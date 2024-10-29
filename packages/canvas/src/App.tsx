@@ -12,7 +12,6 @@ function App() {
             >
                 update count
             </Button>
-
             <h1>{count}</h1>
         </>
     );

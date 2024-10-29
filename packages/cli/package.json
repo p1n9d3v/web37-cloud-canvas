@@ -1,6 +1,6 @@
 {
   "name": "cloud-canvas",
-  "private": true,
+  "private": false,
   "version": "0.0.0",
   "description": "",
   "scripts": {},
@@ -9,5 +9,8 @@
     "cloud-canvas": "./bin/start.js"
   },
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "peerDependencies": {
+    "express": "^4.21.1"
+  }
 }

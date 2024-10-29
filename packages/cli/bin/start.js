@@ -2,7 +2,7 @@
 const { exec } = require("child_process");
 const path = require("path");
 
-const serverPath = path.join(__dirname, "../packages/server/dist/index.js");
+const serverPath = path.join(__dirname, "../dist/server/index.js");
 
 exec(`node ${serverPath}`, (error, stdout, stderr) => {
   if (error) {

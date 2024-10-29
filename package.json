@@ -5,7 +5,6 @@
   "private": true,
   "scripts": {
     "build": "concurrently \"pnpm --filter @cloud-canvas/server build\" \"pnpm --filter @cloud-canvas/canvas build\"",
-    "start": "concurrently \"pnpm --filter @cloud-canvas/server dev\" \"pnpm --filter @cloud-canvas/canvas dev\"",
     "commit": "./node_modules/cz-customizable/standalone.js"
   },
   "keywords": [],

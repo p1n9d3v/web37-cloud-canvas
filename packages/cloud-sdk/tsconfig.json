@@ -1,0 +1,8 @@
+{
+    "extends": "../../config/tsconfig.base.json",
+    "compilerOptions": {
+        "module": "CommonJS", // CommonJS로 변경
+        "outDir": "../cli/dist/server" // 출력 디렉터리를 dist로 변경
+    },
+    "include": ["src"] // 컴파일 대상 경로
+}

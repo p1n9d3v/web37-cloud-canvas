@@ -1,0 +1,16 @@
+{
+    "name": "cloud-canvas",
+    "private": false,
+    "version": "0.0.0",
+    "description": "",
+    "scripts": {},
+    "keywords": [],
+    "bin": {
+        "cloud-canvas": "./bin/start.js"
+    },
+    "author": "",
+    "license": "MIT",
+    "peerDependencies": {
+        "express": "^4.21.1"
+    }
+}

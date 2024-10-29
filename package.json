@@ -2,10 +2,7 @@
   "name": "cloud-canvas",
   "version": "0.0.0",
   "description": "",
-  "private": false,
-  "bin": {
-    "cloud-canvas": "./bin/start.js"
-  },
+  "private": true,
   "scripts": {
     "build": "concurrently \"pnpm --filter @cloud-canvas/server build\" \"pnpm --filter @cloud-canvas/canvas build\"",
     "start": "concurrently \"pnpm --filter @cloud-canvas/server dev\" \"pnpm --filter @cloud-canvas/canvas dev\"",

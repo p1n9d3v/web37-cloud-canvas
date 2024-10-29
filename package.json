@@ -1,0 +1,24 @@
+{
+  "name": "boostcamp",
+  "version": "0.0.1",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "commit": "./node_modules/cz-customizable/standalone.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "commitizen": "^4.3.1",
+    "cz-customizable": "^7.2.1"
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-customizable"
+    },
+    "cz-customizable": {
+      "config": "config/cz.js"
+    }
+  }
+}

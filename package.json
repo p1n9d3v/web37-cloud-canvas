@@ -11,7 +11,8 @@
   "license": "MIT",
   "devDependencies": {
     "commitizen": "^4.3.1",
-    "cz-customizable": "^7.2.1"
+    "cz-customizable": "^7.2.1",
+    "typescript": "~5.6.2"
   },
   "config": {
     "commitizen": {

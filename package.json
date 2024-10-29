@@ -1,9 +1,14 @@
 {
-  "name": "boostcamp",
-  "version": "0.0.1",
+  "name": "cloud-canvas",
+  "version": "0.0.0",
   "description": "",
-  "private": true,
+  "private": false,
+  "bin": {
+    "cloud-canvas": "./bin/start.js"
+  },
   "scripts": {
+    "build": "concurrently \"pnpm --filter @cloud-canvas/server build\" \"pnpm --filter @cloud-canvas/canvas build\"",
+    "start": "concurrently \"pnpm --filter @cloud-canvas/server dev\" \"pnpm --filter @cloud-canvas/canvas dev\"",
     "commit": "./node_modules/cz-customizable/standalone.js"
   },
   "keywords": [],
@@ -21,5 +26,8 @@
     "cz-customizable": {
       "config": "config/cz.js"
     }
+  },
+  "dependencies": {
+    "concurrently": "^9.0.1"
   }
 }

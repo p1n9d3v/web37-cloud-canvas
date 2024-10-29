@@ -1,6 +1,7 @@
 {
-  "name": "@boostcamp/cloud-canvas-server",
+  "name": "@cloud-canvas/server",
   "version": "0.0.0",
+  "private": true,
   "description": "",
   "scripts": {
     "build": "tsc",

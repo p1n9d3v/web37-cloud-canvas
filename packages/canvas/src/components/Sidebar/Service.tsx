@@ -1,23 +1,24 @@
-import { styled } from '@mui/material/styles';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import MuiAccordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import MuiAccordionDetails from '@mui/material/AccordionDetails';
-import Typography from '@mui/material/Typography';
-import List from '@mui/material/List';
+import ServiceItem from '@components/Sidebar/ServiceItem';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import List from '@mui/material/List';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 
-const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
-    padding: 0,
-    backgroundColor: theme.palette.grey[100],
-}));
-
-const Accordion = styled(MuiAccordion)(({ theme }) => ({
-    backgroundColor: theme.palette.primary.main,
-    color: theme.palette.primary.contrastText,
+const StyledService = styled(Accordion)(({ theme }) => ({
+    backgroundColor:
+        theme.palette.mode === 'dark' ? undefined : theme.palette.primary.main,
+    color: theme.palette.text.primary,
+    ['&:hover']: {
+        backgroundColor:
+            theme.palette.mode === 'dark'
+                ? theme.palette.grey[800]
+                : theme.palette.primary.light,
+    },
     [`&:before`]: {
-        height: 0, // Remove the default before border
+        height: 0,
     },
     [`&:first-of-type`]: {
         borderTopLeftRadius: 0,
@@ -29,25 +30,17 @@ const Accordion = styled(MuiAccordion)(({ theme }) => ({
     },
 }));
 
-const ServiceItem = ({ title, desc }: { title: string; desc: string }) => {
-    return (
-        <ListItem
-            sx={{
-                cursor: 'pointer',
-                color: 'black',
-                ['&:not(:last-child)']: {
-                    borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
-                },
-                ['&:hover']: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                },
-            }}
-            key={title}
-        >
-            <ListItemText primary={title} secondary={desc} />
-        </ListItem>
-    );
-};
+const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
+    color: theme.palette.white,
+}));
+
+const StyledAccordionDetails = styled(AccordionDetails)(({ theme }) => ({
+    padding: 0,
+    backgroundColor:
+        theme.palette.mode === 'dark'
+            ? theme.palette.grey[900]
+            : theme.palette.grey[100],
+}));
 
 export default ({
     title,
@@ -60,16 +53,8 @@ export default ({
     }>;
 }) => {
     return (
-        <Accordion elevation={0} disableGutters>
-            <AccordionSummary
-                expandIcon={
-                    <ExpandMoreIcon
-                        sx={{
-                            color: 'white',
-                        }}
-                    />
-                }
-            >
+        <StyledService elevation={0} disableGutters>
+            <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography
                     sx={{
                         textTransform: 'capitalize',
@@ -77,8 +62,8 @@ export default ({
                 >
                     {title}
                 </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
+            </StyledAccordionSummary>
+            <StyledAccordionDetails>
                 <List
                     sx={{
                         overflow: 'hidden',
@@ -93,7 +78,7 @@ export default ({
                         />
                     ))}
                 </List>
-            </AccordionDetails>
-        </Accordion>
+            </StyledAccordionDetails>
+        </StyledService>
     );
 };

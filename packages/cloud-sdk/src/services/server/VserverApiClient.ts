@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosHeaders } from 'axios';
 import { generateSignature } from './signature';
 import { ApiKeyCredentials } from './types';
 
-export class ApiClient {
+export class VserverApiClient {
     private readonly baseURL: string;
     private readonly apiKey?: ApiKeyCredentials;
     private readonly axiosInstance: AxiosInstance;

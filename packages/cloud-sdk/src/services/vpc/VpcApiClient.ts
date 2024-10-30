@@ -1,8 +1,8 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosHeaders } from 'axios';
 import { generateSignature } from './signature';
-import { ApiKeyCredentials } from './types';
+import { ApiKeyCredentials } from '../../types';
 
-export class ApiClient {
+export class VpcApiClient {
     private readonly baseURL: string;
     private readonly apiKey?: ApiKeyCredentials;
     private readonly axiosInstance: AxiosInstance;
@@ -38,6 +38,7 @@ export class ApiClient {
                     timestamp,
                     params,
                     apiKey: this.apiKey,
+                    baseURL: this.baseURL,
                 });
                 if (config.headers instanceof AxiosHeaders) {
                     config.headers.set('x-ncp-apigw-timestamp', timestamp);

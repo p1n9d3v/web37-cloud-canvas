@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosHeaders } from 'axios';
 import { generateSignature } from './signature';
 import { ApiKeyCredentials } from './types';
 
-export class ApiClient {
+export class SubnetApiClient {
     private readonly baseURL: string;
     private readonly apiKey?: ApiKeyCredentials;
     private readonly axiosInstance: AxiosInstance;
@@ -56,7 +56,6 @@ export class ApiClient {
 
     async request(config: AxiosRequestConfig): Promise<any> {
         try {
-            console.log(config);
             const response = await this.axiosInstance.request({
                 ...config,
                 params: {

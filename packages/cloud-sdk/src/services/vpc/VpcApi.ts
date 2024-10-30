@@ -1,12 +1,12 @@
-import { ApiClient } from './ApiClient';
+import { VpcApiClient } from './VpcApiClient';
 import { ApiKeyCredentials } from './types';
 
 export class VpcApi {
-    private client: ApiClient;
+    private client: VpcApiClient;
     private readonly resourcePath: string;
     constructor(apiKey?: ApiKeyCredentials) {
         this.resourcePath = '/vpc/v2';
-        this.client = new ApiClient(apiKey);
+        this.client = new VpcApiClient(apiKey);
     }
 
     async createVpc(params: {

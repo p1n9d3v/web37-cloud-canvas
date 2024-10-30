@@ -3,6 +3,7 @@ import { ApiKeyCredentials, RequestConfig } from './types';
 
 interface SignatureConfig extends RequestConfig {
     apiKey: ApiKeyCredentials;
+    baseURL: string;
 }
 
 export function generateSignature({

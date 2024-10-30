@@ -9,7 +9,6 @@ export interface CreateSubnetRequest {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-common-getregionlist}<br>
      *
      * Optional
-     * @example "KR"
      */
     regionCode?: string;
 
@@ -19,7 +18,6 @@ export interface CreateSubnetRequest {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-common-getregionlist}<br>
      *
      * Required
-     * @example "KR-1"
      */
     zoneCode: string;
 
@@ -29,7 +27,6 @@ export interface CreateSubnetRequest {
      * @see {@link https://api.ncloud-docs.com/docs/networking-vpc-vpcmanagement-getvpclist}<br>
      *
      * Required
-     * @example "vpc-abcdefg123456789"
      */
     vpcNo: string;
 
@@ -39,7 +36,6 @@ export interface CreateSubnetRequest {
      * 3~30자로 영문 소문자, 숫자, 특수 문자 '-'를 허용하며 영문자로 시작해서 영문자 또는 숫자로 끝나야 함.
      *
      * Optional
-     * @example "my-subnet"
      */
     subnetName?: string;
 
@@ -49,7 +45,6 @@ export interface CreateSubnetRequest {
      * Private 대역(10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) 사용.
      *
      * Required
-     * @example "10.0.1.0/24"
      */
     subnet: string;
 
@@ -59,7 +54,6 @@ export interface CreateSubnetRequest {
      * @see {@link https://api.ncloud-docs.com/docs/networking-vpc-networkacl-getnetworkacllist}<br>
      *
      * Required
-     * @example "acl-123abc"
      */
     networkAclNo: string;
 

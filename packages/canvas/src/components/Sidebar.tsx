@@ -1,6 +1,5 @@
 import {
     Paper,
-    FormControl,
     Input,
     IconButton,
     Divider,
@@ -11,6 +10,12 @@ import {
     AccordionDetails as MuiAccordionDetails,
     ListItem,
     ListItemText,
+    Select,
+    MenuItem,
+    SelectChangeEvent,
+    Stack,
+    ListItemAvatar,
+    Avatar,
 } from '@mui/material';
 import {
     Search as SearchIcon,
@@ -18,6 +23,7 @@ import {
 } from '@mui/icons-material';
 
 import { styled } from '@mui/material/styles';
+import { useState } from 'react';
 
 const SERVICES = [
     {
@@ -204,26 +210,92 @@ const SidebarPaper = styled(Paper)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     height: '100%',
-    overflow: 'auto',
 }));
+
+const CLOUD_PLATFORMS = [
+    {
+        value: 'ncloud',
+        title: 'Naver Cloud Platform',
+        imgUrl: 'https://seekvectors.com/files/download/Naver-Logo-04.png',
+    },
+    {
+        value: 'aws',
+        title: 'Amazon Web Service',
+        imgUrl: 'https://img.icons8.com/color/600/amazon-web-services.png',
+    },
+    {
+        value: 'gcp',
+        title: 'Google Cloud Platfor',
+        imgUrl: 'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FQ7yRI%2Fbtrbd0hgJPP%2F5f6Y6zp67DHSjn4JBEAKo1%2Fimg.png',
+    },
+];
+
+const SelectCloud = ({
+    platforms,
+}: {
+    platforms: Array<{
+        value: string;
+        title: string;
+        imgUrl: string;
+    }>;
+}) => {
+    const [value, setValue] = useState(platforms.at(0)!.value);
+    const handleChange = (event: SelectChangeEvent) =>
+        setValue(event.target.value);
+    return (
+        <Select
+            value={value}
+            onChange={handleChange}
+            fullWidth
+            sx={{
+                [`& .MuiSelect-select`]: {
+                    px: 1.5,
+                    py: 1,
+                },
+            }}
+        >
+            {platforms.map(({ value, title, imgUrl }) => (
+                <MenuItem value={value}>
+                    <ListItem sx={{ p: 0 }}>
+                        <ListItemAvatar>
+                            <Avatar alt="aws" src={imgUrl} />
+                        </ListItemAvatar>
+                        <ListItemText primary={title} />
+                    </ListItem>
+                </MenuItem>
+            ))}
+        </Select>
+    );
+};
 
 export default () => {
     return (
         <SidebarPaper elevation={1}>
-            <FormControl fullWidth variant="standard">
+            <Stack
+                spacing={2}
+                sx={{
+                    p: 1,
+                }}
+            >
+                <SelectCloud platforms={CLOUD_PLATFORMS} />
+                <Divider />
                 <Input
-                    sx={{
-                        px: 1,
-                    }}
+                    fullWidth
+                    placeholder="Search services"
                     endAdornment={
                         <IconButton>
                             <SearchIcon />
                         </IconButton>
                     }
                 />
-            </FormControl>
-            <Divider sx={{ my: 2 }} />
-            <List sx={{ flex: 1, padding: 0 }}>
+            </Stack>
+            <List
+                sx={{
+                    flex: 1,
+                    padding: 0,
+                    overflow: 'auto',
+                }}
+            >
                 {SERVICES.map((service) => (
                     <Service
                         key={service.title}

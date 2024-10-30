@@ -8,4 +8,12 @@ export class SubnetApi {
         this.resourcePath = '/subnet/v2';
         this.client = new SubnetApiClient(apiKey);
     }
+
+    async getSubnetList() {}
+
+    async getSubnetDetail() {}
+
+    async createSubnet() {}
+
+    async deleteSubnet() {}
 }

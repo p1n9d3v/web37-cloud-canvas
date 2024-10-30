@@ -1,5 +1,5 @@
 /**
- * Subnet 객체
+ * 서브넷 객체
  */
 export interface Subnet {
     /**
@@ -56,7 +56,7 @@ export interface Subnet {
      *
      * Optional
      */
-    createDate: Date;
+    createDate?: Date;
 
     /**
      * Subnet 구분
@@ -80,14 +80,14 @@ export interface Subnet {
      * - BM: 베어 메탈 전용
      * - NATGW: NAT Gateway 전용
      */
-    usageType: CommonCode;
+    usageType?: CommonCode;
 
     /**
      * Network ACL 번호
      *
      * Optional
      */
-    networkAclNo: string;
+    networkAclNo?: string;
 }
 
 /**

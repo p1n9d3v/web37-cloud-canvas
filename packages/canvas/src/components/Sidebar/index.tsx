@@ -9,7 +9,7 @@ import List from '@mui/material/List';
 
 import { MOCK_SERVICES } from '@/mocks';
 import Service from '@components/Sidebar/Service';
-import SelectCloud from '@components/Sidebar/SelectCloud';
+import SelectPlatform from '@components/Sidebar/SelectPlatform';
 
 const CLOUD_PLATFORMS = [
     {
@@ -46,7 +46,7 @@ export default () => {
                     p: 1,
                 }}
             >
-                <SelectCloud platforms={CLOUD_PLATFORMS} />
+                <SelectPlatform platforms={CLOUD_PLATFORMS} />
                 <Divider />
                 <Input
                     fullWidth

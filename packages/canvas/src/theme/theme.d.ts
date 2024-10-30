@@ -9,6 +9,7 @@ declare module '@mui/material/styles' {
             sidebarWidth: number;
         };
     }
+
     interface ThemeOptions {
         status?: {
             danger?: string;
@@ -17,16 +18,14 @@ declare module '@mui/material/styles' {
             sidebarWidth?: number;
         };
     }
+
     interface Palette {
-        border: {
-            light: string;
-            dark: string;
-        };
+        white: string;
+        black: string;
     }
+
     interface PaletteOptions {
-        border?: {
-            light?: string;
-            dark?: string;
-        };
+        white?: string;
+        black?: string;
     }
 }

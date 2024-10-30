@@ -5,10 +5,8 @@ const theme = createTheme({
         dark: true,
     },
     palette: {
-        border: {
-            light: '#e0e0e0',
-            dark: '#555555',
-        },
+        white: '#fff',
+        black: '#000',
     },
     components: {
         MuiCssBaseline: {
@@ -59,6 +57,22 @@ const theme = createTheme({
                     width: '100%',
                 },
             }),
+        },
+        MuiSvgIcon: {
+            styleOverrides: {
+                root: {
+                    color: 'inherit',
+                },
+            },
+        },
+        MuiAccordionSummary: {
+            styleOverrides: {
+                root: {
+                    ['& .MuiAccordionSummary-expandIconWrapper']: {
+                        color: 'inherit',
+                    },
+                },
+            },
         },
     },
     custom: {

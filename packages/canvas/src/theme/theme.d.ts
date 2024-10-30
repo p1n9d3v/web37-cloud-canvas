@@ -13,8 +13,20 @@ declare module '@mui/material/styles' {
         status?: {
             danger?: string;
         };
-        custom: {
-            sidebarWidth: number;
+        custom?: {
+            sidebarWidth?: number;
+        };
+    }
+    interface Palette {
+        border: {
+            light: string;
+            dark: string;
+        };
+    }
+    interface PaletteOptions {
+        border?: {
+            light?: string;
+            dark?: string;
         };
     }
 }

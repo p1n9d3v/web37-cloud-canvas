@@ -6,7 +6,7 @@ import theme from './theme/index.ts';
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={theme} defaultMode="light">
             <CssBaseline />
             <App />
         </ThemeProvider>

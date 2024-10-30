@@ -19,7 +19,7 @@ export interface GetSubnetDetailRequest {
      *
      * {@link https://api.ncloud-docs.com/docs/networking-vpc-subnetmanagement-getsubnetlist}<br>
      *
-     * Optional
+     * Required
      */
     subnetNo: string;
 

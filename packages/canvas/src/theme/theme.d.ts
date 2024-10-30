@@ -5,10 +5,16 @@ declare module '@mui/material/styles' {
         status: {
             danger: string;
         };
+        custom: {
+            sidebarWidth: number;
+        };
     }
     interface ThemeOptions {
         status?: {
             danger?: string;
+        };
+        custom: {
+            sidebarWidth: number;
         };
     }
 }

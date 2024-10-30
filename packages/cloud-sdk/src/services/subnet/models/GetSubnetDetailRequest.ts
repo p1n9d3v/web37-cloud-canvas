@@ -7,7 +7,7 @@ export interface GetSubnetDetailRequest {
      * 조회 결과의 첫 번째 리전(기본값).
      * getRegionList를 통해 확인 가능.
      *
-     * {@link https://api.ncloud-docs.com/docs/compute-vserver-server-common-getregionlist}<br>
+     * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-common-getregionlist}<br>
      *
      * Optional
      */
@@ -17,7 +17,7 @@ export interface GetSubnetDetailRequest {
      * Subnet 번호로 Subnet 상세 정보 조회.
      * subnetNo는 getSubnetList를 통해 확인 가능.
      *
-     * {@link https://api.ncloud-docs.com/docs/networking-vpc-subnetmanagement-getsubnetlist}<br>
+     * @see {@link https://api.ncloud-docs.com/docs/networking-vpc-subnetmanagement-getsubnetlist}<br>
      *
      * Required
      */

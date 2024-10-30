@@ -13,14 +13,14 @@ export interface NcloudResponse {
     /**
      * 요청에 대한 응답 코드
      *
-     * {@link https://api.ncloud-docs.com/docs/common-ncpapi#3%EC%9D%91%EB%8B%B5%EC%83%81%ED%83%9C%EC%BD%94%EB%93%9C}
+     * @see {@link https://api.ncloud-docs.com/docs/common-ncpapi#3%EC%9D%91%EB%8B%B5%EC%83%81%ED%83%9C%EC%BD%94%EB%93%9C}
      */
     returnCode: string;
 
     /**
      * 요청에 대한 응답 메시지
      *
-     * {@link https://api.ncloud-docs.com/docs/common-ncpapi#3%EC%9D%91%EB%8B%B5%EC%83%81%ED%83%9C%EC%BD%94%EB%93%9C}
+     * @see {@link https://api.ncloud-docs.com/docs/common-ncpapi#3%EC%9D%91%EB%8B%B5%EC%83%81%ED%83%9C%EC%BD%94%EB%93%9C}
      */
     returnMessage: string;
 }

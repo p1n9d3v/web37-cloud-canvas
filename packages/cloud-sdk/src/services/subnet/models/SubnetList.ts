@@ -2,6 +2,7 @@ import { Subnet } from './Subnet';
 
 /**
  * 서브넷 리스트 객체
+ * @see {@link https://api.ncloud-docs.com/docs/common-vapidatatype-subnetlist}
  */
 export interface SubnetList {
     /**

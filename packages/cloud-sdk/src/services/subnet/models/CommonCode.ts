@@ -1,5 +1,6 @@
 /**
  * CommonCode 객체
+ * @see {@link https://api.ncloud-docs.com/docs/common-vapidatatype-commoncode}
  * 추후 통합할 때 Common 폴더로 뺄 예정
  */
 export interface CommonCode {

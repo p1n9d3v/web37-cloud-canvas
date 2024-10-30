@@ -2,6 +2,7 @@ import { CommonCode } from './CommonCode';
 
 /**
  * 서브넷 객체
+ * @see {@link https://api.ncloud-docs.com/docs/common-vapidatatype-subnet}
  */
 export interface Subnet {
     /**
@@ -43,7 +44,7 @@ export interface Subnet {
     /**
      * Subnet 상태
      *
-     * {@link CommonCode}<br>
+     * @see {@link CommonCode}<br>
      *
      * Required
      * - INIT: Initiated

@@ -1,3 +1,5 @@
+import { SubnetNoList } from './SubnetNoList';
+
 /**
  * 서브넷 목록을 조회하기 위한 요청 객체
  */
@@ -7,7 +9,7 @@ export interface GetSubnetListRequest {
      * 조회 결과의 첫 번째 리전(기본값).
      * getRegionList를 통해 확인 가능.
      *
-     * {@link https://api.ncloud-docs.com/docs/compute-vserver-server-common-getregionlist}<br>
+     * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-common-getregionlist}<br>
      *
      * Optional
      */
@@ -17,12 +19,13 @@ export interface GetSubnetListRequest {
      * Subnet 번호로 목록 조회.
      * subnetNo는 getSubnetList를 통해 확인 가능.
      *
-     * {@link https://api.ncloud-docs.com/docs/networking-vpc-subnetmanagement-getsubnetlist}<br>
+     * @see {@link https://api.ncloud-docs.com/docs/networking-vpc-subnetmanagement-getsubnetlist}<br>
+     * @see {@link SubnetNoList}<br>
      *
      * Optional
      * @example subnetNoList.1=1234&subnetNoList.2=2345
      */
-    subnetNoList?: string[];
+    subnetNoList?: SubnetNoList;
 
     /**
      * Subnet 이름으로 목록 조회.
@@ -63,7 +66,7 @@ export interface GetSubnetListRequest {
      * Subnet에 적용된 Network ACL 번호로 Subnet 목록 조회.
      * networkAclNo는 getNetworkAclList를 통해 확인 가능.
      *
-     * {@link https://api.ncloud-docs.com/docs/networking-vpc-networkacl-getnetworkacllist}<br>
+     * @see {@link https://api.ncloud-docs.com/docs/networking-vpc-networkacl-getnetworkacllist}<br>
      *
      * Optional
      */
@@ -101,7 +104,7 @@ export interface GetSubnetListRequest {
      * VPC 번호로 Subnet 목록 조회.
      * getVpcList를 통해 확인 가능.
      *
-     * {@link https://api.ncloud-docs.com/docs/networking-vpc-vpcmanagement-getvpclist}<br>
+     * @see {@link https://api.ncloud-docs.com/docs/networking-vpc-vpcmanagement-getvpclist}<br>
      *
      * Optional
      */
@@ -111,7 +114,7 @@ export interface GetSubnetListRequest {
      * 존 코드로 Subnet 목록 조회.
      * getZoneList를 통해 확인 가능.
      *
-     * {@link https://api.ncloud-docs.com/docs/compute-vserver-server-common-getzonelist}<br>
+     * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-common-getzonelist}<br>
      *
      * Optional
      */

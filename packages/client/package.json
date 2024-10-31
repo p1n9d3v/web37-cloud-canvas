@@ -8,7 +8,7 @@
     "scripts": {
         "start": "serve dist",
         "dev": "vite",
-        "build": "tsc -b && vite build --config vite.build.config.ts",
+        "build": "tsc -b && vite build",
         "bundle": "tsc -b && vite build --config vite.bundle.config.ts",
         "clean": "rm -rf dist"
     },

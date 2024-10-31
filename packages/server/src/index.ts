@@ -1,26 +1,46 @@
+import path from 'node:path';
 import express from 'express';
-import path from 'path';
-import { test } from './apis';
+import chalk from 'chalk';
+import { api as apiRouter } from './api';
 
-console.log(test);
+const port = process.env.PORT || 3000;
+
+const staticDir = path.join(
+    __dirname,
+    process.env.NODE_ENV === 'internal' ? '../../client/dist' : '../client',
+);
+
+// check directory: development mode only
+console.log('  - env:\t', process.env.NODE_ENV);
+console.log('  - cwd:\t', process.cwd());
+console.log('  - dirname:\t', __dirname);
+console.log('  - static:\t', staticDir);
 
 const app = express();
-const PORT = process.env.PORT || 4000;
 
-app.get('/api/data', (req, res) => {
-    res.json({ message: 'Hello from the API!' });
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Static files
+app.use(express.static(staticDir));
+
+// Client
+app.get('/', (req, res) => {
+    res.sendFile('index.html', { root: staticDir });
 });
 
-app.post('/api/some-action', (req, res) => {
-    res.json({ success: true });
-});
+// API
+app.use('/api', apiRouter);
 
-app.use(express.static(path.join(__dirname, '../client')));
-
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/index.html'));
-});
-
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+app.listen(port, () => {
+    console.log(chalk.greenBright(`\n  Server listening on port ${port}\n`));
+    console.log(
+        chalk.whiteBright('  - Local:'),
+        chalk.cyanBright(`http://localhost:${port}`),
+    );
+    console.log(
+        chalk.whiteBright('  - Client path:'),
+        chalk.blueBright(path.relative(process.cwd(), staticDir)),
+    );
 });

@@ -5,8 +5,8 @@
     "private": true,
     "keywords": [],
     "scripts": {
-        "start": "cross-env NODE_ENV=development node dist/index.js",
-        "dev": "cross-env NODE_ENV=development tsx watch src/index.ts",
+        "start": "cross-env NODE_ENV=internal node dist/index.js",
+        "dev": "cross-env NODE_ENV=internal tsx watch src/index.ts",
         "build": "tsup --config tsup.build.config.ts",
         "bundle": "tsup --config tsup.bundle.config.ts",
         "clean": "rm -rf dist"

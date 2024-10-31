@@ -6,8 +6,8 @@ import { api as apiRouter } from './api';
 const port = process.env.PORT || 3000;
 
 const staticDir = path.join(
-    process.cwd(),
-    process.env.NODE_ENV === 'development' ? '../client/dist' : './client',
+    __dirname,
+    process.env.NODE_ENV === 'internal' ? '../../client/dist' : '../client',
 );
 
 // check directory: development mode only

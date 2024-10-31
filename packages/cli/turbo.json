@@ -3,7 +3,7 @@
     "tasks": {
         "dev": {
             "dependsOn": [
-                "@cloud-canvas/client#build",
+                "@cloud-canvas/client#bundle",
                 "@cloud-canvas/server#bundle"
             ],
             "cache": false,

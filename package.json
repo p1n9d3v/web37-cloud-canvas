@@ -5,8 +5,8 @@
     "private": true,
     "keywords": [],
     "scripts": {
-        "start": "turbo run start --filter=!cloud-canvas",
-        "dev": "turbo run dev --filter=!cloud-canvas",
+        "start": "turbo run start --filter=!cloud-canvas --filter=!@cloud-canvas/ncloud-sdk",
+        "dev": "turbo run dev --filter=!cloud-canvas --filter=!@cloud-canvas/ncloud-sdk",
         "build": "turbo run build",
         "bundle": "turbo run bundle",
         "clean": "turbo run clean",

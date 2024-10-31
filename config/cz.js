@@ -1,7 +1,11 @@
 module.exports = {
     types: [
         { value: '✨ Feat', name: '✨ Feat:\t새로운 기능 추가' },
-        { value: '🐛 Design', name: '🐛 Fix:\tCSS 등 사용자 UI 디자인 변경' },
+        { value: '🐞 Fix', name: '🐞 Fix:\t버그 수정' },
+        {
+            value: '🐛 Design',
+            name: '🐛 Design:\tCSS 등 사용자 UI 디자인 변경',
+        },
         { value: '📝 Docs', name: '📝 Docs:\t문서 수정' },
         {
             value: '💄 Style',

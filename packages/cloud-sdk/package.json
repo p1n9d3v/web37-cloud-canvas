@@ -8,11 +8,18 @@
     "license": "MIT",
     "scripts": {
         "build": "tsc",
-        "dev": "ts-node-dev --respawn --transpile-only src/index.ts"
+        "dev": "ts-node-dev --respawn --transpile-only src/createVpc.ts"
     },
     "devDependencies": {
+        "@types/crypto-js": "^4.2.2",
         "@types/node": "^22.8.2",
+        "dotenv": "^16.4.5",
         "nodemon": "^3.1.7",
+        "prettier": "^3.3.3",
         "ts-node-dev": "^2.0.0"
+    },
+    "dependencies": {
+        "crypto-js": "^4.2.0",
+        "superagent": "^10.1.1"
     }
 }

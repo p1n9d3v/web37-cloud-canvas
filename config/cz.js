@@ -1,23 +1,23 @@
 module.exports = {
     types: [
-        { value: '✨ Feat', name: '✨ Feat:\tAdd a new feature' },
-        { value: '🐛 Modify', name: '🐛 Fix:\tModify production, UI,UX code' },
-        { value: '📝 Docs', name: '📝 Docs:\tAdd or update documentation' },
+        { value: '✨ Feat', name: '✨ Feat:\t새로운 기능 추가' },
+        { value: '🐛 Design', name: '🐛 Fix:\tCSS 등 사용자 UI 디자인 변경' },
+        { value: '📝 Docs', name: '📝 Docs:\t문서 수정' },
         {
             value: '💄 Style',
-            name: '💄 Style:\tAdd or update code format (not updation production, UI,UX code)',
+            name: '💄 Style:\t코드 포맷 변경(세미콜론, 들여쓰기 등)만 수정',
         },
         {
             value: '🤖 Refactor',
-            name: '🤖 Refactor:\tCode change that neither fixes a bug nor adds a feature',
+            name: '🤖 Refactor:\t리팩토링, 파일 삭제, 수정, 이동 등',
         },
         {
             value: '✅ Test',
-            name: '✅ Test:\tCode change related with tests cases',
+            name: '✅ Test:\t테스트 코드 관련작업',
         },
         {
-            value: '🚚 Chore',
-            name: '🚚 Chore:\tChanges to the build process or auxiliary tools\n\t\tand libraries such as documentation generation',
+            value: '🚚 Setting',
+            name: '🚚 Setting:\t기타 작업(빌드 스크립트, 패키지 매니저 등등)',
         },
     ],
     allowCustomScopes: false,

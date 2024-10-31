@@ -1,0 +1,15 @@
+{
+    "extends": ["//"],
+    "tasks": {
+        "dev": {
+            "dependsOn": ["@cloud-canvas/client#build"],
+            "cache": false,
+            "persistent": true
+        },
+        "build": {
+            "dependsOn": ["@cloud-canvas/client#build", "clean"],
+            "inputs": ["$TURBO_DEFAULT$", "!README.md", "!CHANGELOG.md"],
+            "outputs": ["dist/**"]
+        }
+    }
+}

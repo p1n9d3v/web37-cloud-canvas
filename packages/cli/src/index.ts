@@ -8,7 +8,9 @@ const serverPath =
 
 async function main() {
     console.log(chalk.blueBright('  Starting Cloud Canvas server...'));
-    import(serverPath);
+    await import(serverPath);
+    const open = await import('open');
+    await open.default('http://localhost:3000');
 }
 
 main();

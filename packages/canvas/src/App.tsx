@@ -1,20 +1,26 @@
-import { Button } from '@mui/material';
-import { useState } from 'react';
+import Header from '@components/Header';
+import Sidebar from '@components/Sidebar';
+import Box from '@mui/material/Box';
 
 function App() {
-    const [count, setCount] = useState(0);
-
     return (
-        <>
-            <Button
-                variant="contained"
-                onClick={() => setCount((count) => count + 1)}
+        <Box
+            sx={{
+                height: '100%',
+                display: 'flex',
+            }}
+        >
+            <Sidebar />
+            <Box
+                sx={{
+                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                }}
             >
-                update count
-            </Button>
-
-            <h1>{count}</h1>
-        </>
+                <Header />
+            </Box>
+        </Box>
     );
 }
 

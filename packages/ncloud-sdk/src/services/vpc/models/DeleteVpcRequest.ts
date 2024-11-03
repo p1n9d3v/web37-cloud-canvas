@@ -1,14 +1,11 @@
+/**
+ * VPC 삭제 요청 파라미터
+ * @typedef {Object} DeleteVpcRequest
+ * @property {string} [regionCode] - 삭제할 VPC의 리전 코드 (Optional)
+ * @property {string} vpcNo - 삭제할 VPC 번호 (Required)
+ */
 export interface DeleteVpcRequest {
-    /**
-     * VPC 리전 코드
-     */
     regionCode: string;
-    /**
-     * VPC 번호
-     */
     vpcNo: string;
-    /**
-     * 응답 결과의 형식
-     */
     responseFormatType: string;
 }

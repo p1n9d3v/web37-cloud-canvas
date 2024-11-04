@@ -1,4 +1,4 @@
-import Background from '@components/Background';
+import Background from '@components/CanvasFlow/Background';
 import useNodeMovement from '@hooks/useNodeMovement';
 import usePanZoom from '@hooks/useZoomPan';
 import { PropsWithChildren, useRef, useState } from 'react';

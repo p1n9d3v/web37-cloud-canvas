@@ -2,7 +2,7 @@
     "name": "@cloud-canvas/ncloud-sdk",
     "version": "0.0.0",
     "description": "",
-    "private": false,
+    "private": true,
     "keywords": [],
     "scripts": {
         "start": "cross-env NODE_ENV=development node dist/index.js",

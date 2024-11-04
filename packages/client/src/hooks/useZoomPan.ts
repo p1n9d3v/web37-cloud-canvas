@@ -16,7 +16,7 @@ export default (ref: RefObject<HTMLElement>) => {
         height: 0,
     });
 
-    const [isPanZoomDragging, setIsPanZoomDragging] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
     const dragStartMousePosition = useRef({ x: 0, y: 0 });
     const dragStartViewBoxPosition = useRef({ x: 0, y: 0 });
 
@@ -49,7 +49,7 @@ export default (ref: RefObject<HTMLElement>) => {
     };
 
     const handleMoveStart = (e: ReactMouseEvent) => {
-        setIsPanZoomDragging(true);
+        setIsDragging(true);
 
         const { clientX, clientY } = e;
         dragStartMousePosition.current = { x: clientX, y: clientY };
@@ -57,7 +57,7 @@ export default (ref: RefObject<HTMLElement>) => {
     };
 
     const handleMove = (e: MouseEvent) => {
-        if (!isPanZoomDragging || !ref.current) return;
+        if (!isDragging || !ref.current) return;
 
         const zoomPan = ref.current.getBoundingClientRect();
         const viewBoxWidthPerPixel = viewBox.width / zoomPan.width;
@@ -81,7 +81,7 @@ export default (ref: RefObject<HTMLElement>) => {
         }));
     };
 
-    const handleMoveEnd = () => setIsPanZoomDragging(false);
+    const handleMoveEnd = () => setIsDragging(false);
 
     useLayoutEffect(() => {
         const handleResize = () => {
@@ -101,7 +101,7 @@ export default (ref: RefObject<HTMLElement>) => {
     }, []);
 
     useEffect(() => {
-        if (isPanZoomDragging) {
+        if (isDragging) {
             window.addEventListener('mousemove', handleMove);
             window.addEventListener('mouseup', handleMoveEnd);
         } else {
@@ -113,11 +113,11 @@ export default (ref: RefObject<HTMLElement>) => {
             window.removeEventListener('mousemove', handleMove);
             window.removeEventListener('mouseup', handleMoveEnd);
         };
-    }, [isPanZoomDragging, handleMove, handleMoveEnd]);
+    }, [isDragging, handleMove, handleMoveEnd]);
 
     return {
         viewBox,
-        isPanZoomDragging,
+        isDragging,
         handleMoveStart,
         handleMoveEnd,
         handleMove,

@@ -1,3 +1,4 @@
+import { getRelativeCoordinatesForViewBox } from '@utils/index';
 import {
     RefObject,
     MouseEvent as ReactMouseEvent,
@@ -27,15 +28,14 @@ export default (ref: RefObject<HTMLElement>) => {
         const scaleFactor = 0.1;
         const ratio = deltaY > 0 ? 1 + scaleFactor : 1 - scaleFactor;
 
-        const zoomPan = e.currentTarget.getBoundingClientRect();
-
-        const relativeX = clientX - zoomPan.left;
-        const relativeY = clientY - zoomPan.top;
-        const mouseX = (relativeX / zoomPan.width) * viewBox.width + viewBox.x;
-        const mouseY =
-            (relativeY / zoomPan.height) * viewBox.height + viewBox.y;
-        const newX = mouseX - (mouseX - viewBox.x) * ratio;
-        const newY = mouseY - (mouseY - viewBox.y) * ratio;
+        const { x: _x, y: _y } = getRelativeCoordinatesForViewBox(
+            clientX,
+            clientY,
+            ref,
+            viewBox
+        );
+        const newX = _x - (_x - viewBox.x) * ratio;
+        const newY = _y - (_y - viewBox.y) * ratio;
 
         const newWidth = viewBox.width * ratio;
         const newHeight = viewBox.height * ratio;

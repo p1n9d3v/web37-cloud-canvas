@@ -1,5 +1,6 @@
 import { GRID_SIZE } from '@constants';
 import { ViewBox, Node } from '@types';
+import { getRelativeCoordinatesForViewBox } from '@utils/index';
 import {
     MouseEvent as ReactMouseEvent,
     RefObject,
@@ -23,12 +24,12 @@ export default (
         if (!selectedNodeId || !ref.current) return;
 
         const { clientX, clientY } = e;
-        const zoomPan = ref.current.getBoundingClientRect();
-        const relativeX = clientX - zoomPan.left;
-        const relativeY = clientY - zoomPan.top;
-
-        const newX = (relativeX / zoomPan.width) * viewBox.width + viewBox.x;
-        const newY = (relativeY / zoomPan.height) * viewBox.height + viewBox.y;
+        const { x: newX, y: newY } = getRelativeCoordinatesForViewBox(
+            clientX,
+            clientY,
+            ref,
+            viewBox
+        );
 
         const GRID_QUARTER = GRID_SIZE / 4;
 

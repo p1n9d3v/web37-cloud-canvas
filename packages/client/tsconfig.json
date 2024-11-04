@@ -10,6 +10,7 @@
         "paths": {
             "@components/*": ["src/components/*"],
             "@theme/*": ["src/theme/*"],
+            "@hooks/*": ["src/hooks/*"],
             "@/*": ["*"]
         },
         "allowSyntheticDefaultImports": true // default import 허용

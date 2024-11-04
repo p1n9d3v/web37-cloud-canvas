@@ -1,17 +1,47 @@
 import Background from '@components/Background';
-import usePanZoom from '@hooks/usePanZoom';
-import { PropsWithChildren, useRef } from 'react';
+import useNodeMovement from '@hooks/useNodeMovement';
+import usePanZoom from '@hooks/useZoomPan';
+import { PropsWithChildren, useRef, useState } from 'react';
+import { Node } from '@types';
 
 export default ({ children }: PropsWithChildren) => {
     const ref = useRef<HTMLDivElement>(null);
     const {
         viewBox,
-        isDragging,
-        handleMoveStart,
-        handleMove,
-        handleMoveEnd,
+        isDragging: isPanZoomDragging,
+        handleMoveStart: handleZoomPanMoveStart,
         handleZoom,
     } = usePanZoom(ref);
+
+    const [nodes, setNodes] = useState<Node[]>([
+        {
+            id: '1',
+            x: 100,
+            y: 200,
+        },
+        {
+            id: '2',
+            x: 100,
+            y: 300,
+        },
+    ]);
+    const { handleMoveStart: handleNodeMoveStart } = useNodeMovement(
+        ref,
+        viewBox,
+        ({ id, x, y }: Node) => {
+            setNodes((prev) =>
+                prev.map((node) =>
+                    node.id === id
+                        ? {
+                              ...node,
+                              x,
+                              y,
+                          }
+                        : node
+                )
+            );
+        }
+    );
 
     const backgroundPoints = [
         [viewBox.x, viewBox.y],
@@ -26,12 +56,10 @@ export default ({ children }: PropsWithChildren) => {
             style={{
                 width: '100%',
                 height: '100%',
-                cursor: isDragging ? 'grab' : 'auto',
+                cursor: isPanZoomDragging ? 'grab' : 'auto',
             }}
             onWheel={handleZoom}
-            onMouseDown={handleMoveStart}
-            onMouseMove={handleMove}
-            onMouseUp={handleMoveEnd}
+            onMouseDown={handleZoomPanMoveStart}
         >
             <svg
                 width="100%"
@@ -44,7 +72,31 @@ export default ({ children }: PropsWithChildren) => {
                         .join(' ')}
                     showSubLines={true}
                 />
-                {children}
+                {nodes.length === 2 && (
+                    <line
+                        x1={nodes[0].x}
+                        y1={nodes[0].y}
+                        x2={nodes[1].x}
+                        y2={nodes[1].y}
+                        stroke="blue"
+                        strokeWidth="2"
+                    />
+                )}
+                {nodes.map((node) => (
+                    <circle
+                        key={node.id}
+                        cx={node.x}
+                        cy={node.y}
+                        onMouseDown={(event) =>
+                            handleNodeMoveStart(event, node.id)
+                        }
+                        r="20"
+                        fill="orange"
+                        stroke="black"
+                        strokeWidth="2"
+                        style={{ cursor: 'pointer' }}
+                    />
+                ))}
             </svg>
         </div>
     );

@@ -14,6 +14,7 @@
             "@utils/*": ["src/utils/*"],
             "@types": ["src/types/index.ts"],
             "@theme": ["src/theme/index.ts"],
+            "@constants": ["src/constants/index.ts"],
             "@/*": ["*"]
         }
     },

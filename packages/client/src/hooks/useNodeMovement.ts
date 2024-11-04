@@ -1,9 +1,9 @@
+import { GRID_SIZE } from '@constants';
 import { ViewBox, Node } from '@types';
 import {
     MouseEvent as ReactMouseEvent,
     RefObject,
     useEffect,
-    useRef,
     useState,
 } from 'react';
 
@@ -30,7 +30,12 @@ export default (
         const newX = (relativeX / zoomPan.width) * viewBox.width + viewBox.x;
         const newY = (relativeY / zoomPan.height) * viewBox.height + viewBox.y;
 
-        changeNodePosition({ id: selectedNodeId, x: newX, y: newY });
+        const GRID_QUARTER = GRID_SIZE / 4;
+
+        const snappedX = Math.round(newX / GRID_QUARTER) * GRID_QUARTER;
+        const snappedY = Math.round(newY / GRID_QUARTER) * GRID_QUARTER;
+
+        changeNodePosition({ id: selectedNodeId, x: snappedX, y: snappedY });
     };
 
     const handleMoveEnd = () => setSelectedNodeId(null);

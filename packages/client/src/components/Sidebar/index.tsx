@@ -15,17 +15,12 @@ const CLOUD_PLATFORMS = [
     {
         value: 'ncloud',
         title: 'Naver Cloud Platform',
-        imgUrl: 'https://seekvectors.com/files/download/Naver-Logo-04.png',
+        imgUrl: 'https://pbs.twimg.com/profile_images/1513858761076604929/O7RUa3BX_400x400.jpg',
     },
     {
-        value: 'aws',
-        title: 'Amazon Web Service',
-        imgUrl: 'https://img.icons8.com/color/600/amazon-web-services.png',
-    },
-    {
-        value: 'gcp',
-        title: 'Google Cloud Platfor',
-        imgUrl: 'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FQ7yRI%2Fbtrbd0hgJPP%2F5f6Y6zp67DHSjn4JBEAKo1%2Fimg.png',
+        value: 'kakao',
+        title: 'Kakao Cloud Platform',
+        imgUrl: 'https://i.pinimg.com/474x/63/43/0d/63430dc35b9b01336ecf35584bd4b7e5.jpg',
     },
 ];
 

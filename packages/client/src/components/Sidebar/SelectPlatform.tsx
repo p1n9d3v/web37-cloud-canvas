@@ -31,7 +31,7 @@ export default ({
             }}
         >
             {platforms.map(({ value, title, imgUrl }) => (
-                <MenuItem value={value}>
+                <MenuItem key={value} value={value}>
                     <ListItem sx={{ p: 0 }}>
                         <ListItemAvatar>
                             <Avatar alt="aws" src={imgUrl} />

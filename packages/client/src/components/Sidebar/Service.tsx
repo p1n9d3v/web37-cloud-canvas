@@ -1,4 +1,4 @@
-import ServiceItem from '@components/Sidebar/ServiceItem';
+import ServiceInstanceItem from '@components/Sidebar/ServiceInstance';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -71,7 +71,7 @@ export default ({
                     }}
                 >
                     {items.map((item, index) => (
-                        <ServiceItem
+                        <ServiceInstanceItem
                             key={`${title}-${index}`}
                             title={item.title}
                             desc={item.desc}

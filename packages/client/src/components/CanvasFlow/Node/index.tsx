@@ -1,7 +1,15 @@
 import LoadingSpinnerNode from '@components/CanvasFlow/Node/LoadingSpinnerNode';
 import { GRID_SIZE } from '@constants';
+import { useTheme } from '@mui/material';
 import useNodeMovement from '@hooks/useNodeMovement';
-import { ComponentProps, lazy, Suspense, useMemo } from 'react';
+import {
+    ComponentProps,
+    lazy,
+    Suspense,
+    useMemo,
+    MouseEvent as ReactMouseEvent,
+    useState,
+} from 'react';
 
 // Lazy load the server node component
 const ServerNode = lazy(() => import('./ServerNode'));
@@ -16,7 +24,9 @@ interface Node extends ComponentProps<'g'> {
 }
 
 export default ({ id, type, position: { x, y }, ...props }: Node) => {
+    const theme = useTheme();
     const { handleMoveStart: handleNodeMoveStart } = useNodeMovement();
+    const [isSelecting, setIsSelecting] = useState(false);
 
     const renderedNode = useMemo(() => {
         let NodeComponent = null;
@@ -38,6 +48,14 @@ export default ({ id, type, position: { x, y }, ...props }: Node) => {
         );
     }, [type]);
 
+    const handleMouseDown = (e: ReactMouseEvent) => {
+        handleNodeMoveStart(e, id);
+    };
+
+    const handleDbClick = () => {
+        setIsSelecting((prev) => !prev);
+    };
+
     return (
         <g
             style={{
@@ -45,17 +63,31 @@ export default ({ id, type, position: { x, y }, ...props }: Node) => {
                 transition: 'all 0.1s linear',
             }}
             id={id}
-            onMouseDown={(e) => handleNodeMoveStart(e, id)}
+            onMouseDown={handleMouseDown}
+            onDoubleClick={handleDbClick}
             {...props}
         >
             <svg width={GRID_SIZE} height={GRID_SIZE}>
                 {renderedNode}
-                <rect
-                    width={GRID_SIZE}
-                    height={GRID_SIZE}
-                    fill="transparent"
-                    stroke="red"
-                />
+                {isSelecting && (
+                    <rect
+                        width={GRID_SIZE}
+                        height={GRID_SIZE}
+                        fill="transparent"
+                        strokeWidth="3"
+                        strokeDasharray="10, 5"
+                        strokeDashoffset={0}
+                        stroke={theme.palette.primary.main}
+                    >
+                        <animate
+                            attributeName="stroke-dashoffset"
+                            from="0"
+                            to="15"
+                            dur="0.5s"
+                            repeatCount="indefinite"
+                        />
+                    </rect>
+                )}
             </svg>
         </g>
     );

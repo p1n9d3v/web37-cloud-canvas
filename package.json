@@ -27,6 +27,7 @@
         "build:ncloud-sdk": "turbo run build --filter=@cloud-canvas/ncloud-sdk",
         "clean:ncloud-sdk": "turbo run clean --filter=@cloud-canvas/ncloud-sdk",
         "release": "turbo run bundle && changeset && changeset version && changeset publish",
+        "local-publish": "bash scripts/verdaccio-publish/index.sh",
         "commit": "./node_modules/cz-customizable/standalone.js",
         "format": "prettier --write .",
         "prepare": "husky"

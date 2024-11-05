@@ -1,11 +1,18 @@
 import Background from '@components/CanvasFlow/Background';
+import Node from '@components/CanvasFlow/Node';
+import { useFlowInstanceContext } from '@contexts/FlowInstanceContext';
 import useNodeMovement from '@hooks/useNodeMovement';
 import usePanZoom from '@hooks/useZoomPan';
-import { PropsWithChildren, useRef, useState } from 'react';
-import { Node } from '@types';
+import { useRef } from 'react';
+import { Node as NodeType } from '@types';
 
-export default ({ children }: PropsWithChildren) => {
+export default () => {
     const ref = useRef<HTMLDivElement>(null);
+    const {
+        state: { edges, nodes },
+        dispatch,
+    } = useFlowInstanceContext();
+
     const {
         viewBox,
         isDragging: isPanZoomDragging,
@@ -13,33 +20,11 @@ export default ({ children }: PropsWithChildren) => {
         handleZoom,
     } = usePanZoom(ref);
 
-    const [nodes, setNodes] = useState<Node[]>([
-        {
-            id: '1',
-            x: 100,
-            y: 200,
-        },
-        {
-            id: '2',
-            x: 100,
-            y: 300,
-        },
-    ]);
     const { handleMoveStart: handleNodeMoveStart } = useNodeMovement(
         ref,
         viewBox,
-        ({ id, x, y }: Node) => {
-            setNodes((prev) =>
-                prev.map((node) =>
-                    node.id === id
-                        ? {
-                              ...node,
-                              x,
-                              y,
-                          }
-                        : node
-                )
-            );
+        (node: NodeType) => {
+            dispatch({ type: 'UPDATE_NODE', payload: node });
         }
     );
 
@@ -72,29 +57,34 @@ export default ({ children }: PropsWithChildren) => {
                         .join(' ')}
                     showSubLines={true}
                 />
-                {nodes.length === 2 && (
-                    <line
-                        x1={nodes[0].x}
-                        y1={nodes[0].y}
-                        x2={nodes[1].x}
-                        y2={nodes[1].y}
-                        stroke="blue"
-                        strokeWidth="2"
-                    />
-                )}
+                {edges.map((edge, index) => {
+                    const fromNode = nodes.find(
+                        (node) => node.id === edge.source
+                    );
+                    const toNode = nodes.find(
+                        (node) => node.id === edge.target
+                    );
+                    return (
+                        fromNode &&
+                        toNode && (
+                            <line
+                                key={index}
+                                x1={fromNode.x}
+                                y1={fromNode.y}
+                                x2={toNode.x}
+                                y2={toNode.y}
+                                stroke="blue"
+                                strokeWidth="2"
+                            />
+                        )
+                    );
+                })}
                 {nodes.map((node) => (
-                    <circle
+                    <Node
                         key={node.id}
-                        cx={node.x}
-                        cy={node.y}
-                        onMouseDown={(event) =>
-                            handleNodeMoveStart(event, node.id)
-                        }
-                        r="20"
-                        fill="orange"
-                        stroke="black"
-                        strokeWidth="2"
-                        style={{ cursor: 'pointer' }}
+                        {...node}
+                        type="server"
+                        onMouseDown={(e) => handleNodeMoveStart(e, node.id)}
                     />
                 ))}
             </svg>

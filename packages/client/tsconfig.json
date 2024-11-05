@@ -12,6 +12,7 @@
             "@components/*": ["src/components/*"],
             "@hooks/*": ["src/hooks/*"],
             "@utils/*": ["src/utils/*"],
+            "@contexts/*": ["src/contexts/*"],
             "@types": ["src/types/index.ts"],
             "@theme": ["src/theme/index.ts"],
             "@constants": ["src/constants/index.ts"],

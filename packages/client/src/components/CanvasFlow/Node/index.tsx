@@ -10,6 +10,7 @@ import {
     MouseEvent as ReactMouseEvent,
     useState,
 } from 'react';
+import ConnectionPointer from '@components/CanvasFlow/Node/ConnectionPointer';
 
 // Lazy load the server node component
 const ServerNode = lazy(() => import('./ServerNode'));
@@ -67,26 +68,41 @@ export default ({ id, type, position: { x, y }, ...props }: Node) => {
             onDoubleClick={handleDbClick}
             {...props}
         >
-            <svg width={GRID_SIZE} height={GRID_SIZE}>
+            <svg
+                width={GRID_SIZE}
+                height={GRID_SIZE}
+                viewBox={`-10 -10 ${GRID_SIZE + 20} ${GRID_SIZE + 20}`}
+            >
                 {renderedNode}
                 {isSelecting && (
-                    <rect
-                        width={GRID_SIZE}
-                        height={GRID_SIZE}
-                        fill="transparent"
-                        strokeWidth="3"
-                        strokeDasharray="10, 5"
-                        strokeDashoffset={0}
-                        stroke={theme.palette.primary.main}
-                    >
-                        <animate
-                            attributeName="stroke-dashoffset"
-                            from="0"
-                            to="15"
-                            dur="0.5s"
-                            repeatCount="indefinite"
-                        />
-                    </rect>
+                    <>
+                        <rect
+                            width={GRID_SIZE}
+                            height={GRID_SIZE}
+                            fill="transparent"
+                            strokeWidth="3"
+                            strokeDasharray="10, 5"
+                            strokeDashoffset={0}
+                            stroke={theme.palette.primary.main}
+                        >
+                            <animate
+                                attributeName="stroke-dashoffset"
+                                from="0"
+                                to="15"
+                                dur="0.5s"
+                                repeatCount="indefinite"
+                            />
+                        </rect>
+
+                        {/* Top */}
+                        <ConnectionPointer cx={GRID_SIZE / 2} />
+                        {/* Right */}
+                        <ConnectionPointer cx={GRID_SIZE} cy={GRID_SIZE / 2} />
+                        {/* Bottom */}
+                        <ConnectionPointer cx={GRID_SIZE / 2} cy={GRID_SIZE} />
+                        {/* Left */}
+                        <ConnectionPointer cy={GRID_SIZE / 2} />
+                    </>
                 )}
             </svg>
         </g>

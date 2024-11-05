@@ -22,8 +22,10 @@ const FlowZoomPanContext = createContext<FlowZoomPanContextType>(undefined);
 export const FlowZoomPanContextProvider = ({ children }: PropsWithChildren) => {
     const ref = useRef<HTMLElement>(null);
     const [viewBox, setViewBox] = useState({
-        x: 0,
-        y: 0,
+        position: {
+            x: 0,
+            y: 0,
+        },
         width: 0,
         height: 0,
     });
@@ -35,8 +37,10 @@ export const FlowZoomPanContextProvider = ({ children }: PropsWithChildren) => {
             if (!ref.current) return;
 
             setViewBox({
-                x: 0,
-                y: 0,
+                position: {
+                    x: 0,
+                    y: 0,
+                },
                 width: ref.current.offsetWidth,
                 height: ref.current.offsetHeight,
             });

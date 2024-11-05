@@ -1,17 +1,23 @@
 import LoadingSpinnerNode from '@components/CanvasFlow/Node/LoadingSpinnerNode';
 import { GRID_SIZE } from '@constants';
+import useNodeMovement from '@hooks/useNodeMovement';
 import { ComponentProps, lazy, Suspense, useMemo } from 'react';
 
 // Lazy load the server node component
 const ServerNode = lazy(() => import('./ServerNode'));
 
 interface Node extends ComponentProps<'g'> {
-    x: number;
-    y: number;
+    id: string;
+    position: {
+        x: number;
+        y: number;
+    };
     type: string;
 }
 
-export default ({ x, y, type, ...props }: Node) => {
+export default ({ id, type, position: { x, y }, ...props }: Node) => {
+    const { handleMoveStart: handleNodeMoveStart } = useNodeMovement();
+
     const renderedNode = useMemo(() => {
         let NodeComponent = null;
         switch (type) {
@@ -38,6 +44,8 @@ export default ({ x, y, type, ...props }: Node) => {
                 transform: `translate(${x}px, ${y}px)`,
                 transition: 'all 0.1s linear',
             }}
+            id={id}
+            onMouseDown={(e) => handleNodeMoveStart(e, id)}
             {...props}
         >
             <svg width={GRID_SIZE} height={GRID_SIZE}>

@@ -1,6 +1,8 @@
 export type ViewBox = {
-    x: number;
-    y: number;
+    position: {
+        x: number;
+        y: number;
+    };
     width: number;
     height: number;
 };
@@ -8,8 +10,10 @@ export type ViewBox = {
 export type Node = {
     id: string;
     type: string;
-    x: number;
-    y: number;
+    position: {
+        x: number;
+        y: number;
+    };
 };
 
 export type Edge = {

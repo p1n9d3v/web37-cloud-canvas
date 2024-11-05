@@ -13,8 +13,9 @@ export const getRelativeCoordinatesForViewBox = (
     const relativeX = clientX - zoomPan.left;
     const relativeY = clientY - zoomPan.top;
 
-    const x = (relativeX / zoomPan.width) * viewBox.width + viewBox.x;
-    const y = (relativeY / zoomPan.height) * viewBox.height + viewBox.y;
+    const { position: viewBoxPosition } = viewBox;
+    const x = (relativeX / zoomPan.width) * viewBox.width + viewBoxPosition.x;
+    const y = (relativeY / zoomPan.height) * viewBox.height + viewBoxPosition.y;
 
     return { x, y };
 };

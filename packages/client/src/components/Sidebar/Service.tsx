@@ -61,9 +61,11 @@ export default ({
             type: 'ADD_NODE',
             payload: {
                 id: `${type}-${state.nodes.length + 1}`,
-                x: 0,
-                y: 0,
                 type,
+                position: {
+                    x: 0,
+                    y: 0,
+                },
             },
         });
     };

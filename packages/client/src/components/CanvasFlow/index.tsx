@@ -2,12 +2,12 @@ import Background from '@components/CanvasFlow/Background';
 import Node from '@components/CanvasFlow/Node';
 import { useFlowInstanceContext } from '@contexts/FlowInstanceContext';
 import { useFlowZoomPanContext } from '@contexts/FlowZoomPanContext';
-import useNodeMovement from '@hooks/useNodeMovement';
 import useZoomPan from '@hooks/useZoomPan';
 import { LegacyRef } from 'react';
 
 export default () => {
     const { ref, viewBox } = useFlowZoomPanContext();
+    const { position: viewBoxPosition } = viewBox;
 
     const {
         state: { edges, nodes },
@@ -19,13 +19,11 @@ export default () => {
         handleZoom,
     } = useZoomPan(ref);
 
-    const { handleMoveStart: handleNodeMoveStart } = useNodeMovement();
-
     const backgroundPoints = [
-        [viewBox.x, viewBox.y],
-        [viewBox.x + viewBox.width, viewBox.y],
-        [viewBox.x + viewBox.width, viewBox.y + viewBox.height],
-        [viewBox.x, viewBox.y + viewBox.height],
+        [viewBoxPosition.x, viewBoxPosition.y],
+        [viewBoxPosition.x + viewBox.width, viewBoxPosition.y],
+        [viewBoxPosition.x + viewBox.width, viewBoxPosition.y + viewBox.height],
+        [viewBoxPosition.x, viewBoxPosition.y + viewBox.height],
     ];
 
     return (
@@ -42,7 +40,7 @@ export default () => {
             <svg
                 width="100%"
                 height="100%"
-                viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`}
+                viewBox={`${viewBoxPosition.x} ${viewBoxPosition.y} ${viewBox.width} ${viewBox.height}`}
             >
                 <Background
                     points={backgroundPoints
@@ -50,35 +48,8 @@ export default () => {
                         .join(' ')}
                     showSubLines={true}
                 />
-                {edges.map((edge, index) => {
-                    const fromNode = nodes.find(
-                        (node) => node.id === edge.source
-                    );
-                    const toNode = nodes.find(
-                        (node) => node.id === edge.target
-                    );
-                    return (
-                        fromNode &&
-                        toNode && (
-                            <line
-                                key={index}
-                                x1={fromNode.x}
-                                y1={fromNode.y}
-                                x2={toNode.x}
-                                y2={toNode.y}
-                                stroke="blue"
-                                strokeWidth="2"
-                            />
-                        )
-                    );
-                })}
                 {nodes.map((node) => (
-                    <Node
-                        key={node.id}
-                        {...node}
-                        type="server"
-                        onMouseDown={(e) => handleNodeMoveStart(e, node.id)}
-                    />
+                    <Node key={node.id} {...node} />
                 ))}
             </svg>
         </div>

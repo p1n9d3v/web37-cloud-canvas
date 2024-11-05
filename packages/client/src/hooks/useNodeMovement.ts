@@ -60,9 +60,10 @@ export default () => {
             type: 'UPDATE_NODE',
             payload: {
                 id: selectedNodeId,
-                x: gridAlignedX,
-                y: gridAlignedY,
-                type: '',
+                position: {
+                    x: gridAlignedX,
+                    y: gridAlignedY,
+                },
             },
         });
     };

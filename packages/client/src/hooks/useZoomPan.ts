@@ -30,15 +30,19 @@ export default (ref: RefObject<HTMLElement>) => {
             ref,
             viewBox
         );
-        const newX = _x - (_x - viewBox.x) * ratio;
-        const newY = _y - (_y - viewBox.y) * ratio;
+
+        const { position: viewBoxPosition } = viewBox;
+        const newX = _x - (_x - viewBoxPosition.x) * ratio;
+        const newY = _y - (_y - viewBoxPosition.y) * ratio;
 
         const newWidth = viewBox.width * ratio;
         const newHeight = viewBox.height * ratio;
 
         changeViewBox({
-            x: newX,
-            y: newY,
+            position: {
+                x: newX,
+                y: newY,
+            },
             width: newWidth,
             height: newHeight,
         });
@@ -48,8 +52,13 @@ export default (ref: RefObject<HTMLElement>) => {
         setIsDragging(true);
 
         const { clientX, clientY } = e;
+
+        const { position: viewBoxPosition } = viewBox;
         dragStartMousePosition.current = { x: clientX, y: clientY };
-        dragStartViewBoxPosition.current = { x: viewBox.x, y: viewBox.y };
+        dragStartViewBoxPosition.current = {
+            x: viewBoxPosition.x,
+            y: viewBoxPosition.y,
+        };
     };
 
     const handleMove = (e: MouseEvent) => {
@@ -72,8 +81,10 @@ export default (ref: RefObject<HTMLElement>) => {
 
         changeViewBox({
             ...viewBox,
-            x: viewBoxStartX - dx,
-            y: viewBoxStartY - dy,
+            position: {
+                x: viewBoxStartX - dx,
+                y: viewBoxStartY - dy,
+            },
         });
     };
 
@@ -84,8 +95,10 @@ export default (ref: RefObject<HTMLElement>) => {
             if (!ref.current) return;
 
             changeViewBox({
-                x: 0,
-                y: 0,
+                position: {
+                    x: 0,
+                    y: 0,
+                },
                 width: ref.current.offsetWidth,
                 height: ref.current.offsetHeight,
             });

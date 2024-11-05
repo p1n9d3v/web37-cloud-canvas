@@ -2,87 +2,121 @@ export const MOCK_SERVICES = [
     {
         title: 'compute',
         items: [
-            { title: 'EC2', desc: 'Virtual servers in the cloud' },
             {
-                title: 'Lambda',
-                desc: 'Run code without thinking about servers',
+                title: 'Compute Server',
+                desc: 'Compute server instances',
+                nodeType: 'server',
             },
-        ],
-    },
-    {
-        title: 'container',
-        items: [
-            { title: 'ECS', desc: 'Highly scalable container service' },
-            { title: 'EKS', desc: 'Managed Kubernetes service' },
+            { title: 'Auto Scaling', desc: 'Automatic scaling for servers' },
+            { title: 'Cloud Functions', desc: 'Serverless functions' },
+            { title: 'Containers', desc: 'Managed container service' },
+            { title: 'Container Registry', desc: 'Container image repository' },
+            { title: 'Kubernetes Service', desc: 'Managed Kubernetes service' },
         ],
     },
     {
         title: 'storage',
         items: [
-            { title: 'S3', desc: 'Scalable storage in the cloud' },
-            { title: 'EBS', desc: 'Block storage for EC2' },
-        ],
-    },
-    {
-        title: 'database',
-        items: [
-            { title: 'RDS', desc: 'Managed relational database service' },
-            { title: 'DynamoDB', desc: 'NoSQL database service' },
+            { title: 'Object Storage', desc: 'Scalable object storage' },
+            { title: 'NAS', desc: 'Network attached storage' },
+            { title: 'Archive Storage', desc: 'Archive storage for long-term' },
+            { title: 'Backup', desc: 'Data backup service' },
         ],
     },
     {
         title: 'networking',
         items: [
             { title: 'VPC', desc: 'Virtual private cloud' },
-            { title: 'CloudFront', desc: 'Content delivery network' },
+            { title: 'Load Balancer', desc: 'Traffic distribution service' },
+            { title: 'Global DNS', desc: 'Domain name management' },
+            { title: 'IPsec VPN', desc: 'Secure IPsec VPN connections' },
+            { title: 'Global Traffic Manager', desc: 'Global traffic routing' },
+            { title: 'Classic Path', desc: 'Classic network path' },
+            { title: 'Cloud Connect', desc: 'Direct cloud connection' },
+        ],
+    },
+    {
+        title: 'database',
+        items: [
+            { title: 'DB for MySQL', desc: 'Managed MySQL database' },
+            { title: 'DB for Redis', desc: 'Managed Redis database' },
+            { title: 'DB for MSSQL', desc: 'Managed MSSQL database' },
+            { title: 'DB for MongoDB', desc: 'Managed MongoDB database' },
+            { title: 'DB for PostgreSQL', desc: 'Managed PostgreSQL database' },
+            {
+                title: 'Database Migration Service',
+                desc: 'Database migration tool',
+            },
         ],
     },
     {
         title: 'security',
         items: [
-            { title: 'IAM', desc: 'Identity and access management' },
-            { title: 'KMS', desc: 'Key management service' },
+            { title: 'App Safer', desc: 'Application security service' },
+            { title: 'File Safer', desc: 'File security service' },
+            {
+                title: 'Web Security Checker',
+                desc: 'Web vulnerability scanning',
+            },
+            {
+                title: 'System Security Checker',
+                desc: 'System security analysis',
+            },
+            { title: 'Basic Security', desc: 'Basic security package' },
+            { title: 'SSL VPN', desc: 'Secure SSL VPN service' },
+            {
+                title: 'Security Monitoring',
+                desc: 'Security monitoring service',
+            },
+            { title: 'Compliance Guide', desc: 'Compliance guidelines' },
+            {
+                title: 'Key Management Service',
+                desc: 'Key management and encryption',
+            },
+            {
+                title: 'Certificate Manager',
+                desc: 'SSL certificate management',
+            },
+            { title: 'Private CA', desc: 'Private certificate authority' },
+            {
+                title: 'WebShell Behavior Detector',
+                desc: 'Web shell detection',
+            },
+            {
+                title: 'Cloud Security Watcher',
+                desc: 'Cloud security monitoring',
+            },
+            {
+                title: 'Secret Manager',
+                desc: 'Secrets and credentials manager',
+            },
         ],
     },
     {
         title: 'ai services',
         items: [
-            { title: 'Rekognition', desc: 'Image and video analysis' },
-            { title: 'Comprehend', desc: 'Natural language processing' },
+            { title: 'Papago Translation', desc: 'Language translation' },
+            { title: 'CLOVA Chatbot', desc: 'Conversational AI chatbot' },
+            { title: 'CLOVA OCR', desc: 'Optical character recognition' },
+            { title: 'CLOVA Speech', desc: 'Speech-to-text service' },
+            { title: 'CLOVA Dubbing', desc: 'AI voice dubbing' },
+            { title: 'AiTEMS', desc: 'AI-powered recommendation' },
+            { title: 'CLOVA Studio', desc: 'AI model training' },
+            { title: 'CLOVA NSML', desc: 'Machine learning framework' },
+            { title: 'CLOVA GreenEye', desc: 'Green energy AI monitoring' },
         ],
     },
     {
-        title: 'applications',
+        title: 'application services',
         items: [
+            { title: 'GeoLocation', desc: 'Geolocation services' },
             {
-                title: 'Elastic Beanstalk',
-                desc: 'Deploy and manage applications',
+                title: 'Simple & Easy Notification',
+                desc: 'Notification service',
             },
-            { title: 'App Runner', desc: 'Run containerized web applications' },
-        ],
-    },
-    {
-        title: 'blockchain',
-        items: [
-            {
-                title: 'Managed Blockchain',
-                desc: 'Create and manage blockchain networks',
-            },
-            { title: 'QLDB', desc: 'Ledger database service' },
-        ],
-    },
-    {
-        title: 'ai api',
-        items: [
-            { title: 'Lex', desc: 'Build conversational interfaces' },
-            { title: 'Polly', desc: 'Text-to-speech service' },
-        ],
-    },
-    {
-        title: 'big data & analytics',
-        items: [
-            { title: 'EMR', desc: 'Big data processing with Hadoop' },
-            { title: 'Redshift', desc: 'Data warehousing service' },
+            { title: 'Cloud Outbound Mailer', desc: 'Email sending service' },
+            { title: 'API Gateway', desc: 'API management service' },
+            { title: 'Simple RabbitMQ', desc: 'Managed RabbitMQ service' },
         ],
     },
 ];

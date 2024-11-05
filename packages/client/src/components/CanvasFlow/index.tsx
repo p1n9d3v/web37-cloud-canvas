@@ -1,32 +1,25 @@
 import Background from '@components/CanvasFlow/Background';
 import Node from '@components/CanvasFlow/Node';
 import { useFlowInstanceContext } from '@contexts/FlowInstanceContext';
+import { useFlowZoomPanContext } from '@contexts/FlowZoomPanContext';
 import useNodeMovement from '@hooks/useNodeMovement';
-import usePanZoom from '@hooks/useZoomPan';
-import { useRef } from 'react';
-import { Node as NodeType } from '@types';
+import useZoomPan from '@hooks/useZoomPan';
+import { LegacyRef } from 'react';
 
 export default () => {
-    const ref = useRef<HTMLDivElement>(null);
+    const { ref, viewBox } = useFlowZoomPanContext();
+
     const {
         state: { edges, nodes },
-        dispatch,
     } = useFlowInstanceContext();
 
     const {
-        viewBox,
         isDragging: isPanZoomDragging,
         handleMoveStart: handleZoomPanMoveStart,
         handleZoom,
-    } = usePanZoom(ref);
+    } = useZoomPan(ref);
 
-    const { handleMoveStart: handleNodeMoveStart } = useNodeMovement(
-        ref,
-        viewBox,
-        (node: NodeType) => {
-            dispatch({ type: 'UPDATE_NODE', payload: node });
-        }
-    );
+    const { handleMoveStart: handleNodeMoveStart } = useNodeMovement();
 
     const backgroundPoints = [
         [viewBox.x, viewBox.y],
@@ -37,7 +30,7 @@ export default () => {
 
     return (
         <div
-            ref={ref}
+            ref={ref as LegacyRef<HTMLDivElement>}
             style={{
                 width: '100%',
                 height: '100%',

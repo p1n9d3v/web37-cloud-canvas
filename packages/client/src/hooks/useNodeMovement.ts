@@ -1,19 +1,18 @@
 import { GRID_QUARTER } from '@constants';
-import { Node, ViewBox } from '@types';
+import { useFlowInstanceContext } from '@contexts/FlowInstanceContext';
+import { useFlowZoomPanContext } from '@contexts/FlowZoomPanContext';
 import { getRelativeCoordinatesForViewBox } from '@utils/index';
 import {
     MouseEvent as ReactMouseEvent,
-    RefObject,
     useEffect,
     useRef,
     useState,
 } from 'react';
 
-export default (
-    ref: RefObject<HTMLElement>,
-    viewBox: ViewBox,
-    changeNodePosition: (newNodeInfo: Node) => void
-) => {
+export default () => {
+    const { ref, viewBox } = useFlowZoomPanContext();
+    const { dispatch: flowInstanceDispatch } = useFlowInstanceContext();
+
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
     const originPosition = useRef({ x: 0, y: 0 });
 
@@ -57,12 +56,14 @@ export default (
         const gridAlignedX = Math.floor(newX / GRID_QUARTER) * GRID_QUARTER;
         const gridAlignedY = Math.floor(newY / GRID_QUARTER) * GRID_QUARTER;
 
-        //TODO: context로 변경함에 따라 dispatch로 변경
-        changeNodePosition({
-            id: selectedNodeId,
-            x: gridAlignedX,
-            y: gridAlignedY,
-            type: '',
+        flowInstanceDispatch({
+            type: 'UPDATE_NODE',
+            payload: {
+                id: selectedNodeId,
+                x: gridAlignedX,
+                y: gridAlignedY,
+                type: '',
+            },
         });
     };
 

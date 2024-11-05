@@ -14,7 +14,7 @@ type FlowInstanceState = {
 
 type FlowInstanceAction =
     | { type: 'ADD_NODE'; payload: Node }
-    | { type: 'UPDATE_NODE'; payload: Node }
+    | { type: 'UPDATE_NODE'; payload: Partial<Node> }
     | { type: 'REMOVE_NODE'; payload: { id: string } }
     | { type: 'ADD_EDGE'; payload: Edge }
     | { type: 'REMOVE_EDGE'; payload: Edge };
@@ -42,7 +42,12 @@ const flowInstanceReducer = (
             return {
                 ...state,
                 nodes: state.nodes.map((node) =>
-                    node.id === action.payload.id ? action.payload : node
+                    node.id === action.payload.id
+                        ? {
+                              ...node,
+                              ...action.payload,
+                          }
+                        : node
                 ),
             };
         }

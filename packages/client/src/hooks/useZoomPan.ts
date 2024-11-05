@@ -1,3 +1,4 @@
+import { useFlowZoomPanContext } from '@contexts/FlowZoomPanContext';
 import { getRelativeCoordinatesForViewBox } from '@utils/index';
 import {
     RefObject,
@@ -10,12 +11,7 @@ import {
 } from 'react';
 
 export default (ref: RefObject<HTMLElement>) => {
-    const [viewBox, setViewBox] = useState({
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
-    });
+    const { viewBox, changeViewBox } = useFlowZoomPanContext();
 
     const [isDragging, setIsDragging] = useState(false);
     const dragStartMousePosition = useRef({ x: 0, y: 0 });
@@ -40,7 +36,7 @@ export default (ref: RefObject<HTMLElement>) => {
         const newWidth = viewBox.width * ratio;
         const newHeight = viewBox.height * ratio;
 
-        setViewBox({
+        changeViewBox({
             x: newX,
             y: newY,
             width: newWidth,
@@ -74,11 +70,11 @@ export default (ref: RefObject<HTMLElement>) => {
         const { x: viewBoxStartX, y: viewBoxStartY } =
             dragStartViewBoxPosition.current;
 
-        setViewBox((prev) => ({
-            ...prev,
+        changeViewBox({
+            ...viewBox,
             x: viewBoxStartX - dx,
             y: viewBoxStartY - dy,
-        }));
+        });
     };
 
     const handleMoveEnd = () => setIsDragging(false);
@@ -87,7 +83,7 @@ export default (ref: RefObject<HTMLElement>) => {
         const handleResize = () => {
             if (!ref.current) return;
 
-            setViewBox({
+            changeViewBox({
                 x: 0,
                 y: 0,
                 width: ref.current.offsetWidth,

@@ -61,6 +61,7 @@ export default ({
             type: 'ADD_NODE',
             payload: {
                 id: `${type}-${state.nodes.length + 1}`,
+                isFocused: false,
                 type,
                 position: {
                     x: 0,

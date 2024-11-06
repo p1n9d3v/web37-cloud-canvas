@@ -10,6 +10,7 @@ export type ViewBox = {
 export type Node = {
     id: string;
     type: string;
+    isFocused: boolean;
     position: {
         x: number;
         y: number;

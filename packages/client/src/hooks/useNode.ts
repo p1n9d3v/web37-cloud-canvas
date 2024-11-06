@@ -10,9 +10,11 @@ import {
 } from 'react';
 
 export default () => {
-    const { ref, viewBox } = useFlowZoomPanContext();
+    const { ref: zoomPanRef, viewBox } = useFlowZoomPanContext();
+    const ref = useRef<SVGGElement>(null);
     const { dispatch: flowInstanceDispatch } = useFlowInstanceContext();
 
+    //TDDO: Context로 옮길지 고민
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
     const originPosition = useRef({ x: 0, y: 0 });
 
@@ -21,19 +23,19 @@ export default () => {
         clientY: number,
         nodeId: string
     ) => {
-        const $node = ref.current!.querySelector(`#${nodeId}`);
+        const $node = zoomPanRef.current!.querySelector(`#${nodeId}`);
         const rect = $node!.getBoundingClientRect();
         const { height, width } = rect;
 
         return getRelativeCoordinatesForViewBox(
             clientX - width / 2,
             clientY - height / 2,
-            ref,
+            zoomPanRef,
             viewBox
         );
     };
 
-    const handleMoveStart = (e: ReactMouseEvent, id: string) => {
+    const initiateNodeDrag = (e: ReactMouseEvent, id: string) => {
         e.stopPropagation();
         setSelectedNodeId(id);
 
@@ -44,8 +46,8 @@ export default () => {
         );
     };
 
-    const handleMove = (e: MouseEvent) => {
-        if (!selectedNodeId || !ref.current) return;
+    const updateNodePosition = (e: MouseEvent) => {
+        if (!selectedNodeId || !zoomPanRef.current) return;
 
         const { x: newX, y: newY } = getAdjustedMousePosition(
             e.clientX,
@@ -68,25 +70,46 @@ export default () => {
         });
     };
 
-    const handleMoveEnd = () => setSelectedNodeId(null);
+    const finalizeNodePosition = () => setSelectedNodeId(null);
+
+    const selectNode = (id: string) =>
+        flowInstanceDispatch({
+            type: 'SELECT_NODE',
+            payload: { id, isFocused: true },
+        });
+
+    const clearSelect = (event: MouseEvent) => {
+        if (ref.current && !ref.current.contains(event.target as any)) {
+            flowInstanceDispatch({
+                type: 'CLEAR_SELECTED_NODES',
+            });
+        }
+    };
+
+    useEffect(() => {
+        window.addEventListener('mousedown', clearSelect);
+
+        return () => window.removeEventListener('mousedown', clearSelect);
+    }, []);
 
     useEffect(() => {
         if (selectedNodeId) {
-            window.addEventListener('mousemove', handleMove);
-            window.addEventListener('mouseup', handleMoveEnd);
+            window.addEventListener('mousemove', updateNodePosition);
+            window.addEventListener('mouseup', finalizeNodePosition);
         } else {
-            window.removeEventListener('mousemove', handleMove);
-            window.removeEventListener('mouseup', handleMoveEnd);
+            window.removeEventListener('mousemove', updateNodePosition);
+            window.removeEventListener('mouseup', finalizeNodePosition);
         }
 
         return () => {
-            window.removeEventListener('mousemove', handleMove);
-            window.removeEventListener('mouseup', handleMoveEnd);
+            window.removeEventListener('mousemove', updateNodePosition);
+            window.removeEventListener('mouseup', finalizeNodePosition);
         };
     }, [selectedNodeId]);
 
     return {
-        selectedNodeId,
-        handleMoveStart,
+        ref,
+        selectNode,
+        initiateNodeDrag,
     };
 };

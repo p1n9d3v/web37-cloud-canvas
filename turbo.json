@@ -1,0 +1,25 @@
+{
+    "$schema": "https://turbo.build/schema.json",
+    "ui": "tui",
+    "tasks": {
+        "start": {
+            "dependsOn": ["build"]
+        },
+        "dev": {
+            "cache": false,
+            "persistent": true
+        },
+        "build": {
+            "dependsOn": ["clean"],
+            "inputs": ["$TURBO_DEFAULT$", "!README.md", "!CHANGELOG.md"],
+            "outputs": ["dist/**"]
+        },
+        "bundle": {
+            "inputs": ["$TURBO_DEFAULT$", "!README.md", "!CHANGELOG.md"],
+            "outputs": ["../cli/dist/**"]
+        },
+        "clean": {
+            "cache": false
+        }
+    }
+}

@@ -43,7 +43,7 @@ export class VserverApiClient {
                     config.headers.set('x-ncp-apigw-timestamp', timestamp);
                     config.headers.set(
                         'x-ncp-iam-access-key',
-                        this.apiKey.accessKey,
+                        this.apiKey.accessKey
                     );
                     config.headers.set('x-ncp-apigw-signature-v2', signature);
                 }

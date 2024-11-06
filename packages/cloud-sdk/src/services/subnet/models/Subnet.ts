@@ -3,6 +3,13 @@ import { CommonCode } from './CommonCode';
 /**
  * 서브넷 객체
  * @see {@link https://api.ncloud-docs.com/docs/common-vapidatatype-subnet}
+ * Subnet 번호.
+ * Subnet을 식별하기 위한 네이버 클라우드 플랫폼의 식별자.
+ *
+ * Required
+ * @property {string} [Subnet.subnetNo]
+ * Subnet 번호.
+ * Subnet을 식별하기 위한 네이버 클라우드 플랫폼의 식별자.
  */
 export interface Subnet {
     /**

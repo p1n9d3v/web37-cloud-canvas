@@ -9,6 +9,9 @@ import { GetSubnetDetailResponse } from './models/GetSubnetDetailResponse';
 import { DeleteSubnetRequest } from './models/DeleteSubnetRequest';
 import { DeleteSubnetResponse } from './models/DeleteSubnetResponse';
 
+/**
+ * Subnet 관련 API를 직접적으로 호출하는 클래스
+ */
 export class SubnetApi {
     private client: SubnetApiClient;
     private readonly resourcePath: string;
@@ -25,7 +28,13 @@ export class SubnetApi {
      * @see {@link GetSubnetListResponse}
      * @see {@link https://api.ncloud-docs.com/docs/networking-vpc-subnetmanagement-getsubnetlist}
      */
-    async getSubnetList(getSubnetListRequest: GetSubnetListRequest) {}
+    async getSubnetList(getSubnetListRequest: GetSubnetListRequest) {
+        return await this.client.request({
+            method: 'POST',
+            url: this.resourcePath + '/getSubnetList',
+            params: getSubnetListRequest,
+        });
+    }
 
     /**
      * 서브넷 상세 조회
@@ -35,7 +44,13 @@ export class SubnetApi {
      * @see {@link GetSubnetDetailResponse}
      * @see {@link https://api.ncloud-docs.com/docs/networking-vpc-subnetmanagement-getsubnetdetail}
      */
-    async getSubnetDetail(getSubnetDetailRequest: GetSubnetDetailRequest) {}
+    async getSubnetDetail(getSubnetDetailRequest: GetSubnetDetailRequest) {
+        return await this.client.request({
+            method: 'POST',
+            url: this.resourcePath + '/getSubnetDetail',
+            params: getSubnetDetailRequest,
+        });
+    }
 
     /**
      * 서브넷 생성
@@ -45,7 +60,13 @@ export class SubnetApi {
      * @see {@link CreateSubnetResponse}
      * @see {@link https://api.ncloud-docs.com/docs/networking-vpc-subnetmanagement-createsubnet}
      */
-    async createSubnet(createSubnetRequest: CreateSubnetRequest) {}
+    async createSubnet(createSubnetRequest: CreateSubnetRequest) {
+        return await this.client.request({
+            method: 'POST',
+            url: this.resourcePath + '/createSubnet',
+            params: createSubnetRequest,
+        });
+    }
 
     /**
      * 서브넷 삭제
@@ -55,5 +76,11 @@ export class SubnetApi {
      * @see {@link DeleteSubnetResponse}
      * @see {@link https://api.ncloud-docs.com/docs/networking-vpc-subnetmanagement-deletesubnet}
      */
-    async deleteSubnet(deleteSubnetRequest: DeleteSubnetRequest) {}
+    async deleteSubnet(deleteSubnetRequest: DeleteSubnetRequest) {
+        return await this.client.request({
+            method: 'POST',
+            url: this.resourcePath + '/deleteSubnet',
+            params: deleteSubnetRequest,
+        });
+    }
 }

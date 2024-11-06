@@ -15,6 +15,7 @@ export interface SubnetList {
 
     /**
      * List<Subnet> 데이터 타입.
+     * @see {@link Subnet}<br>
      *
      * Required
      */

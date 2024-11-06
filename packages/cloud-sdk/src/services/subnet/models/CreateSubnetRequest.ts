@@ -6,6 +6,7 @@ export interface CreateSubnetRequest {
      * Subnet이 생성될 리전 코드.
      * 조회 결과의 첫 번째 리전(기본값).
      * getRegionList를 통해 확인 가능.
+     *
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-common-getregionlist}<br>
      *
      * Optional
@@ -15,6 +16,7 @@ export interface CreateSubnetRequest {
     /**
      * Subnet이 생성될 존 코드.
      * getZoneList를 통해 확인 가능.
+     *
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-common-getregionlist}<br>
      *
      * Required
@@ -24,6 +26,7 @@ export interface CreateSubnetRequest {
     /**
      * Subnet을 포함할 VPC의 고유 식별 번호.
      * getVpcList를 통해 확인 가능.
+     *
      * @see {@link https://api.ncloud-docs.com/docs/networking-vpc-vpcmanagement-getvpclist}<br>
      *
      * Required

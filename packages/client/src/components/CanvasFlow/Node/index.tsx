@@ -44,7 +44,7 @@ export default ({ id, type, isFocused, position: { x, y } }: Node) => {
             ref={nodeRef}
             style={{
                 transform: `translate(${x}px, ${y}px)`,
-                transition: `all ${theme.custom.animation.move}`,
+                // transition: `all ${theme.custom.animation.move}`,
             }}
             id={id}
             onMouseDown={handleMouseDownNode}

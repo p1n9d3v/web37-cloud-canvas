@@ -18,7 +18,7 @@ export default ({ x1, x2, y1, y2, isConnecting }: EdgeProps) => {
     const linePathD = `M ${x1} ${y1} L ${x2} ${y2}`;
 
     return (
-        <svg>
+        <g>
             <defs>
                 <marker
                     id="arrowhead"
@@ -36,13 +36,13 @@ export default ({ x1, x2, y1, y2, isConnecting }: EdgeProps) => {
                 stroke="black"
                 fill="none"
                 strokeWidth={2}
-                style={{
-                    transition: isConnecting
-                        ? undefined
-                        : `d ${theme.custom.animation.move}`,
-                }}
+                // style={{
+                //     transition: isConnecting
+                //         ? undefined
+                //         : `d ${theme.custom.animation.move}`,
+                // }}
                 markerEnd="url(#arrowhead)"
             />
-        </svg>
+        </g>
     );
 };

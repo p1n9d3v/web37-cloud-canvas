@@ -85,10 +85,10 @@ export default () => {
 
                 {connectingEdge.isConnecting && (
                     <Edge
-                        x1={connectingEdge.source.anchor.position.x}
-                        y1={connectingEdge.source.anchor.position.y}
-                        x2={connectingEdge.target.anchor.position.x}
-                        y2={connectingEdge.target.anchor.position.y}
+                        x1={connectingEdge.source!.anchor.position.x}
+                        y1={connectingEdge.source!.anchor.position.y}
+                        x2={connectingEdge.target!.anchor.position.x}
+                        y2={connectingEdge.target!.anchor.position.y}
                         isConnecting={true}
                     />
                 )}

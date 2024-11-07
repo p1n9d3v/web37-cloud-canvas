@@ -118,6 +118,18 @@ function wait_for_verdaccio() {
     return 1
 }
 
+function start_verdaccio() {
+    log "Verdaccio 서버 시작"
+    npx verdaccio --config "$CONFIG_FILE" &
+    VERDACCIO_PID=$!
+
+    if ! wait_for_verdaccio; then
+        error "Verdaccio 서버 시작 시간 초과"
+        cleanup
+        exit 1
+    fi
+}
+
 function publish_package() {
     log "$PACKAGE_NAME 패키지 배포 시작"
     if [ ! -d "packages/cli" ]; then
@@ -126,6 +138,9 @@ function publish_package() {
     fi
     
     cd packages/cli || exit 1
+
+    echo "//localhost:4873/:_authToken=fake-token-123456789" > .npmrc
+
     if ! npm publish --registry "$REGISTRY_URL"; then
         error "패키지 배포 실패"
         cleanup
@@ -139,17 +154,6 @@ function publish_package() {
     fi
 }
 
-function start_verdaccio() {
-    log "Verdaccio 서버 시작"
-    npx verdaccio --config "$CONFIG_FILE" &
-    VERDACCIO_PID=$!
-
-    if ! wait_for_verdaccio; then
-        error "Verdaccio 서버 시작 시간 초과"
-        cleanup
-        exit 1
-    fi
-}
 
 function wait_for_package() {
     local attempt=0
@@ -176,6 +180,8 @@ function run_package() {
 
 function cleanup() {
     log "정리 작업 시작"
+
+    rm .npmrc
     
     if [[ "$PWD" == *"/packages/cli" ]]; then
         cd ../.. || exit 1

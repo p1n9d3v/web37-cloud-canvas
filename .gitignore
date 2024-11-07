@@ -12,6 +12,8 @@ dist-ssr
 *.local
 .env
 .turbo
+.verdaccio
+.wiki
 
 # Editor directories and files
 .vscode/*

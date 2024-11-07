@@ -1,4 +1,5 @@
-import { Edge, Node } from '@types';
+import { Edge, EdgePoint, Node } from '@types';
+import { calculateAnchorsPosition } from '@utils/index';
 import {
     createContext,
     Dispatch,
@@ -7,27 +8,28 @@ import {
     useReducer,
 } from 'react';
 
-type ConnectEdge = {
-    start: { x: number; y: number };
-    end: { x: number; y: number };
+type ConnectingEdge = {
+    source: EdgePoint;
+    target: EdgePoint;
     isConnecting: boolean;
 };
 
 type FlowInstanceState = {
     nodes: Node[];
     edges: Edge[];
-    connectEdge: ConnectEdge;
+    connectingEdge: ConnectingEdge;
 };
 
 type FlowInstanceAction =
-    | { type: 'ADD_NODE'; payload: Node }
+    | { type: 'ADD_NODE'; payload: Pick<Node, 'id' | 'type'> }
     | { type: 'UPDATE_NODE'; payload: Partial<Node> }
     | { type: 'REMOVE_NODE'; payload: { id: string } }
+    | { type: 'MOVE_NODE'; payload: Pick<Node, 'id' | 'position'> }
     | { type: 'ADD_EDGE'; payload: Edge }
     | { type: 'SELECT_NODE'; payload: { id: string; isFocused: boolean } }
     | { type: 'CLEAR_SELECTED_NODES' }
     | { type: 'REMOVE_EDGE'; payload: Edge }
-    | { type: 'CONNECT_EDGE'; payload: Partial<ConnectEdge> };
+    | { type: 'CONNECTING_EDGE'; payload: Partial<ConnectingEdge> };
 
 const FlowInstanceContext = createContext<
     | {
@@ -45,7 +47,19 @@ const flowInstanceReducer = (
         case 'ADD_NODE': {
             return {
                 ...state,
-                nodes: [...state.nodes, action.payload],
+                nodes: [
+                    ...state.nodes,
+                    {
+                        ...action.payload,
+                        isFocused: false,
+                        position: {
+                            //TODO: 추후 선택된 지점으로 이동할 수 있도록 설정하던가 해야함
+                            x: 0,
+                            y: 0,
+                        },
+                        anchors: calculateAnchorsPosition(0, 0),
+                    },
+                ],
             };
         }
         case 'UPDATE_NODE': {
@@ -59,6 +73,56 @@ const flowInstanceReducer = (
                           }
                         : node
                 ),
+            };
+        }
+
+        case 'MOVE_NODE': {
+            const {
+                position: { x, y },
+            } = action.payload;
+            const anchors = calculateAnchorsPosition(x, y);
+            return {
+                ...state,
+                nodes: state.nodes.map((node) =>
+                    node.id === action.payload.id
+                        ? {
+                              ...node,
+                              ...action.payload,
+                          }
+                        : node
+                ),
+                edges: state.edges.map((edge) => {
+                    if (edge.source.nodeId === action.payload.id) {
+                        return {
+                            ...edge,
+                            source: {
+                                ...edge.source,
+                                anchor: {
+                                    ...edge.source.anchor,
+                                    position: {
+                                        x: anchors[edge.source.anchor.type!].x,
+                                        y: anchors[edge.source.anchor.type!].y,
+                                    },
+                                },
+                            },
+                        };
+                    } else if (edge.target.nodeId === action.payload.id) {
+                        return {
+                            ...edge,
+                            target: {
+                                ...edge.target,
+                                anchor: {
+                                    ...edge.target.anchor,
+                                    position: {
+                                        x: anchors[edge.target.anchor.type!].x,
+                                        y: anchors[edge.target.anchor.type!].y,
+                                    },
+                                },
+                            },
+                        };
+                    }
+                    return edge;
+                }),
             };
         }
         case 'REMOVE_NODE': {
@@ -108,11 +172,11 @@ const flowInstanceReducer = (
                 ),
             };
         }
-        case 'CONNECT_EDGE': {
+        case 'CONNECTING_EDGE': {
             return {
                 ...state,
-                connectEdge: {
-                    ...state.connectEdge,
+                connectingEdge: {
+                    ...state.connectingEdge,
                     ...action.payload,
                 },
             };
@@ -128,10 +192,18 @@ export const FlowInstanceContextProvider = ({
     const [state, dispatch] = useReducer(flowInstanceReducer, {
         nodes: [],
         edges: [],
-        connectEdge: {
+        connectingEdge: {
+            source: {
+                anchor: {
+                    position: { x: 0, y: 0 },
+                },
+            },
+            target: {
+                anchor: {
+                    position: { x: 0, y: 0 },
+                },
+            },
             isConnecting: false,
-            start: { x: 0, y: 0 },
-            end: { x: 0, y: 0 },
         },
     });
 

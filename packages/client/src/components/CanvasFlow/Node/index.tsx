@@ -1,7 +1,9 @@
 import LoadingSpinnerNode from '@components/CanvasFlow/Node/LoadingSpinnerNode';
 import Outline from '@components/CanvasFlow/Node/Outline';
 import { GRID_SIZE, POINTER_SIZE } from '@constants';
-import useNodeMovement from '@hooks/useNode';
+import useEdge from '@hooks/useEdge';
+import useNode from '@hooks/useNode';
+import { useTheme } from '@mui/material';
 import { Node } from '@types';
 import { lazy, MouseEvent as ReactMouseEvent, Suspense, useMemo } from 'react';
 
@@ -9,7 +11,9 @@ import { lazy, MouseEvent as ReactMouseEvent, Suspense, useMemo } from 'react';
 const ServerNode = lazy(() => import('./ServerNode'));
 
 export default ({ id, type, isFocused, position: { x, y } }: Node) => {
-    const { ref: nodeRef, initiateNodeDrag, selectNode } = useNodeMovement();
+    const { ref: nodeRef, initiateNodeDrag, selectNode } = useNode();
+    const { startConnecting } = useEdge();
+    const theme = useTheme();
 
     const renderedNode = useMemo(() => {
         let NodeComponent = null;
@@ -31,18 +35,19 @@ export default ({ id, type, isFocused, position: { x, y } }: Node) => {
         );
     }, [type]);
 
-    const handleMouseDown = (e: ReactMouseEvent) => initiateNodeDrag(e, id);
+    const handleMouseDownNode = (e: ReactMouseEvent) => initiateNodeDrag(e, id);
     const handleDbClick = () => selectNode(id);
+    const handleMouseDownAnchor = (e: ReactMouseEvent) => startConnecting(e);
 
     return (
         <g
             ref={nodeRef}
             style={{
                 transform: `translate(${x}px, ${y}px)`,
-                transition: 'all 0.2s linear',
+                transition: `all ${theme.custom.animation.move}`,
             }}
             id={id}
-            onMouseDown={handleMouseDown}
+            onMouseDown={handleMouseDownNode}
             onDoubleClick={handleDbClick}
         >
             <svg
@@ -53,7 +58,10 @@ export default ({ id, type, isFocused, position: { x, y } }: Node) => {
                 }`}
             >
                 {renderedNode}
-                <Outline isSelected={isFocused} />
+                <Outline
+                    isSelected={isFocused}
+                    onMouseDownAnchor={handleMouseDownAnchor}
+                />
             </svg>
         </g>
     );

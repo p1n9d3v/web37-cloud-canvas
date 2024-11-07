@@ -1,25 +1,14 @@
 import ConnectionPointer from '@components/CanvasFlow/Node/ConnectionPointer';
-import { GRID_HALF, GRID_SIZE } from '@constants';
+import { GRID_SIZE_HALF, GRID_SIZE } from '@constants';
 import { useTheme } from '@mui/material';
+import { MouseEvent } from 'react';
 
 type OutlineProps = {
     isSelected: boolean;
+    onMouseDownAnchor: (e: MouseEvent) => void;
 };
 
-const ConnectionPointers = () => (
-    <>
-        {/* Top */}
-        <ConnectionPointer cx={GRID_HALF} />
-        {/* Right */}
-        <ConnectionPointer cx={GRID_SIZE} cy={GRID_HALF} />
-        {/* Bottom */}
-        <ConnectionPointer cx={GRID_HALF} cy={GRID_SIZE} />
-        {/* Left */}
-        <ConnectionPointer cy={GRID_HALF} />
-    </>
-);
-
-export default ({ isSelected }: OutlineProps) => {
+export default ({ isSelected, onMouseDownAnchor }: OutlineProps) => {
     const theme = useTheme();
 
     return (
@@ -44,7 +33,32 @@ export default ({ isSelected }: OutlineProps) => {
                 )}
             </rect>
 
-            {isSelected && <ConnectionPointers />}
+            {isSelected && (
+                <>
+                    {/* Top */}
+                    <ConnectionPointer
+                        cx={GRID_SIZE_HALF}
+                        onMouseDown={onMouseDownAnchor}
+                    />
+                    {/* Right */}
+                    <ConnectionPointer
+                        cx={GRID_SIZE}
+                        cy={GRID_SIZE_HALF}
+                        onMouseDown={onMouseDownAnchor}
+                    />
+                    {/* Bottom */}
+                    <ConnectionPointer
+                        cx={GRID_SIZE_HALF}
+                        cy={GRID_SIZE}
+                        onMouseDown={onMouseDownAnchor}
+                    />
+                    {/* Left */}
+                    <ConnectionPointer
+                        cy={GRID_SIZE_HALF}
+                        onMouseDown={onMouseDownAnchor}
+                    />
+                </>
+            )}
         </g>
     );
 };

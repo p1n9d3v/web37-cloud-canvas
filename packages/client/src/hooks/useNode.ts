@@ -1,4 +1,4 @@
-import { GRID_QUARTER } from '@constants';
+import { GRID_SIZE_QUARTER } from '@constants';
 import { useFlowInstanceContext } from '@contexts/FlowInstanceContext';
 import { useFlowZoomPanContext } from '@contexts/FlowZoomPanContext';
 import { getRelativeCoordinatesForViewBox } from '@utils/index';
@@ -55,11 +55,13 @@ export default () => {
             selectedNodeId
         );
 
-        const gridAlignedX = Math.floor(newX / GRID_QUARTER) * GRID_QUARTER;
-        const gridAlignedY = Math.floor(newY / GRID_QUARTER) * GRID_QUARTER;
+        const gridAlignedX =
+            Math.floor(newX / GRID_SIZE_QUARTER) * GRID_SIZE_QUARTER;
+        const gridAlignedY =
+            Math.floor(newY / GRID_SIZE_QUARTER) * GRID_SIZE_QUARTER;
 
         flowInstanceDispatch({
-            type: 'UPDATE_NODE',
+            type: 'MOVE_NODE',
             payload: {
                 id: selectedNodeId,
                 position: {

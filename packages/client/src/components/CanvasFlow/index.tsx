@@ -1,4 +1,5 @@
 import Background from '@components/CanvasFlow/Background';
+import Edge from '@components/CanvasFlow/Edge';
 import Node from '@components/CanvasFlow/Node';
 import { useFlowInstanceContext } from '@contexts/FlowInstanceContext';
 import { useFlowZoomPanContext } from '@contexts/FlowZoomPanContext';
@@ -10,7 +11,7 @@ export default () => {
     const { position: viewBoxPosition } = viewBox;
 
     const {
-        state: { edges, nodes },
+        state: { connectingEdge, nodes, edges },
     } = useFlowInstanceContext();
 
     const {
@@ -48,9 +49,38 @@ export default () => {
                         .join(' ')}
                     showSubLines={true}
                 />
+                {edges.map((edge) => {
+                    const {
+                        source: {
+                            anchor: {
+                                position: { x: sx, y: sy },
+                            },
+                        },
+
+                        target: {
+                            anchor: {
+                                position: { x: tx, y: ty },
+                            },
+                        },
+                    } = edge;
+                    return (
+                        <Edge key={edge.id} x1={sx} y1={sy} x2={tx} y2={ty} />
+                    );
+                })}
                 {nodes.map((node) => (
                     <Node key={node.id} {...node} />
                 ))}
+
+                {connectingEdge.isConnecting && (
+                    <Edge
+                        x1={connectingEdge.source.anchor.position.x}
+                        y1={connectingEdge.source.anchor.position.y}
+                        x2={connectingEdge.target.anchor.position.x}
+                        y2={connectingEdge.target.anchor.position.y}
+                        stroke={'black'}
+                        strokeWidth={2}
+                    />
+                )}
             </svg>
         </div>
     );

@@ -1,17 +1,32 @@
-import Background from '@components/Background';
-import usePanZoom from '@hooks/usePanZoom';
-import { PropsWithChildren, useRef } from 'react';
+import Background from '@components/CanvasFlow/Background';
+import Node from '@components/CanvasFlow/Node';
+import { useFlowInstanceContext } from '@contexts/FlowInstanceContext';
+import useNodeMovement from '@hooks/useNodeMovement';
+import usePanZoom from '@hooks/useZoomPan';
+import { useRef } from 'react';
+import { Node as NodeType } from '@types';
 
-export default ({ children }: PropsWithChildren) => {
+export default () => {
     const ref = useRef<HTMLDivElement>(null);
     const {
+        state: { edges, nodes },
+        dispatch,
+    } = useFlowInstanceContext();
+
+    const {
         viewBox,
-        isDragging,
-        handleMoveStart,
-        handleMove,
-        handleMoveEnd,
+        isDragging: isPanZoomDragging,
+        handleMoveStart: handleZoomPanMoveStart,
         handleZoom,
     } = usePanZoom(ref);
+
+    const { handleMoveStart: handleNodeMoveStart } = useNodeMovement(
+        ref,
+        viewBox,
+        (node: NodeType) => {
+            dispatch({ type: 'UPDATE_NODE', payload: node });
+        }
+    );
 
     const backgroundPoints = [
         [viewBox.x, viewBox.y],
@@ -26,12 +41,10 @@ export default ({ children }: PropsWithChildren) => {
             style={{
                 width: '100%',
                 height: '100%',
-                cursor: isDragging ? 'grab' : 'auto',
+                cursor: isPanZoomDragging ? 'grab' : 'auto',
             }}
             onWheel={handleZoom}
-            onMouseDown={handleMoveStart}
-            onMouseMove={handleMove}
-            onMouseUp={handleMoveEnd}
+            onMouseDown={handleZoomPanMoveStart}
         >
             <svg
                 width="100%"
@@ -44,7 +57,36 @@ export default ({ children }: PropsWithChildren) => {
                         .join(' ')}
                     showSubLines={true}
                 />
-                {children}
+                {edges.map((edge, index) => {
+                    const fromNode = nodes.find(
+                        (node) => node.id === edge.source
+                    );
+                    const toNode = nodes.find(
+                        (node) => node.id === edge.target
+                    );
+                    return (
+                        fromNode &&
+                        toNode && (
+                            <line
+                                key={index}
+                                x1={fromNode.x}
+                                y1={fromNode.y}
+                                x2={toNode.x}
+                                y2={toNode.y}
+                                stroke="blue"
+                                strokeWidth="2"
+                            />
+                        )
+                    );
+                })}
+                {nodes.map((node) => (
+                    <Node
+                        key={node.id}
+                        {...node}
+                        type="server"
+                        onMouseDown={(e) => handleNodeMoveStart(e, node.id)}
+                    />
+                ))}
             </svg>
         </div>
     );

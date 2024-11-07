@@ -1,4 +1,5 @@
-import ServiceItem from '@components/Sidebar/ServiceItem';
+import ServiceInstanceItem from '@components/Sidebar/ServiceInstance';
+import { useFlowInstanceContext } from '@contexts/FlowInstanceContext';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -50,8 +51,23 @@ export default ({
     items: Array<{
         title: string;
         desc: string;
+        nodeType?: string;
     }>;
 }) => {
+    const { state, dispatch } = useFlowInstanceContext();
+
+    const handleAddInstance = (type: string) => {
+        dispatch({
+            type: 'ADD_NODE',
+            payload: {
+                id: `${type}-${state.nodes.length + 1}`,
+                x: 0,
+                y: 0,
+                type,
+            },
+        });
+    };
+
     return (
         <StyledService elevation={0} disableGutters>
             <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -71,10 +87,13 @@ export default ({
                     }}
                 >
                     {items.map((item, index) => (
-                        <ServiceItem
+                        <ServiceInstanceItem
                             key={`${title}-${index}`}
                             title={item.title}
                             desc={item.desc}
+                            onClick={() =>
+                                handleAddInstance(item.nodeType || '')
+                            }
                         />
                     ))}
                 </List>

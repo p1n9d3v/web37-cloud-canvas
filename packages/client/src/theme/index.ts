@@ -1,4 +1,5 @@
 import { createTheme } from '@mui/material/styles';
+import { grey } from '@mui/material/colors';
 
 const theme = createTheme({
     colorSchemes: {
@@ -7,6 +8,16 @@ const theme = createTheme({
     palette: {
         white: '#fff',
         black: '#000',
+        lines: {
+            primary: {
+                light: grey[900],
+                dark: grey[100],
+            },
+            secondary: {
+                light: grey[400],
+                dark: grey[700],
+            },
+        },
     },
     components: {
         MuiCssBaseline: {

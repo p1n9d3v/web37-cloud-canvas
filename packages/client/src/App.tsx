@@ -21,7 +21,7 @@ function App() {
                 }}
             >
                 <Header />
-                <CanvasFlow></CanvasFlow>
+                <CanvasFlow />
             </Box>
         </Box>
     );

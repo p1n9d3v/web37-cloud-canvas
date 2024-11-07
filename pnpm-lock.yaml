@@ -32,9 +32,6 @@ importers:
 
   packages/cli:
     dependencies:
-      '@cloud-canvas/ncloud-sdk':
-        specifier: workspace:*
-        version: link:../ncloud-sdk
       chalk:
         specifier: 4.1.2
         version: 4.1.2

@@ -1,5 +1,5 @@
-import LinePattern from '@components/Background/LinePattern';
-import SubLinePattern from '@components/Background/SubLinePattern';
+import LinePattern from './LinePattern';
+import SubLinePattern from './SubLinePattern';
 
 export default ({
     points,

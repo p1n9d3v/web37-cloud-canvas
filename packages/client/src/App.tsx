@@ -1,3 +1,4 @@
+import CanvasFlow from '@components/CanvasFlow';
 import Header from '@components/Header';
 import Sidebar from '@components/Sidebar';
 import Box from '@mui/material/Box';
@@ -16,9 +17,11 @@ function App() {
                     width: '100%',
                     display: 'flex',
                     flexDirection: 'column',
+                    overflow: 'hidden',
                 }}
             >
                 <Header />
+                <CanvasFlow></CanvasFlow>
             </Box>
         </Box>
     );

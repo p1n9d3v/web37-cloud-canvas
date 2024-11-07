@@ -2,14 +2,13 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import ManageHistoryIcon from '@mui/icons-material/ManageHistory';
-import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import { styled, useColorScheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import Divider from '@mui/material/Divider';
 
 const StyledBox = styled(Box)(({ theme }) => ({
     display: 'flex',
@@ -67,10 +66,6 @@ export default () => {
                         )}
                     </StyledIconButton>
                 </ButtonGroup>
-                <Avatar
-                    alt="Remy Sharp"
-                    src="https://avatars.githubusercontent.com/u/152015839?s=40&v=4"
-                />
             </Stack>
         </StyledBox>
     );

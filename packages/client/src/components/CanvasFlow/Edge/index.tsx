@@ -6,9 +6,10 @@ interface EdgeProps extends ComponentProps<'line'> {
     x2: number;
     y1: number;
     y2: number;
+    isConnecting?: boolean;
 }
 
-export default ({ x1, x2, y1, y2 }: EdgeProps) => {
+export default ({ x1, x2, y1, y2, isConnecting }: EdgeProps) => {
     const theme = useTheme();
     const color =
         theme.palette.mode === 'dark'
@@ -36,7 +37,9 @@ export default ({ x1, x2, y1, y2 }: EdgeProps) => {
                 fill="none"
                 strokeWidth={2}
                 style={{
-                    transition: `d ${theme.custom.animation.move}`,
+                    transition: isConnecting
+                        ? undefined
+                        : `d ${theme.custom.animation.move}`,
                 }}
                 markerEnd="url(#arrowhead)"
             />

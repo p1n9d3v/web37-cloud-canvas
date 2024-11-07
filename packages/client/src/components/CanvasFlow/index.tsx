@@ -64,7 +64,14 @@ export default () => {
                         },
                     } = edge;
                     return (
-                        <Edge key={edge.id} x1={sx} y1={sy} x2={tx} y2={ty} />
+                        <Edge
+                            key={edge.id}
+                            x1={sx}
+                            y1={sy}
+                            x2={tx}
+                            y2={ty}
+                            isConnecting={false}
+                        />
                     );
                 })}
                 {nodes.map((node) => (
@@ -77,8 +84,7 @@ export default () => {
                         y1={connectingEdge.source.anchor.position.y}
                         x2={connectingEdge.target.anchor.position.x}
                         y2={connectingEdge.target.anchor.position.y}
-                        stroke={'black'}
-                        strokeWidth={2}
+                        isConnecting={true}
                     />
                 )}
             </svg>

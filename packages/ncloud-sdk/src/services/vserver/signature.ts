@@ -1,54 +1,36 @@
-import * as url from 'url';
-import hmacSHA256 from 'crypto-js/hmac-sha256';
-import Base64 from 'crypto-js/enc-base64';
-import { SuperAgentRequest } from 'superagent';
+import { createHmac } from 'crypto';
+import { ApiKeyCredentials, RequestConfig } from './types';
 
-interface QueryParams {
-    [key: string]: string | number | boolean;
+interface SignatureConfig extends RequestConfig {
+    apiKey: ApiKeyCredentials;
 }
 
-/**
- * Generates an HMAC signature for API requests
- * @param req - The superagent request object
- * @param timestamp - Current timestamp
- * @param accessKey - API access key
- * @param secretKey - API secret key
- * @returns Base64 encoded HMAC signature
- */
-export function generateSignature(
-    req: SuperAgentRequest,
-    timestamp: number,
-    accessKey: string,
-    secretKey: string,
-): string {
+export function generateSignature({
+    method,
+    url,
+    timestamp,
+    params,
+    apiKey,
+}: SignatureConfig): string {
     const space = ' ';
     const newLine = '\n';
-    const originalUrl = url.parse(req.url);
 
-    let query = '';
-    //   const queryParams = req.qs as QueryParams;
+    const fullUrl = params
+        ? `${url}?${new URLSearchParams(params).toString()}`
+        : url;
 
-    //   for (const key in queryParams) {
-    //     if (queryParams.hasOwnProperty(key)) {
-    //       if (query === '') {
-    //         query += `${key}=${queryParams[key]}`;
-    //       } else {
-    //         query += `&${key}=${queryParams[key]}`;
-    //       }
-    //     }
-    //   }
-
+    console.log(fullUrl);
     const message = [
-        req.method,
+        method,
         space,
-        originalUrl.pathname,
-        query !== '' ? `?${query}` : '',
+        fullUrl,
         newLine,
         timestamp,
         newLine,
-        accessKey,
+        apiKey.accessKey,
     ].join('');
 
-    const hmac = hmacSHA256(message, secretKey);
-    return Base64.stringify(hmac);
+    return createHmac('sha256', apiKey.secretKey)
+        .update(message)
+        .digest('base64');
 }

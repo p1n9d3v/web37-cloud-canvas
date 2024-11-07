@@ -7,6 +7,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import List from '@mui/material/List';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
+import { nanoid } from 'nanoid';
 
 const StyledService = styled(Accordion)(({ theme }) => ({
     backgroundColor:
@@ -60,7 +61,7 @@ export default ({
         dispatch({
             type: 'ADD_NODE',
             payload: {
-                id: `${type}-${state.nodes.length + 1}`,
+                id: `${type}-${nanoid()}`,
                 type,
             },
         });

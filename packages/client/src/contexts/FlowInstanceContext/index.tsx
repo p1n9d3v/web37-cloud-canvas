@@ -9,8 +9,8 @@ import {
 } from 'react';
 
 type ConnectingEdge = {
-    source: EdgePoint;
-    target: EdgePoint;
+    source: EdgePoint | null;
+    target: EdgePoint | null;
     isConnecting: boolean;
 };
 
@@ -193,16 +193,8 @@ export const FlowInstanceContextProvider = ({
         nodes: [],
         edges: [],
         connectingEdge: {
-            source: {
-                anchor: {
-                    position: { x: 0, y: 0 },
-                },
-            },
-            target: {
-                anchor: {
-                    position: { x: 0, y: 0 },
-                },
-            },
+            source: null,
+            target: null,
             isConnecting: false,
         },
     });

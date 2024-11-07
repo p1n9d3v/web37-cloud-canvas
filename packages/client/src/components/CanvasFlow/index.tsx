@@ -3,6 +3,7 @@ import Edge from '@components/CanvasFlow/Edge';
 import Node from '@components/CanvasFlow/Node';
 import { useFlowInstanceContext } from '@contexts/FlowInstanceContext';
 import { useFlowZoomPanContext } from '@contexts/FlowZoomPanContext';
+import useEdge from '@hooks/useEdge';
 import useZoomPan from '@hooks/useZoomPan';
 import { LegacyRef } from 'react';
 
@@ -27,6 +28,8 @@ export default () => {
         [viewBoxPosition.x, viewBoxPosition.y + viewBox.height],
     ];
 
+    const { finishConnecting, updateEdgeTarget } = useEdge();
+
     return (
         <div
             ref={ref as LegacyRef<HTMLDivElement>}
@@ -42,6 +45,8 @@ export default () => {
                 width="100%"
                 height="100%"
                 viewBox={`${viewBoxPosition.x} ${viewBoxPosition.y} ${viewBox.width} ${viewBox.height}`}
+                onMouseUp={finishConnecting}
+                onMouseMove={updateEdgeTarget}
             >
                 <Background
                     points={backgroundPoints

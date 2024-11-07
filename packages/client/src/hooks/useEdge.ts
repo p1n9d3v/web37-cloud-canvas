@@ -7,7 +7,8 @@ import {
     getDistance,
     getRelativeCoordinatesForViewBox,
 } from '@utils/index';
-import { MouseEvent as ReactMouseEvent, useEffect, useRef } from 'react';
+import { nanoid } from 'nanoid';
+import { MouseEvent } from 'react';
 
 export default () => {
     const { ref, viewBox } = useFlowZoomPanContext();
@@ -15,9 +16,6 @@ export default () => {
         state: { connectingEdge, nodes },
         dispatch: flowInstanceDispatch,
     } = useFlowInstanceContext();
-
-    const sourceRef = useRef<EdgePoint | null>(null);
-    const targetRef = useRef<EdgePoint | null>(null);
 
     const findNearestNode = (mouseX: number, mouseY: number) => {
         return nodes.find((node) => {
@@ -48,8 +46,9 @@ export default () => {
         );
     };
 
-    const startConnecting = (e: ReactMouseEvent) => {
+    const startConnecting = (e: MouseEvent) => {
         e.stopPropagation();
+
         const { clientX, clientY } = e;
         const { x: mouseX, y: mouseY } = getRelativeCoordinatesForViewBox(
             clientX,
@@ -70,9 +69,6 @@ export default () => {
             },
         };
 
-        sourceRef.current = source;
-        targetRef.current = source;
-
         flowInstanceDispatch({
             type: 'CONNECTING_EDGE',
             payload: {
@@ -84,6 +80,7 @@ export default () => {
     };
 
     const updateEdgeTarget = (e: MouseEvent) => {
+        if (!connectingEdge.isConnecting) return;
         const { clientX, clientY } = e;
         const { x: mouseX, y: mouseY } = getRelativeCoordinatesForViewBox(
             clientX,
@@ -109,8 +106,6 @@ export default () => {
                 nodeId: nearestNode.id,
                 anchor: { type, position: { x, y } },
             };
-
-            targetRef.current = target;
         }
 
         flowInstanceDispatch({
@@ -120,43 +115,37 @@ export default () => {
     };
 
     const finishConnecting = () => {
+        if (!connectingEdge.isConnecting) return;
         flowInstanceDispatch({
             type: 'CONNECTING_EDGE',
-            payload: { isConnecting: false },
+            payload: { isConnecting: false, source: null, target: null },
         });
 
-        const isExistTarget =
-            targetRef.current &&
-            targetRef.current.nodeId &&
-            targetRef.current.nodeId !== sourceRef.current?.nodeId;
+        const isPossibleToConnect =
+            connectingEdge.source &&
+            connectingEdge.target &&
+            connectingEdge.target.nodeId;
 
-        if (!isExistTarget) return;
+        if (!isPossibleToConnect) return;
+
+        const { source, target } = connectingEdge as {
+            source: EdgePoint;
+            target: EdgePoint;
+        };
+
         flowInstanceDispatch({
             type: 'ADD_EDGE',
             payload: {
-                id: `${sourceRef.current!.nodeId}-${targetRef.current!.nodeId}`,
-                source: sourceRef.current!,
-                target: targetRef.current!,
+                id: `${source.nodeId}-${target.nodeId}-${nanoid()}`,
+                source: source,
+                target: target,
             },
         });
     };
 
-    useEffect(() => {
-        if (connectingEdge.isConnecting) {
-            window.addEventListener('mousemove', updateEdgeTarget);
-            window.addEventListener('mouseup', finishConnecting);
-        } else {
-            window.removeEventListener('mousemove', updateEdgeTarget);
-            window.removeEventListener('mouseup', finishConnecting);
-        }
-
-        return () => {
-            window.removeEventListener('mousemove', updateEdgeTarget);
-            window.removeEventListener('mouseup', finishConnecting);
-        };
-    }, [connectingEdge.isConnecting]);
-
     return {
         startConnecting,
+        updateEdgeTarget,
+        finishConnecting,
     };
 };

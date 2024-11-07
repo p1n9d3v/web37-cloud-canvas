@@ -7,6 +7,9 @@ declare module '@mui/material/styles' {
         };
         custom: {
             sidebarWidth: number;
+            animation: {
+                move: string;
+            };
         };
     }
 
@@ -16,6 +19,9 @@ declare module '@mui/material/styles' {
         };
         custom?: {
             sidebarWidth?: number;
+            animation?: {
+                move: string;
+            };
         };
     }
 

@@ -1,17 +1,20 @@
 import LoadingSpinnerNode from '@components/CanvasFlow/Node/LoadingSpinnerNode';
-import { GRID_SIZE } from '@constants';
-import { ComponentProps, lazy, Suspense, useMemo } from 'react';
+import Outline from '@components/CanvasFlow/Node/Outline';
+import { GRID_SIZE, POINTER_SIZE } from '@constants';
+import useEdge from '@hooks/useEdge';
+import useNode from '@hooks/useNode';
+import { useTheme } from '@mui/material';
+import { Node } from '@types';
+import { lazy, MouseEvent as ReactMouseEvent, Suspense, useMemo } from 'react';
 
 // Lazy load the server node component
 const ServerNode = lazy(() => import('./ServerNode'));
 
-interface Node extends ComponentProps<'g'> {
-    x: number;
-    y: number;
-    type: string;
-}
+export default ({ id, type, isFocused, position: { x, y } }: Node) => {
+    const { ref: nodeRef, initiateNodeDrag, selectNode } = useNode();
+    const { startConnecting } = useEdge();
+    const theme = useTheme();
 
-export default ({ x, y, type, ...props }: Node) => {
     const renderedNode = useMemo(() => {
         let NodeComponent = null;
         switch (type) {
@@ -32,21 +35,32 @@ export default ({ x, y, type, ...props }: Node) => {
         );
     }, [type]);
 
+    const handleMouseDownNode = (e: ReactMouseEvent) => initiateNodeDrag(e, id);
+    const handleDbClick = () => selectNode(id);
+    const handleMouseDownAnchor = (e: ReactMouseEvent) => startConnecting(e);
+
     return (
         <g
+            ref={nodeRef}
             style={{
                 transform: `translate(${x}px, ${y}px)`,
-                transition: 'all 0.1s linear',
+                // transition: `all ${theme.custom.animation.move}`,
             }}
-            {...props}
+            id={id}
+            onMouseDown={handleMouseDownNode}
+            onDoubleClick={handleDbClick}
         >
-            <svg width={GRID_SIZE} height={GRID_SIZE}>
+            <svg
+                width={GRID_SIZE}
+                height={GRID_SIZE}
+                viewBox={`-${POINTER_SIZE} -${POINTER_SIZE} ${GRID_SIZE + 10} ${
+                    GRID_SIZE + 10
+                }`}
+            >
                 {renderedNode}
-                <rect
-                    width={GRID_SIZE}
-                    height={GRID_SIZE}
-                    fill="transparent"
-                    stroke="red"
+                <Outline
+                    isSelected={isFocused}
+                    onMouseDownAnchor={handleMouseDownAnchor}
                 />
             </svg>
         </g>

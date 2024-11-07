@@ -88,6 +88,9 @@ const theme = createTheme({
     },
     custom: {
         sidebarWidth: 300,
+        animation: {
+            move: '0.2s ease-in-out',
+        },
     },
 });
 

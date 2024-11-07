@@ -1,3 +1,4 @@
+import { useFlowZoomPanContext } from '@contexts/FlowZoomPanContext';
 import { getRelativeCoordinatesForViewBox } from '@utils/index';
 import {
     RefObject,
@@ -10,12 +11,7 @@ import {
 } from 'react';
 
 export default (ref: RefObject<HTMLElement>) => {
-    const [viewBox, setViewBox] = useState({
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
-    });
+    const { viewBox, changeViewBox } = useFlowZoomPanContext();
 
     const [isDragging, setIsDragging] = useState(false);
     const dragStartMousePosition = useRef({ x: 0, y: 0 });
@@ -34,15 +30,19 @@ export default (ref: RefObject<HTMLElement>) => {
             ref,
             viewBox
         );
-        const newX = _x - (_x - viewBox.x) * ratio;
-        const newY = _y - (_y - viewBox.y) * ratio;
+
+        const { position: viewBoxPosition } = viewBox;
+        const newX = _x - (_x - viewBoxPosition.x) * ratio;
+        const newY = _y - (_y - viewBoxPosition.y) * ratio;
 
         const newWidth = viewBox.width * ratio;
         const newHeight = viewBox.height * ratio;
 
-        setViewBox({
-            x: newX,
-            y: newY,
+        changeViewBox({
+            position: {
+                x: newX,
+                y: newY,
+            },
             width: newWidth,
             height: newHeight,
         });
@@ -52,8 +52,13 @@ export default (ref: RefObject<HTMLElement>) => {
         setIsDragging(true);
 
         const { clientX, clientY } = e;
+
+        const { position: viewBoxPosition } = viewBox;
         dragStartMousePosition.current = { x: clientX, y: clientY };
-        dragStartViewBoxPosition.current = { x: viewBox.x, y: viewBox.y };
+        dragStartViewBoxPosition.current = {
+            x: viewBoxPosition.x,
+            y: viewBoxPosition.y,
+        };
     };
 
     const handleMove = (e: MouseEvent) => {
@@ -74,11 +79,13 @@ export default (ref: RefObject<HTMLElement>) => {
         const { x: viewBoxStartX, y: viewBoxStartY } =
             dragStartViewBoxPosition.current;
 
-        setViewBox((prev) => ({
-            ...prev,
-            x: viewBoxStartX - dx,
-            y: viewBoxStartY - dy,
-        }));
+        changeViewBox({
+            ...viewBox,
+            position: {
+                x: viewBoxStartX - dx,
+                y: viewBoxStartY - dy,
+            },
+        });
     };
 
     const handleMoveEnd = () => setIsDragging(false);
@@ -87,9 +94,11 @@ export default (ref: RefObject<HTMLElement>) => {
         const handleResize = () => {
             if (!ref.current) return;
 
-            setViewBox({
-                x: 0,
-                y: 0,
+            changeViewBox({
+                position: {
+                    x: 0,
+                    y: 0,
+                },
                 width: ref.current.offsetWidth,
                 height: ref.current.offsetHeight,
             });

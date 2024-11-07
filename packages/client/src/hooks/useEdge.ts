@@ -65,7 +65,10 @@ export default () => {
             nodeId: nearestNode.id,
             anchor: {
                 type: nearestAnchor.type,
-                position: { x: mouseX, y: mouseY },
+                position: {
+                    x: nearestAnchor.x,
+                    y: nearestAnchor.y,
+                },
             },
         };
 

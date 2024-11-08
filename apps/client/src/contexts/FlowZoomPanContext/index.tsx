@@ -30,19 +30,21 @@ export const FlowZoomPanContextProvider = ({ children }: PropsWithChildren) => {
         height: 0,
     });
 
-    const changeViewBox = (viewBox: ViewBox) => setViewBox(viewBox);
+    const changeViewBox = (viewBox: ViewBox) =>
+        setViewBox((prev) => ({ ...prev, ...viewBox }));
 
     useLayoutEffect(() => {
         const handleResize = () => {
             if (!ref.current) return;
 
-            setViewBox({
-                position: {
-                    x: 0,
-                    y: 0,
-                },
-                width: ref.current.offsetWidth,
-                height: ref.current.offsetHeight,
+            const newWidth = ref.current.clientWidth;
+            const newHeight = ref.current.clientHeight;
+            setViewBox((prev) => {
+                return {
+                    ...prev,
+                    width: newWidth,
+                    height: newHeight,
+                };
             });
         };
 

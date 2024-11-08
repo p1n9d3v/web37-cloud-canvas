@@ -1,59 +1,29 @@
 import Background from '@components/CanvasFlow/Background';
 import Edge from '@components/CanvasFlow/Edge';
 import Node from '@components/CanvasFlow/Node';
+import ZoomPan from '@components/CanvasFlow/ZoomPan';
 import { useFlowInstanceContext } from '@contexts/FlowInstanceContext';
-import { useFlowZoomPanContext } from '@contexts/FlowZoomPanContext';
 import useEdge from '@hooks/useEdge';
 import useZoomPan from '@hooks/useZoomPan';
-import { LegacyRef } from 'react';
 
 export default () => {
-    const { ref, viewBox } = useFlowZoomPanContext();
-    const { position: viewBoxPosition } = viewBox;
-
     const {
         state: { connectingEdge, nodes, edges },
     } = useFlowInstanceContext();
 
-    const {
-        isDragging: isPanZoomDragging,
-        handleMoveStart: handleZoomPanMoveStart,
-        handleZoom,
-    } = useZoomPan(ref);
-
-    const backgroundPoints = [
-        [viewBoxPosition.x, viewBoxPosition.y],
-        [viewBoxPosition.x + viewBox.width, viewBoxPosition.y],
-        [viewBoxPosition.x + viewBox.width, viewBoxPosition.y + viewBox.height],
-        [viewBoxPosition.x, viewBoxPosition.y + viewBox.height],
-    ];
-
     const { finishConnecting, updateEdgeTarget } = useEdge();
+    const { viewBox } = useZoomPan();
 
     return (
-        <div
-            ref={ref as LegacyRef<HTMLDivElement>}
-            style={{
-                width: '100%',
-                height: '100%',
-                cursor: isPanZoomDragging ? 'grab' : 'auto',
-            }}
-            onWheel={handleZoom}
-            onMouseDown={handleZoomPanMoveStart}
-        >
+        <ZoomPan>
             <svg
                 width="100%"
                 height="100%"
-                viewBox={`${viewBoxPosition.x} ${viewBoxPosition.y} ${viewBox.width} ${viewBox.height}`}
+                viewBox={`${viewBox.position.x} ${viewBox.position.y} ${viewBox.width} ${viewBox.height}`}
                 onMouseUp={finishConnecting}
                 onMouseMove={updateEdgeTarget}
             >
-                <Background
-                    points={backgroundPoints
-                        .map((point) => point.join(','))
-                        .join(' ')}
-                    showSubLines={true}
-                />
+                <Background viewBox={viewBox} showSubLines={true} />
                 {edges.map((edge) => {
                     const {
                         source: {
@@ -93,6 +63,6 @@ export default () => {
                     />
                 )}
             </svg>
-        </div>
+        </ZoomPan>
     );
 };

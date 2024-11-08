@@ -1,23 +1,22 @@
 import { useFlowZoomPanContext } from '@contexts/FlowZoomPanContext';
 import { getRelativeCoordinatesForViewBox } from '@utils/index';
 import {
-    RefObject,
-    MouseEvent as ReactMouseEvent,
+    MouseEvent,
     WheelEvent,
-    useEffect,
     useLayoutEffect,
     useRef,
     useState,
 } from 'react';
 
-export default (ref: RefObject<HTMLElement>) => {
-    const { viewBox, changeViewBox } = useFlowZoomPanContext();
+export default () => {
+    const { ref, viewBox, changeViewBox } = useFlowZoomPanContext();
 
     const [isDragging, setIsDragging] = useState(false);
+
     const dragStartMousePosition = useRef({ x: 0, y: 0 });
     const dragStartViewBoxPosition = useRef({ x: 0, y: 0 });
 
-    const handleZoom = (e: WheelEvent) => {
+    const zoomInZoomOut = (e: WheelEvent) => {
         const { deltaY, clientX, clientY } = e;
 
         // scroll up -> scale down, scroll up -> scale down
@@ -48,7 +47,7 @@ export default (ref: RefObject<HTMLElement>) => {
         });
     };
 
-    const handleMoveStart = (e: ReactMouseEvent) => {
+    const startDrag = (e: MouseEvent) => {
         setIsDragging(true);
 
         const { clientX, clientY } = e;
@@ -61,7 +60,7 @@ export default (ref: RefObject<HTMLElement>) => {
         };
     };
 
-    const handleMove = (e: MouseEvent) => {
+    const drag = (e: MouseEvent) => {
         if (!isDragging || !ref.current) return;
 
         const zoomPan = ref.current.getBoundingClientRect();
@@ -88,48 +87,35 @@ export default (ref: RefObject<HTMLElement>) => {
         });
     };
 
-    const handleMoveEnd = () => setIsDragging(false);
+    const stopDrag = () => setIsDragging(false);
 
     useLayoutEffect(() => {
-        const handleResize = () => {
-            if (!ref.current) return;
+        const zoomPan = ref.current;
 
+        const handleResize = () => {
             changeViewBox({
                 position: {
                     x: 0,
                     y: 0,
                 },
-                width: ref.current.offsetWidth,
-                height: ref.current.offsetHeight,
+                width: ref.current!.offsetWidth,
+                height: ref.current!.offsetHeight,
             });
         };
-
-        handleResize();
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
+        if (zoomPan) {
+            handleResize();
+            zoomPan.addEventListener('resize', handleResize);
+            return () => zoomPan.removeEventListener('resize', handleResize);
+        }
     }, []);
 
-    useEffect(() => {
-        if (isDragging) {
-            window.addEventListener('mousemove', handleMove);
-            window.addEventListener('mouseup', handleMoveEnd);
-        } else {
-            window.removeEventListener('mousemove', handleMove);
-            window.removeEventListener('mouseup', handleMoveEnd);
-        }
-
-        return () => {
-            window.removeEventListener('mousemove', handleMove);
-            window.removeEventListener('mouseup', handleMoveEnd);
-        };
-    }, [isDragging, handleMove, handleMoveEnd]);
-
     return {
+        ref,
         viewBox,
         isDragging,
-        handleMoveStart,
-        handleMoveEnd,
-        handleMove,
-        handleZoom,
+        startDrag,
+        stopDrag,
+        drag,
+        zoomInZoomOut,
     };
 };

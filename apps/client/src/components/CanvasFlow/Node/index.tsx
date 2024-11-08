@@ -1,9 +1,7 @@
-import LoadingSpinnerNode from '@components/CanvasFlow/Node/LoadingSpinnerNode';
 import Outline from '@components/CanvasFlow/Node/Outline';
 import { GRID_SIZE, POINTER_SIZE } from '@constants';
 import useEdge from '@hooks/useEdge';
 import useNode from '@hooks/useNode';
-import { useTheme } from '@mui/material';
 import { Node } from '@types';
 import { lazy, MouseEvent as ReactMouseEvent, Suspense, useMemo } from 'react';
 
@@ -13,7 +11,6 @@ const ServerNode = lazy(() => import('./ServerNode'));
 export default ({ id, type, isFocused, position: { x, y } }: Node) => {
     const { ref: nodeRef, initiateNodeDrag, selectNode } = useNode();
     const { startConnecting } = useEdge();
-    const theme = useTheme();
 
     const renderedNode = useMemo(() => {
         let NodeComponent = null;
@@ -24,15 +21,7 @@ export default ({ id, type, isFocused, position: { x, y } }: Node) => {
                 );
                 break;
         }
-        return (
-            <Suspense
-                fallback={
-                    <LoadingSpinnerNode width={GRID_SIZE} height={GRID_SIZE} />
-                }
-            >
-                {NodeComponent}
-            </Suspense>
-        );
+        return <Suspense>{NodeComponent}</Suspense>;
     }, [type]);
 
     const handleMouseDownNode = (e: ReactMouseEvent) => initiateNodeDrag(e, id);

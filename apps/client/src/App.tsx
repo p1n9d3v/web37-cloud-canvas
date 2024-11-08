@@ -1,4 +1,4 @@
-import CanvasFlow from '@components/CanvasFlow';
+import CloudFlow from '@cloudflow/CloudFlow';
 import Header from '@components/Header';
 import Sidebar from '@components/Sidebar';
 import Box from '@mui/material/Box';
@@ -21,7 +21,7 @@ function App() {
                 }}
             >
                 <Header />
-                <CanvasFlow />
+                <CloudFlow />
             </Box>
         </Box>
     );

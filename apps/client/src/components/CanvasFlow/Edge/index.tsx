@@ -33,7 +33,7 @@ export default ({ x1, x2, y1, y2, isConnecting }: EdgeProps) => {
             </defs>
             <path
                 d={linePathD}
-                stroke="black"
+                stroke={color}
                 fill="none"
                 strokeWidth={2}
                 // style={{

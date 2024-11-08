@@ -1,18 +1,18 @@
-import { ViewBox } from '@types';
-import { getRelativeCoordinatesForViewBox } from '@utils/index';
+import { ViewBox } from '@cloudflow/types';
+import { getRelativeCoordinatesForViewBox } from '@cloudflow/utils';
 import { useLayoutEffect, useRef, useState } from 'react';
 
 export default () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [viewBox, setViewBox] = useState<ViewBox>({
-        position: { x: 0, y: 0 },
-        width: 0,
-        height: 0,
+        point: { x: 0, y: 0 },
+        width: containerRef.current?.clientWidth || 0,
+        height: containerRef.current?.clientHeight || 0,
     });
     const [isDragging, setIsDragging] = useState(false);
 
     const dragStart = useRef({ x: 0, y: 0 });
-    const initialPosition = useRef({ x: 0, y: 0 });
+    const startPoint = useRef({ x: 0, y: 0 });
 
     const onZoom = (e: React.WheelEvent<HTMLDivElement>) => {
         const { deltaY, clientX, clientY } = e;
@@ -25,13 +25,13 @@ export default () => {
             viewBox
         );
 
-        setViewBox((prev) => {
-            const newWidth = prev.width * zoomFactor;
-            const newHeight = prev.height * zoomFactor;
+        setViewBox(({ width, height, point }) => {
+            const newWidth = width * zoomFactor;
+            const newHeight = height * zoomFactor;
             return {
-                position: {
-                    x: mouseX - (mouseX - prev.position.x) * zoomFactor,
-                    y: mouseY - (mouseY - prev.position.y) * zoomFactor,
+                point: {
+                    x: mouseX - (mouseX - point.x) * zoomFactor,
+                    y: mouseY - (mouseY - point.y) * zoomFactor,
                 },
                 width: newWidth,
                 height: newHeight,
@@ -43,7 +43,7 @@ export default () => {
         e.preventDefault();
         setIsDragging(true);
         dragStart.current = { x: e.clientX, y: e.clientY };
-        initialPosition.current = { ...viewBox.position };
+        startPoint.current = { ...viewBox.point };
     };
 
     const onDrag = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -58,9 +58,9 @@ export default () => {
 
         setViewBox((prev) => ({
             ...prev,
-            position: {
-                x: initialPosition.current.x - deltaX * scaleX,
-                y: initialPosition.current.y - deltaY * scaleY,
+            point: {
+                x: startPoint.current.x - deltaX * scaleX,
+                y: startPoint.current.y - deltaY * scaleY,
             },
         }));
     };

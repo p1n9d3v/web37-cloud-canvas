@@ -3,6 +3,7 @@ import {
     GRID_3D_WIDTH_SIZE,
     GRID_SIZE,
 } from '@cloudflow/constants';
+import { Dimension } from '@cloudflow/types';
 import { useTheme } from '@mui/material';
 
 type Props = {

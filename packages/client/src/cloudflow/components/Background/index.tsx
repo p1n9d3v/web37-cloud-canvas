@@ -1,4 +1,4 @@
-import { ViewBox } from '@types';
+import { Dimension, ViewBox } from '@cloudflow/types';
 import GridPatternMajor from './patterns/GridPatternMajor';
 import GridPatternMinor from './patterns/GridPatternMinor';
 
@@ -11,14 +11,12 @@ export default ({
     showSubLines: boolean;
     dimension: Dimension;
 }) => {
+    const { point, width, height } = viewBox;
     const pointsInfo = {
-        topLeft: [viewBox.position.x, viewBox.position.y],
-        topRight: [viewBox.position.x + viewBox.width, viewBox.position.y],
-        bottomRight: [
-            viewBox.position.x + viewBox.width,
-            viewBox.position.y + viewBox.height,
-        ],
-        bottomLeft: [viewBox.position.x, viewBox.position.y + viewBox.height],
+        topLeft: [point.x, point.y],
+        topRight: [point.x + width, point.y],
+        bottomRight: [point.x + width, point.y + height],
+        bottomLeft: [point.x, point.y + height],
     };
     const points = Object.values(pointsInfo)
         .map((point) => point.join(','))

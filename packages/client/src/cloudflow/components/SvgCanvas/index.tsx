@@ -1,19 +1,21 @@
-import { ViewBox } from '@types';
-import { ReactNode } from 'react';
+import { ViewBox } from '@cloudflow/types';
+import { MouseEventHandler, ReactNode } from 'react';
 
 type Props = {
     viewBox: ViewBox;
-    onMouseUp?: React.MouseEventHandler<SVGSVGElement>;
-    onMouseMove?: React.MouseEventHandler<SVGSVGElement>;
+    onMouseUp?: MouseEventHandler<SVGSVGElement>;
+    onMouseMove?: MouseEventHandler<SVGSVGElement>;
     children: ReactNode;
 };
 
 export default ({ viewBox, children, onMouseUp, onMouseMove }: Props) => {
+    const { point, width, height } = viewBox;
+
     return (
         <svg
             width="100%"
             height="100%"
-            viewBox={`${viewBox.position.x} ${viewBox.position.y} ${viewBox.width} ${viewBox.height}`}
+            viewBox={`${point.x} ${point.y} ${width} ${height}`}
             onMouseUp={onMouseUp}
             onMouseMove={onMouseMove}
         >

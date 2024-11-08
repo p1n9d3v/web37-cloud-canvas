@@ -1,5 +1,5 @@
 import useZoomPan from '@cloudflow/hooks/useZoomPan';
-import { ViewBox } from '@types';
+import { ViewBox } from '@cloudflow/types';
 import { ReactElement } from 'react';
 
 type Props = {
@@ -22,7 +22,7 @@ export default ({ children }: Props) => {
             style={{
                 width: '100%',
                 height: '100%',
-                cursor: isDragging ? 'grabbing' : 'grab',
+                cursor: isDragging ? 'grab' : 'auto',
             }}
             onWheel={onZoom}
             onMouseDown={onDragStart}

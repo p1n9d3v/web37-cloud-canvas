@@ -1,5 +1,5 @@
 {
-    "name": "@cloud-canvas/client",
+    "name": "client",
     "version": "0.0.0",
     "description": "",
     "private": true,
@@ -9,7 +9,6 @@
         "start": "serve dist",
         "dev": "vite",
         "build": "tsc -b && vite build",
-        "bundle": "tsc -b && vite build --config vite.bundle.config.ts",
         "clean": "rm -rf dist"
     },
     "dependencies": {

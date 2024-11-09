@@ -1,13 +1,10 @@
 import Background from '@cloudflow/components/Background';
-import GraphNode from '@cloudflow/components/GraphNode';
 import Flow from '@cloudflow/components/Flow';
+import Node from '@cloudflow/components/Node';
 import ZoomPan from '@cloudflow/components/ZoomPan';
-import { FlowProvider, useFlowContext } from '@cloudflow/contexts/FlowContext';
 import { DragProvider } from '@cloudflow/contexts/DragContext';
-import {
-    GraphNodeProvider,
-    useGraphNodeContext,
-} from '@cloudflow/contexts/GraphNodeContext';
+import { FlowProvider, useFlowContext } from '@cloudflow/contexts/FlowContext';
+import { NodeProvider, useNodeContext } from '@cloudflow/contexts/NodeContext';
 import useDragNode from '@cloudflow/hooks/useDragNode';
 import { nanoid } from 'nanoid';
 import { MouseEvent, useEffect } from 'react';
@@ -17,7 +14,7 @@ const CloudFlow = () => {
     const {
         state: { nodes },
         dispatch,
-    } = useGraphNodeContext();
+    } = useNodeContext();
     const { dragNode, endDragNode } = useDragNode();
 
     const handleMouseMoveFlow = (e: MouseEvent<SVGGElement>) => {
@@ -54,11 +51,7 @@ const CloudFlow = () => {
                         showSubLines
                     />
                     {nodes.map((node) => (
-                        <GraphNode
-                            key={node.id}
-                            node={node}
-                            dimension={dimension}
-                        />
+                        <Node key={node.id} node={node} dimension={dimension} />
                     ))}
 
                     <rect
@@ -80,11 +73,11 @@ const CloudFlow = () => {
 export default () => {
     return (
         <FlowProvider>
-            <GraphNodeProvider>
+            <NodeProvider>
                 <DragProvider>
                     <CloudFlow />
                 </DragProvider>
-            </GraphNodeProvider>
+            </NodeProvider>
         </FlowProvider>
     );
 };

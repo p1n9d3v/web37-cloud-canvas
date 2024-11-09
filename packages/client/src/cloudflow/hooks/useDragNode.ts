@@ -1,19 +1,15 @@
-import {
-    GRID_QUARTER_SIZE,
-    GRID_3D_WIDTH_SIZE,
-    GRID_3D_HEIGHT_SIZE,
-} from '@cloudflow/constants';
-import { useFlowContext } from '@cloudflow/contexts/FlowContext';
+import { GRID_3D_HEIGHT_SIZE, GRID_3D_WIDTH_SIZE } from '@cloudflow/constants';
 import { useDragContext } from '@cloudflow/contexts/DragContext';
-import { useGraphNodeContext } from '@cloudflow/contexts/GraphNodeContext';
+import { useFlowContext } from '@cloudflow/contexts/FlowContext';
+import { useNodeContext } from '@cloudflow/contexts/NodeContext';
 import { Point } from '@cloudflow/types';
 import { getDistance, getSvgPoint } from '@cloudflow/utils';
-import { useEffect } from 'react';
 import { GRID_SIZE } from '@constants';
+import { useEffect } from 'react';
 
 export default () => {
     const { flowRef, dimension } = useFlowContext();
-    const { dispatch: dispatchNode } = useGraphNodeContext();
+    const { dispatch: dispatchNode } = useNodeContext();
     const { startDragPoint, isDragging, draggingId, startDrag, endDrag } =
         useDragContext();
 
@@ -90,14 +86,13 @@ export default () => {
 
         if (cursorSvgPoint) {
             const distance = getDistance(startDragPoint, cursorSvgPoint);
-            if (distance < GRID_QUARTER_SIZE) return;
+            const snappedSize = dimension === '2d' ? GRID_SIZE / 4 : 1 / 4;
+            if (distance < snappedSize) return;
 
             const nodeElement = document.getElementById(
                 draggingId
             ) as SVGGraphicsElement | null;
             if (!nodeElement) return;
-
-            const snappedSize = dimension === '2d' ? GRID_SIZE / 4 : 1 / 4;
 
             const newPoint = getGridAlignedPoint(
                 cursorSvgPoint,

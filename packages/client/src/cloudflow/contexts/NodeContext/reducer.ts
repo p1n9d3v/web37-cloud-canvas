@@ -1,31 +1,31 @@
-import { GraphNode } from '@cloudflow/types';
+import { Node } from '@cloudflow/types';
 
-export type GraphNodeState = {
-    nodes: GraphNode[];
+export type NodeState = {
+    nodes: Node[];
     selectedNodeIds: Set<string>;
 };
 
 export type NodeAction =
-    | { type: 'ADD_NODE'; payload: GraphNode }
-    | { type: 'UPDATE_NODE'; payload: GraphNode }
+    | { type: 'ADD_NODE'; payload: Node }
+    | { type: 'UPDATE_NODE'; payload: Node }
     | { type: 'REMOVE_NODE'; payload: { id: string } }
     | { type: 'SELECT_NODE'; payload: { id: string } }
     | { type: 'DESELECT_NODE'; payload: { id: string } }
     | { type: 'DESELECT_ALL_NODES' }
     | {
           type: 'MOVE_NODE';
-          payload: Pick<GraphNode, 'id' | 'point'>;
+          payload: Pick<Node, 'id' | 'point'>;
       };
 
-export const initialGraphNodeState: GraphNodeState = {
+export const initialNodeState: NodeState = {
     nodes: [],
     selectedNodeIds: new Set(),
 };
 
-export const graphNodeReducer = (
-    state: GraphNodeState,
+export const nodeReducer = (
+    state: NodeState,
     action: NodeAction
-): GraphNodeState => {
+): NodeState => {
     switch (action.type) {
         case 'ADD_NODE':
             return { ...state, nodes: [...state.nodes, action.payload] };

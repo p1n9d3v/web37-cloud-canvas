@@ -4,12 +4,12 @@ import {
     GRID_SIZE,
 } from '@cloudflow/constants';
 import useDragNode from '@cloudflow/hooks/useDragNode';
-import { Dimension, GraphNode } from '@cloudflow/types';
+import { Dimension, Node } from '@cloudflow/types';
 import { createElement, MouseEvent } from 'react';
-import ServerNode from './Nodes/ServerNode';
+import ServerNode from './Svgs/ServerNode';
 
 type Props = {
-    node: GraphNode;
+    node: Node;
     dimension: Dimension;
 };
 

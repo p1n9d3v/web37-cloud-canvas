@@ -10,7 +10,7 @@ export type ViewBox = {
     height: number;
 };
 
-export type GraphNode = {
+export type Node = {
     id: string;
     type: string;
     point: Point;

@@ -1,13 +1,13 @@
 import { ViewBox } from '@cloudflow/types';
 import { getRelativeCoordinatesForViewBox } from '@cloudflow/utils';
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 export default () => {
-    const containerRef = useRef<HTMLDivElement>(null);
+    const zoomPanRef = useRef<HTMLDivElement>(null);
     const [viewBox, setViewBox] = useState<ViewBox>({
         point: { x: 0, y: 0 },
-        width: containerRef.current?.clientWidth || 0,
-        height: containerRef.current?.clientHeight || 0,
+        width: zoomPanRef.current?.clientWidth || 0,
+        height: zoomPanRef.current?.clientHeight || 0,
     });
     const [isDragging, setIsDragging] = useState(false);
 
@@ -21,7 +21,7 @@ export default () => {
         const { x: mouseX, y: mouseY } = getRelativeCoordinatesForViewBox(
             clientX,
             clientY,
-            containerRef,
+            zoomPanRef,
             viewBox
         );
 
@@ -47,12 +47,12 @@ export default () => {
     };
 
     const onDrag = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!isDragging || !containerRef.current) return;
+        if (!isDragging || !zoomPanRef.current) return;
 
         const deltaX = e.clientX - dragStart.current.x;
         const deltaY = e.clientY - dragStart.current.y;
 
-        const rect = containerRef.current.getBoundingClientRect();
+        const rect = zoomPanRef.current.getBoundingClientRect();
         const scaleX = viewBox.width / rect.width;
         const scaleY = viewBox.height / rect.height;
 
@@ -68,12 +68,12 @@ export default () => {
     const onDragEnd = () => setIsDragging(false);
 
     useLayoutEffect(() => {
-        if (containerRef.current) {
+        if (zoomPanRef.current) {
             const updateViewBoxSize = () => {
                 setViewBox((prev) => ({
                     ...prev,
-                    width: containerRef.current!.clientWidth,
-                    height: containerRef.current!.clientHeight,
+                    width: zoomPanRef.current!.clientWidth,
+                    height: zoomPanRef.current!.clientHeight,
                 }));
             };
             updateViewBoxSize();
@@ -85,8 +85,12 @@ export default () => {
         }
     }, []);
 
+    useEffect(() => {
+        document.body.style.cursor = isDragging ? 'grabbing' : 'auto';
+    }, [isDragging]);
+
     return {
-        containerRef,
+        zoomPanRef,
         viewBox,
         isDragging,
         onZoom,

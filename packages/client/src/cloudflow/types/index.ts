@@ -14,5 +14,4 @@ export type GraphNode = {
     id: string;
     type: string;
     point: Point;
-    isSelected: boolean;
 };

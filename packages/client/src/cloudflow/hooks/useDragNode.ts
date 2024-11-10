@@ -68,12 +68,14 @@ export default () => {
     const startDragNode = (id: string, cursorPoint: Point) => {
         if (!flowRef.current) return;
 
-        const point = getSvgPoint(flowRef.current, {
+        const svgPoint = getSvgPoint(flowRef.current, {
             x: cursorPoint.x,
             y: cursorPoint.y,
         });
 
-        startDrag(id, point);
+        if (!svgPoint) return;
+
+        startDrag(id, svgPoint);
     };
 
     const dragNode = (cursorPoint: Point) => {

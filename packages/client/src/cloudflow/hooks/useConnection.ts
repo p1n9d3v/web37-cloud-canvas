@@ -1,8 +1,15 @@
+import {
+    GRID_3D_DEPTH_SIZE,
+    GRID_3D_HEIGHT_SIZE,
+    GRID_3D_WIDTH_SIZE,
+    GRID_SIZE,
+} from '@cloudflow/constants';
 import { useConnectionContext } from '@cloudflow/contexts/ConnectionContext';
+import { useEdgeContext } from '@cloudflow/contexts/EdgeContext';
 import { useFlowContext } from '@cloudflow/contexts/FlowContext';
 import { useNodeContext } from '@cloudflow/contexts/NodeContext';
-import { Point } from '@cloudflow/types';
-import { getSvgPoint } from '@cloudflow/utils';
+import { Anchor, Point } from '@cloudflow/types';
+import { getDistance, getSvgPoint } from '@cloudflow/utils';
 import { nanoid } from 'nanoid';
 
 export default () => {
@@ -10,30 +17,103 @@ export default () => {
     const {
         state: { nodes },
     } = useNodeContext();
+    const { dispatch: dispatchEdge } = useEdgeContext();
     const {
-        state: { isConnecting },
+        state: { isConnecting, targetAnchor, sourceAnchor },
         dispatch: dispatchConnection,
     } = useConnectionContext();
 
-    const findNearestAnchor = (mouseX: number, mouseY: number) => {
-        if (!flowRef.current) return;
+    const findNearestAnchor = (cursorPoint: Point): Anchor | null => {
+        if (!flowRef.current) return null;
         const cursorSvgPoint = getSvgPoint(flowRef.current, {
-            x: mouseX,
-            y: mouseY,
+            x: cursorPoint.x,
+            y: cursorPoint.y,
         });
 
-        const { x: cursorSvgX, y: cursorSvgY } = cursorSvgPoint!;
+        if (!cursorSvgPoint) return null;
+
+        let nearestAnchor = null;
+        let minDistance = Infinity;
+
+        nodes.forEach((node) => {
+            if (node.id === sourceAnchor?.nodeId) return;
+
+            const width = dimension === '2d' ? GRID_SIZE : GRID_3D_WIDTH_SIZE;
+            const height =
+                dimension === '2d'
+                    ? GRID_SIZE
+                    : GRID_3D_HEIGHT_SIZE + GRID_3D_DEPTH_SIZE;
+            const anchors = [
+                {
+                    type: 'top',
+                    point: { x: node.point.x + width / 2, y: node.point.y },
+                },
+                {
+                    type: 'right',
+                    point: {
+                        x: node.point.x + width,
+                        y: node.point.y + height / 2,
+                    },
+                },
+                {
+                    type: 'bottom',
+                    point: {
+                        x: node.point.x + width / 2,
+                        y: node.point.y + height,
+                    },
+                },
+                {
+                    type: 'left',
+                    point: {
+                        x: node.point.x,
+                        y: node.point.y + height / 2,
+                    },
+                },
+            ];
+
+            anchors.forEach((anchor) => {
+                const anchorSvgPoint = getSvgPoint(
+                    flowRef.current!,
+                    anchor.point
+                );
+                if (!anchorSvgPoint) return;
+
+                const distance = getDistance(cursorSvgPoint, anchorSvgPoint);
+                const snappedThreshold = 30;
+                if (distance < snappedThreshold && distance < minDistance) {
+                    minDistance = distance;
+                    nearestAnchor = {
+                        nodeId: node.id,
+                        type: anchor.type,
+                        point: anchor.point,
+                    };
+                }
+            });
+        });
+
+        return nearestAnchor;
     };
 
-    const startConnection = (startPoint: Point) => {
+    const startConnection = (sourceAnchor: Anchor) => {
         if (!flowRef.current) return;
-        const startSvgPoint = getSvgPoint(flowRef.current, startPoint);
+        const startSvgPoint = getSvgPoint(flowRef.current, sourceAnchor.point);
+        if (!startSvgPoint) return;
 
         dispatchConnection({
             type: 'START_CONNECTION',
             payload: {
-                id: nanoid(),
-                point: { x: startSvgPoint!.x, y: startSvgPoint!.y },
+                x: startSvgPoint.x,
+                y: startSvgPoint.y,
+            },
+        });
+        dispatchConnection({
+            type: 'SET_SOURCE_ANCHOR',
+            payload: {
+                ...sourceAnchor,
+                point: {
+                    x: startSvgPoint.x,
+                    y: startSvgPoint.y,
+                },
             },
         });
     };
@@ -45,23 +125,62 @@ export default () => {
             x: cursorPoint.x,
             y: cursorPoint.y,
         });
+        if (!cursorSvgPoint) return;
 
-        if (cursorSvgPoint) {
-            const { x: cursorSvgX, y: cursorSvgY } = cursorSvgPoint;
-            const nearestNode = findNearestAnchor(cursorSvgX, cursorSvgY);
+        const nearestAnchor = findNearestAnchor(cursorSvgPoint);
+
+        let targetPoint = {
+            x: cursorSvgPoint.x,
+            y: cursorSvgPoint.y,
+        };
+
+        if (nearestAnchor) {
+            targetPoint = {
+                x: nearestAnchor.point.x,
+                y: nearestAnchor.point.y,
+            };
             dispatchConnection({
-                type: 'MOVE_CONNECTION',
+                type: 'SET_TARGET_ANCHOR',
                 payload: {
-                    x: cursorSvgX,
-                    y: cursorSvgY,
+                    ...nearestAnchor,
                 },
             });
+        } else {
+            dispatchConnection({
+                type: 'SET_TARGET_ANCHOR',
+                payload: null,
+            });
         }
+        dispatchConnection({
+            type: 'MOVE_CONNECTION',
+            payload: {
+                x: targetPoint.x,
+                y: targetPoint.y,
+            },
+        });
     };
 
     const endConnection = () => {
+        if (targetAnchor) {
+            dispatchEdge({
+                type: 'ADD_EDGE',
+                payload: {
+                    id: `edge-${nanoid()}`,
+                    source: {
+                        id: sourceAnchor!.nodeId,
+                        anchorType: sourceAnchor!.type,
+                        point: sourceAnchor!.point,
+                    },
+                    target: {
+                        id: targetAnchor.nodeId,
+                        anchorType: targetAnchor.type,
+                        point: targetAnchor.point,
+                    },
+                },
+            });
+        }
         dispatchConnection({
-            type: 'END_CONNECTION',
+            type: 'RESET_CONNECTION',
         });
     };
 

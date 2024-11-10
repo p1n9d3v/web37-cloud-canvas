@@ -1,13 +1,16 @@
 import useConnection from '@cloudflow/hooks/useConnection';
 import { useTheme } from '@mui/material';
+import { AnchorType } from '@types';
 import { MouseEvent } from 'react';
 
 type Props = {
+    nodeId: string;
+    type: AnchorType;
     cx?: number;
     cy?: number;
 };
 
-export default ({ cx, cy }: Props) => {
+export default ({ nodeId, type, cx, cy }: Props) => {
     const { startConnecting } = useConnection();
     const theme = useTheme();
     const color =
@@ -22,7 +25,12 @@ export default ({ cx, cy }: Props) => {
         const anchorRect = currentTarget.getBoundingClientRect();
         const anchorCenterX = anchorRect.left + anchorRect.width / 2;
         const anchorCenterY = anchorRect.top + anchorRect.height / 2;
-        startConnecting({ x: anchorCenterX, y: anchorCenterY });
+
+        startConnecting({
+            nodeId,
+            type,
+            point: { x: anchorCenterX, y: anchorCenterY },
+        });
     };
 
     return (

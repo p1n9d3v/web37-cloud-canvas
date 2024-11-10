@@ -1,4 +1,5 @@
 import Background from '@cloudflow/components/Background';
+import ConnectingEdge from '@cloudflow/components/ConnectingEdge';
 import Edge from '@cloudflow/components/Edge';
 import Flow from '@cloudflow/components/Flow';
 import Node from '@cloudflow/components/Node';
@@ -8,7 +9,7 @@ import {
     useConnectionContext,
 } from '@cloudflow/contexts/ConnectionContext';
 import { DragProvider } from '@cloudflow/contexts/DragContext';
-import { EdgeProvider } from '@cloudflow/contexts/EdgeContext';
+import { EdgeProvider, useEdgeContext } from '@cloudflow/contexts/EdgeContext';
 import { FlowProvider, useFlowContext } from '@cloudflow/contexts/FlowContext';
 import { NodeProvider, useNodeContext } from '@cloudflow/contexts/NodeContext';
 import useConnection from '@cloudflow/hooks/useConnection';
@@ -23,7 +24,10 @@ const CloudFlow = () => {
         dispatch: dispatchNode,
     } = useNodeContext();
     const {
-        state: { isConnecting, connection },
+        state: { edges },
+    } = useEdgeContext();
+    const {
+        state: { isConnecting, connection, sourceAnchor, targetAnchor },
     } = useConnectionContext();
 
     const { dragNode, endDragNode } = useDragNode();
@@ -42,15 +46,16 @@ const CloudFlow = () => {
 
     useEffect(() => {
         // Test Node
+        if (!flowRef.current) return;
         dispatchNode({
             type: 'ADD_NODE',
             payload: {
-                id: nanoid(),
+                id: `server-${nanoid()}`,
                 type: 'server',
-                point: { x: 100, y: 100 },
+                point: { x: 0, y: 0 },
             },
         });
-    }, []);
+    }, [flowRef]);
 
     return (
         <ZoomPan>
@@ -80,9 +85,15 @@ const CloudFlow = () => {
                         y="0"
                         fill="blue"
                     />
+                    {edges.map((edge) => (
+                        <Edge key={edge.id} edge={edge} />
+                    ))}
 
                     {isConnecting && connection && (
-                        <Edge start={connection.start} end={connection.end} />
+                        <ConnectingEdge
+                            start={connection.start}
+                            end={connection.end}
+                        />
                     )}
                 </Flow>
             )}

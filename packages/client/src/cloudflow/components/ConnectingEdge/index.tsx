@@ -1,21 +1,21 @@
-import { Edge } from '@cloudflow/types';
+import { Point } from '@cloudflow/types';
 import { useTheme } from '@mui/material';
 
 type Props = {
-    edge: Edge;
+    start: Point;
+    end: Point;
 };
-export default ({ edge }: Props) => {
-    const { id, source, target } = edge;
+export default ({ start, end }: Props) => {
     const theme = useTheme();
     const color =
         theme.palette.mode === 'dark'
             ? theme.palette.grey[200]
             : theme.palette.grey[800];
 
-    const linePathD = `M ${source.point.x} ${source.point.y} L ${target.point.x} ${target.point.y}`;
+    const linePathD = `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
 
     return (
-        <g id={id}>
+        <g>
             <defs>
                 <marker
                     id="arrowhead"

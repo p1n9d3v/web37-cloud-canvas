@@ -1,4 +1,6 @@
+import Anchor from '@cloudflow/components/Anchor';
 import {
+    GRID_3D_DEPTH_SIZE,
     GRID_3D_HEIGHT_SIZE,
     GRID_3D_WIDTH_SIZE,
     GRID_SIZE,
@@ -7,7 +9,6 @@ import useDragNode from '@cloudflow/hooks/useDragNode';
 import { Dimension, Node } from '@cloudflow/types';
 import { createElement, MouseEvent } from 'react';
 import ServerNode from './Svgs/ServerNode';
-import Anchor from '@cloudflow/components/Anchor';
 
 type Props = {
     node: Node;
@@ -35,6 +36,12 @@ export default ({ node: { id, type, point }, dimension }: Props) => {
         startDragNode(id, { x: clientX, y: clientY });
     };
 
+    const width = dimension === '2d' ? GRID_SIZE : GRID_3D_WIDTH_SIZE;
+    const height =
+        dimension === '2d'
+            ? GRID_SIZE
+            : GRID_3D_HEIGHT_SIZE + GRID_3D_DEPTH_SIZE;
+
     return (
         <g
             id={id}
@@ -45,19 +52,19 @@ export default ({ node: { id, type, point }, dimension }: Props) => {
         >
             {createElement(getNodeComponent(type), {
                 dimension,
-                width: dimension === '2d' ? GRID_SIZE : GRID_3D_WIDTH_SIZE,
-                height:
-                    dimension === '2d' ? GRID_SIZE : GRID_3D_HEIGHT_SIZE + 37,
+                width,
+                height,
             })}
 
             <>
-                <Anchor cx={GRID_SIZE / 2} />
+                {/* Top */}
+                <Anchor nodeId={id} type="top" cx={width / 2} />
                 {/* Right */}
-                <Anchor cx={GRID_SIZE} cy={GRID_SIZE / 2} />
+                <Anchor nodeId={id} type="right" cx={width} cy={height / 2} />
                 {/* Bottom */}
-                <Anchor cx={GRID_SIZE / 2} cy={GRID_SIZE} />
+                <Anchor nodeId={id} type="bottom" cx={width / 2} cy={height} />
                 {/* Left */}
-                <Anchor cy={GRID_SIZE / 2} />
+                <Anchor nodeId={id} type="left" cy={height / 2} />
             </>
         </g>
     );

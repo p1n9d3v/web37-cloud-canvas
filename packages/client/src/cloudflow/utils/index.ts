@@ -29,6 +29,6 @@ export const getSvgPoint = (flow: SVGSVGElement, cursorPoint: Point) => {
     svgPoint.x = cursorPoint.x;
     svgPoint.y = cursorPoint.y;
     const screenCTM = flow.getScreenCTM();
-    if (!screenCTM) return;
+    if (!screenCTM) return null;
     return svgPoint.matrixTransform(screenCTM.inverse());
 };

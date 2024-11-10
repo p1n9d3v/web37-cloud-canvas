@@ -10,6 +10,14 @@ export type ViewBox = {
     height: number;
 };
 
+export type Anchor = {
+    nodeId: string;
+    type: AnchorType;
+    point: Point;
+};
+
+export type AnchorType = 'top' | 'right' | 'bottom' | 'left';
+
 export type Node = {
     id: string;
     type: string;
@@ -18,6 +26,14 @@ export type Node = {
 
 export type Edge = {
     id: string;
-    sourceNodeId: string;
-    targetNodeId: string;
+    source: {
+        id: string;
+        anchorType: AnchorType;
+        point: Point;
+    };
+    target: {
+        id: string;
+        anchorType: AnchorType;
+        point: Point;
+    };
 };

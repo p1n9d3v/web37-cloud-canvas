@@ -1,7 +1,8 @@
-import { ViewBox } from '@cloudflow/types';
+import { Point, ViewBox } from '@cloudflow/types';
 import { getRelativeCoordinatesForViewBox } from '@cloudflow/utils';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
+//TODO: SVG를 이용하면 getRelativeCoordinatesForViewBox 함수를 안쓰고도 구현할 수 있을 것 같다. 추후 변경 예정
 export default () => {
     const zoomPanRef = useRef<HTMLDivElement>(null);
     const [viewBox, setViewBox] = useState<ViewBox>({
@@ -14,13 +15,12 @@ export default () => {
     const dragStart = useRef({ x: 0, y: 0 });
     const startPoint = useRef({ x: 0, y: 0 });
 
-    const onZoom = (e: React.WheelEvent<HTMLDivElement>) => {
-        const { deltaY, clientX, clientY } = e;
+    const zoom = (deltaY: number, cursorPoint: Point) => {
         const zoomFactor = deltaY > 0 ? 1.1 : 0.9;
 
         const { x: mouseX, y: mouseY } = getRelativeCoordinatesForViewBox(
-            clientX,
-            clientY,
+            cursorPoint.x,
+            cursorPoint.y,
             zoomPanRef,
             viewBox
         );
@@ -39,18 +39,17 @@ export default () => {
         });
     };
 
-    const onDragStart = (e: React.MouseEvent<HTMLDivElement>) => {
-        e.preventDefault();
+    const startDragPan = (cursorPoint: Point) => {
         setIsDragging(true);
-        dragStart.current = { x: e.clientX, y: e.clientY };
+        dragStart.current = { x: cursorPoint.x, y: cursorPoint.y };
         startPoint.current = { ...viewBox.point };
     };
 
-    const onDrag = (e: React.MouseEvent<HTMLDivElement>) => {
+    const dragPan = (cursorPoint: Point) => {
         if (!isDragging || !zoomPanRef.current) return;
 
-        const deltaX = e.clientX - dragStart.current.x;
-        const deltaY = e.clientY - dragStart.current.y;
+        const deltaX = cursorPoint.x - dragStart.current.x;
+        const deltaY = cursorPoint.y - dragStart.current.y;
 
         const rect = zoomPanRef.current.getBoundingClientRect();
         const scaleX = viewBox.width / rect.width;
@@ -65,7 +64,7 @@ export default () => {
         }));
     };
 
-    const onDragEnd = () => setIsDragging(false);
+    const endDragPan = () => setIsDragging(false);
 
     useLayoutEffect(() => {
         if (zoomPanRef.current) {
@@ -93,9 +92,9 @@ export default () => {
         zoomPanRef,
         viewBox,
         isDragging,
-        onZoom,
-        onDragStart,
-        onDrag,
-        onDragEnd,
+        zoom,
+        startDragPan,
+        dragPan,
+        endDragPan,
     };
 };

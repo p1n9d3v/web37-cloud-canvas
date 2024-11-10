@@ -1,4 +1,10 @@
-import { Point, ViewBox } from '@cloudflow/types';
+import {
+    GRID_3D_DEPTH_SIZE,
+    GRID_3D_HEIGHT_SIZE,
+    GRID_3D_WIDTH_SIZE,
+    GRID_SIZE,
+} from '@cloudflow/constants';
+import { Dimension, Point, ViewBox } from '@cloudflow/types';
 import { RefObject } from 'react';
 
 export const getRelativeCoordinatesForViewBox = (
@@ -31,4 +37,14 @@ export const getSvgPoint = (flow: SVGSVGElement, cursorPoint: Point) => {
     const screenCTM = flow.getScreenCTM();
     if (!screenCTM) return null;
     return svgPoint.matrixTransform(screenCTM.inverse());
+};
+
+export const getNodeSizeForDimension = (dimension: Dimension) => {
+    const width = dimension === '2d' ? GRID_SIZE : GRID_3D_WIDTH_SIZE;
+    const height =
+        dimension === '2d'
+            ? GRID_SIZE
+            : GRID_3D_HEIGHT_SIZE + GRID_3D_DEPTH_SIZE;
+
+    return { width, height };
 };

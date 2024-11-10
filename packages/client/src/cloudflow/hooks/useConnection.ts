@@ -1,15 +1,13 @@
-import {
-    GRID_3D_DEPTH_SIZE,
-    GRID_3D_HEIGHT_SIZE,
-    GRID_3D_WIDTH_SIZE,
-    GRID_SIZE,
-} from '@cloudflow/constants';
 import { useConnectionContext } from '@cloudflow/contexts/ConnectionContext';
 import { useEdgeContext } from '@cloudflow/contexts/EdgeContext';
 import { useFlowContext } from '@cloudflow/contexts/FlowContext';
 import { useNodeContext } from '@cloudflow/contexts/NodeContext';
 import { Anchor, Point } from '@cloudflow/types';
-import { getDistance, getSvgPoint } from '@cloudflow/utils';
+import {
+    getDistance,
+    getNodeSizeForDimension,
+    getSvgPoint,
+} from '@cloudflow/utils';
 import { nanoid } from 'nanoid';
 
 export default () => {
@@ -38,11 +36,7 @@ export default () => {
         nodes.forEach((node) => {
             if (node.id === sourceAnchor?.nodeId) return;
 
-            const width = dimension === '2d' ? GRID_SIZE : GRID_3D_WIDTH_SIZE;
-            const height =
-                dimension === '2d'
-                    ? GRID_SIZE
-                    : GRID_3D_HEIGHT_SIZE + GRID_3D_DEPTH_SIZE;
+            const { width, height } = getNodeSizeForDimension(dimension);
             const anchors = [
                 {
                     type: 'top',

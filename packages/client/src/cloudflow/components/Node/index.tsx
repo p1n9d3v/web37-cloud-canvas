@@ -1,12 +1,8 @@
 import Anchor from '@cloudflow/components/Anchor';
-import {
-    GRID_3D_DEPTH_SIZE,
-    GRID_3D_HEIGHT_SIZE,
-    GRID_3D_WIDTH_SIZE,
-    GRID_SIZE,
-} from '@cloudflow/constants';
+import { GRID_SIZE } from '@cloudflow/constants';
 import useDragNode from '@cloudflow/hooks/useDragNode';
 import { Dimension, Node } from '@cloudflow/types';
+import { getNodeSizeForDimension } from '@cloudflow/utils';
 import { createElement, MouseEvent } from 'react';
 import ServerNode from './Svgs/ServerNode';
 
@@ -36,12 +32,7 @@ export default ({ node: { id, type, point }, dimension }: Props) => {
         startDragNode(id, { x: clientX, y: clientY });
     };
 
-    const width = dimension === '2d' ? GRID_SIZE : GRID_3D_WIDTH_SIZE;
-    const height =
-        dimension === '2d'
-            ? GRID_SIZE
-            : GRID_3D_HEIGHT_SIZE + GRID_3D_DEPTH_SIZE;
-
+    const { width, height } = getNodeSizeForDimension(dimension);
     return (
         <g
             id={id}

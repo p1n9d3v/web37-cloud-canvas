@@ -15,3 +15,9 @@ export type Node = {
     type: string;
     point: Point;
 };
+
+export type Edge = {
+    id: string;
+    sourceNodeId: string;
+    targetNodeId: string;
+};

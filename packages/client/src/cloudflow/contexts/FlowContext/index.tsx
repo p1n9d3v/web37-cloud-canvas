@@ -8,12 +8,12 @@ import {
     useState,
 } from 'react';
 
-type FlowContext = {
+type FlowContextProps = {
     flowRef: RefObject<SVGSVGElement>;
     dimension: Dimension;
     changeDimension: (dimension: Dimension) => void;
 };
-const FlowContext = createContext<FlowContext>({
+const FlowContext = createContext<FlowContextProps>({
     flowRef: { current: null },
     dimension: '2d',
     changeDimension: () => {},
@@ -34,6 +34,7 @@ export const FlowProvider = ({ children }: PropsWithChildren) => {
 
 export const useFlowContext = () => {
     const context = useContext(FlowContext);
+
     if (!context) {
         throw new Error('CloudFlowContext : context is undefined');
     }

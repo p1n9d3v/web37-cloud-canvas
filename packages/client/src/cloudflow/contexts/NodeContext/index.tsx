@@ -11,15 +11,17 @@ import {
     useReducer,
 } from 'react';
 
+type NodeContextProps = {
+    state: NodeState;
+    dispatch: Dispatch<NodeAction>;
+};
+
 const initialState: NodeState = {
     nodes: [],
     selectedNodeIds: new Set(),
 };
 
-const NodeContext = createContext<{
-    state: NodeState;
-    dispatch: Dispatch<NodeAction>;
-}>({
+const NodeContext = createContext<NodeContextProps>({
     state: initialState,
     dispatch: () => null,
 });
@@ -37,7 +39,7 @@ export const NodeProvider = ({ children }: PropsWithChildren) => {
 export const useNodeContext = () => {
     const context = useContext(NodeContext);
     if (!context) {
-        throw new Error('GraphNodeContext : context is undefined');
+        throw new Error('NodeContext : context is undefined');
     }
     return context;
 };

@@ -7,20 +7,15 @@ import {
     useState,
 } from 'react';
 
-type DragState = {
+type DragContextProps = {
     isDragging: boolean;
     draggingId: string | null;
     startDragPoint: { x: number; y: number };
-};
-
-interface DragContext extends DragState {
-    isDragging: boolean;
-    draggingId: string | null;
     startDrag: (id: string, point?: Point) => void;
     endDrag: () => void;
-}
+};
 
-const DragContext = createContext<DragContext>({
+const DragContext = createContext<DragContextProps>({
     isDragging: false,
     draggingId: null,
     startDragPoint: { x: 0, y: 0 },

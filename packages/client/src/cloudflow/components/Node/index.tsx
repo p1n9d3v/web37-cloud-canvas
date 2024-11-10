@@ -7,6 +7,7 @@ import useDragNode from '@cloudflow/hooks/useDragNode';
 import { Dimension, Node } from '@cloudflow/types';
 import { createElement, MouseEvent } from 'react';
 import ServerNode from './Svgs/ServerNode';
+import Anchor from '@cloudflow/components/Anchor';
 
 type Props = {
     node: Node;
@@ -48,6 +49,16 @@ export default ({ node: { id, type, point }, dimension }: Props) => {
                 height:
                     dimension === '2d' ? GRID_SIZE : GRID_3D_HEIGHT_SIZE + 37,
             })}
+
+            <>
+                <Anchor cx={GRID_SIZE / 2} />
+                {/* Right */}
+                <Anchor cx={GRID_SIZE} cy={GRID_SIZE / 2} />
+                {/* Bottom */}
+                <Anchor cx={GRID_SIZE / 2} cy={GRID_SIZE} />
+                {/* Left */}
+                <Anchor cy={GRID_SIZE / 2} />
+            </>
         </g>
     );
 };

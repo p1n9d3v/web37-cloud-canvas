@@ -76,8 +76,8 @@ export default (flowRef: RefObject<SVGSVGElement>, dimension: Dimension) => {
     }, []);
 
     const handleDragNode = (point: Point) => {
-        if (!draggingId) return;
-        const cursorSvgPoint = getSvgPoint(flowRef.current!, {
+        if (!isDragging || !draggingId || !flowRef.current) return;
+        const cursorSvgPoint = getSvgPoint(flowRef.current, {
             x: point.x,
             y: point.y,
         });
@@ -115,6 +115,7 @@ export default (flowRef: RefObject<SVGSVGElement>, dimension: Dimension) => {
     const handleEndDragNode = () => {
         setDraggingId(null);
         setIsDragging(false);
+        startDragPoint.current = null;
     };
 
     return {

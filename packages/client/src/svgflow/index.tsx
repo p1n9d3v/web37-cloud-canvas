@@ -11,7 +11,7 @@ import { NodeProvider, useNodeContext } from '@svgflow/contexts/NodeContext';
 import useDragNode from '@svgflow/hooks/useDragNode';
 import useZoomPan from '@svgflow/hooks/useZoomPan';
 import { nanoid } from 'nanoid';
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 const getRandomPoint = () => {
     return {
@@ -36,6 +36,7 @@ export const SvgFlow = () => {
         handleDragNode,
         handleEndDragNode,
     } = useDragNode(flowRef, dimension);
+    const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
     const {
         state: { nodes },
@@ -63,6 +64,10 @@ export const SvgFlow = () => {
         [nodes, viewBox, dimension]
     );
 
+    const handleSelectNode = useCallback((nodeId: string) => {
+        setSelectedNodeId(nodeId);
+    }, []);
+
     useEffect(() => {
         Array(5000)
             .fill(0)
@@ -87,7 +92,7 @@ export const SvgFlow = () => {
 
     return (
         <Flow
-            dimension="2d"
+            dimension={dimension}
             ref={flowRef}
             viewBox={viewBox}
             onZoom={handleZoom}
@@ -102,7 +107,9 @@ export const SvgFlow = () => {
                     key={node.id}
                     node={node}
                     dimension={dimension}
+                    isSelected={node.id === selectedNodeId}
                     onStartDragNode={handleStartDragNode}
+                    onSelectNode={handleSelectNode}
                 />
             ))}
 

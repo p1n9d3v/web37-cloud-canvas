@@ -8,37 +8,36 @@ import {
     useState,
 } from 'react';
 
-type SvgFlowContextProps = {
+type FlowContextProps = {
     flowRef: RefObject<SVGSVGElement>;
     dimension: Dimension;
     changeDimension: (dimension: Dimension) => void;
 };
-const SvgFlowContext = createContext<SvgFlowContextProps>({
+const FlowContext = createContext<FlowContextProps>({
     flowRef: { current: null },
     dimension: '2d',
     changeDimension: () => {},
 });
 
-export const SvgFlowProvider = ({ children }: PropsWithChildren) => {
+export const FlowProvider = ({ children }: PropsWithChildren) => {
     const flowRef = useRef<SVGSVGElement>(null);
     const [dimension, setDimension] = useState<Dimension>('2d');
 
     const changeDimension = (dimension: Dimension) => setDimension(dimension);
 
     return (
-        <SvgFlowContext.Provider
-            value={{ flowRef, dimension, changeDimension }}
-        >
+        <FlowContext.Provider value={{ flowRef, dimension, changeDimension }}>
             {children}
-        </SvgFlowContext.Provider>
+        </FlowContext.Provider>
     );
 };
 
-export const useSvgFlowContext = () => {
-    const context = useContext(SvgFlowContext);
+export const useFlowContext = () => {
+    const context = useContext(FlowContext);
 
     if (!context) {
         throw new Error('SvgFlowContext : context is undefined');
     }
+
     return context;
 };

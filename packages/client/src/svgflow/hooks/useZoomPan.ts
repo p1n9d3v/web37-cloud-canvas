@@ -1,11 +1,9 @@
 // useZoomPan.ts
-import { useSvgFlowContext } from '@svgflow/contexts/SvgFlowCotext';
 import { Point, ViewBox } from '@svgflow/types';
 import { getSvgPoint } from '@svgflow/utils';
-import { useCallback, useLayoutEffect, useState } from 'react';
+import { RefObject, useLayoutEffect, useState } from 'react';
 
-export default function useZoomPan() {
-    const { flowRef } = useSvgFlowContext();
+export default function useZoomPan(flowRef: RefObject<SVGSVGElement>) {
     const [viewBox, setViewBox] = useState<ViewBox>({
         x: 0,
         y: 0,
@@ -33,7 +31,7 @@ export default function useZoomPan() {
         }
     }, []);
 
-    const zoom = useCallback((wheelY: number, cursorPoint: Point) => {
+    const handleZoom = (wheelY: number, cursorPoint: Point) => {
         if (!flowRef.current) return;
         const zoomFactor = wheelY > 0 ? 1.1 : 0.9;
 
@@ -54,36 +52,40 @@ export default function useZoomPan() {
                 height: newHeight,
             };
         });
-    }, []);
+    };
 
-    const startPan = useCallback((point: Point) => {
+    const handleStartPan = (point: Point) => {
         setIsPanning(true);
         setStartPoint(point);
-    }, []);
+    };
 
-    const movePan = useCallback(
-        (point: Point) => {
-            if (!isPanning || !flowRef.current) return;
+    const handleMovePan = (point: Point) => {
+        if (!isPanning || !flowRef.current) return;
 
-            const dx =
-                (startPoint.x - point.x) *
-                (viewBox.width / flowRef.current.clientWidth);
-            const dy =
-                (startPoint.y - point.y) *
-                (viewBox.height / flowRef.current.clientHeight);
+        const dx =
+            (startPoint.x - point.x) *
+            (viewBox.width / flowRef.current.clientWidth);
+        const dy =
+            (startPoint.y - point.y) *
+            (viewBox.height / flowRef.current.clientHeight);
 
-            setViewBox((prev) => ({
-                ...prev,
-                x: prev.x + dx,
-                y: prev.y + dy,
-            }));
+        setViewBox((prev) => ({
+            ...prev,
+            x: prev.x + dx,
+            y: prev.y + dy,
+        }));
 
-            setStartPoint(point);
-        },
-        [isPanning, startPoint, viewBox]
-    );
+        setStartPoint(point);
+    };
 
-    const endPan = useCallback(() => setIsPanning(false), []);
+    const handleEndPan = () => setIsPanning(false);
 
-    return { viewBox, zoom, startPan, movePan, endPan };
+    return {
+        viewBox,
+        isPanning,
+        handleZoom,
+        handleStartPan,
+        handleMovePan,
+        handleEndPan,
+    };
 }

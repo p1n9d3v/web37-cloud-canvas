@@ -9,3 +9,11 @@ export interface ViewBox extends Point {
     width: number;
     height: number;
 }
+
+export type AnchorType = 'top' | 'right' | 'bottom' | 'left';
+
+export type Node = {
+    id: string;
+    type: string;
+    point: Point;
+};

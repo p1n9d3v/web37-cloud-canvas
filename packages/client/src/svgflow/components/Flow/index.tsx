@@ -1,38 +1,48 @@
 import Background from '@svgflow/components/Background';
-import { Dimension, ViewBox } from '@svgflow/types';
-import { forwardRef, MouseEventHandler, ReactNode } from 'react';
+import { useSvgFlowContext } from '@svgflow/contexts/SvgFlowCotext';
+import useZoomPan from '@svgflow/hooks/useZoomPan';
+import { MouseEvent, ReactNode, WheelEvent } from 'react';
 
 type Props = {
-    viewBox: ViewBox;
-    dimension: Dimension;
-    onMouseDown?: MouseEventHandler<SVGSVGElement>;
-    onMouseUp?: MouseEventHandler<SVGSVGElement>;
-    onMouseMove?: MouseEventHandler<SVGSVGElement>;
     children: ReactNode;
 };
 
-export default forwardRef<SVGSVGElement, Props>(
-    (
-        { viewBox, children, dimension, onMouseDown, onMouseUp, onMouseMove },
-        ref
-    ) => {
-        return (
-            <svg
-                ref={ref}
-                width="100%"
-                height="100%"
-                viewBox={Object.values(viewBox).join(' ')}
-                onMouseUp={onMouseUp}
-                onMouseDown={onMouseDown}
-                onMouseMove={onMouseMove}
-            >
-                <Background
-                    viewBox={viewBox}
-                    dimension={dimension}
-                    showSubLines
-                />
-                {children}
-            </svg>
-        );
-    }
-);
+export default ({ children }: Props) => {
+    const { flowRef, dimension } = useSvgFlowContext();
+
+    const { viewBox, zoom, startPan, endPan, movePan } = useZoomPan();
+
+    const handleWheel = (event: WheelEvent) => {
+        const { deltaY, clientX, clientY } = event;
+        zoom(deltaY, { x: clientX, y: clientY });
+    };
+
+    const handleMouseDown = (event: MouseEvent) => {
+        const { clientX, clientY } = event;
+        startPan({ x: clientX, y: clientY });
+    };
+
+    const handleMouseMove = (event: MouseEvent) => {
+        const { clientX, clientY } = event;
+        movePan({ x: clientX, y: clientY });
+    };
+
+    const handleMouseUp = () => {
+        endPan();
+    };
+    return (
+        <svg
+            ref={flowRef}
+            width="100%"
+            height="100%"
+            viewBox={Object.values(viewBox).join(' ')}
+            onMouseUp={handleMouseUp}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onWheel={handleWheel}
+        >
+            <Background viewBox={viewBox} dimension={dimension} showSubLines />
+            {children}
+        </svg>
+    );
+};

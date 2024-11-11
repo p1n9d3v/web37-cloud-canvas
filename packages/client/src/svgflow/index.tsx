@@ -1,3 +1,4 @@
+import Edge from '@svgflow/components/Edge';
 import Flow from '@svgflow/components/Flow';
 import Node from '@svgflow/components/Node';
 import {
@@ -6,6 +7,7 @@ import {
     GRID_3D_WIDTH_SIZE,
     GRID_SIZE,
 } from '@svgflow/constants';
+import { EdgeProvider, useEdgeContext } from '@svgflow/contexts/EdgeContext';
 import { FlowProvider, useFlowContext } from '@svgflow/contexts/FlowCotext';
 import { NodeProvider, useNodeContext } from '@svgflow/contexts/NodeContext';
 import useDragNode from '@svgflow/hooks/useDragNode';
@@ -40,8 +42,12 @@ export const SvgFlow = () => {
 
     const {
         state: { nodes },
-        dispatch,
+        dispatch: dispatchNode,
     } = useNodeContext();
+    const {
+        state: { edges },
+        dispatch: dispatchEdge,
+    } = useEdgeContext();
 
     const visibleNodes = useMemo(
         () =>
@@ -64,23 +70,74 @@ export const SvgFlow = () => {
         [nodes, viewBox, dimension]
     );
 
+    const visibleEdges = useMemo(
+        () =>
+            edges.filter((edge) => {
+                const sourceNode = visibleNodes.find(
+                    (node) => node.id === edge.sourceId
+                );
+                const targetNode = visibleNodes.find(
+                    (node) => node.id === edge.targetId
+                );
+
+                // 화면에 노드가 하나라도 없으면 엣지를 안보이게 할지 고민
+                // if (sourceNode || targetNode) return true;
+                //
+                // return false;
+                if (!sourceNode || !targetNode) return false;
+
+                return true;
+            }),
+        [edges, visibleNodes]
+    );
+
     const handleSelectNode = useCallback((nodeId: string) => {
         setSelectedNodeId(nodeId);
     }, []);
 
     useEffect(() => {
-        Array(5000)
-            .fill(0)
-            .forEach(() => {
-                dispatch({
-                    type: 'ADD_NODE',
-                    payload: {
-                        id: nanoid(),
-                        type: 'server',
-                        point: getRandomPoint(),
-                    },
-                });
+        // random node 생성
+        const newNodes = Array.from({ length: 5000 }, () => ({
+            id: nanoid(),
+            type: 'server',
+            point: getRandomPoint(),
+        }));
+
+        newNodes.forEach((node) => {
+            dispatchNode({
+                type: 'ADD_NODE',
+                payload: node,
             });
+        });
+
+        // random edge 생성
+        const randomAnchorType = () => {
+            const anchors = ['top', 'right', 'bottom', 'left'];
+            return anchors[Math.floor(Math.random() * anchors.length)];
+        };
+
+        const newEdges = Array.from({ length: 2000 }, () => {
+            const sourceIndex = Math.floor(Math.random() * newNodes.length);
+            let targetIndex = Math.floor(Math.random() * newNodes.length);
+            while (targetIndex === sourceIndex) {
+                targetIndex = Math.floor(Math.random() * newNodes.length);
+            }
+
+            return {
+                id: nanoid(),
+                sourceId: newNodes[sourceIndex].id,
+                targetId: newNodes[targetIndex].id,
+                sourceAnchorType: randomAnchorType(),
+                targetAnchorType: randomAnchorType(),
+            };
+        });
+
+        newEdges.forEach((edge) => {
+            dispatchEdge({
+                type: 'ADD_EDGE',
+                payload: edge,
+            });
+        });
     }, []);
 
     useEffect(() => {
@@ -113,6 +170,10 @@ export const SvgFlow = () => {
                 />
             ))}
 
+            {visibleEdges.map((edge) => (
+                <Edge key={edge.id} edge={edge} dimension={dimension} />
+            ))}
+
             <rect
                 width="100px"
                 height="100px"
@@ -132,7 +193,9 @@ export default () => {
     return (
         <FlowProvider>
             <NodeProvider>
-                <SvgFlow />
+                <EdgeProvider>
+                    <SvgFlow />
+                </EdgeProvider>
             </NodeProvider>
         </FlowProvider>
     );

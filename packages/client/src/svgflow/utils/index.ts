@@ -4,7 +4,7 @@ import {
     GRID_3D_WIDTH_SIZE,
     GRID_SIZE,
 } from '@svgflow/constants';
-import { AnchorType, Dimension, Point } from '@svgflow/types';
+import { AnchorType, Dimension, Node, Point } from '@svgflow/types';
 
 export const getDistance = (point1: Point, point2: Point) => {
     return Math.sqrt((point1.x - point2.x) ** 2 + (point1.y - point2.y) ** 2);
@@ -28,26 +28,20 @@ export const getNodeSizeForDimension = (dimension: Dimension) => {
     return { width, height };
 };
 
-export const calculateAnchorPoint = (
-    type: AnchorType,
+export const calculateAnchorPoints = (
+    point: Point,
     dimension: Dimension
-): Point => {
-    const width = dimension === '2d' ? GRID_SIZE : GRID_3D_WIDTH_SIZE;
-    const height =
-        dimension === '2d'
-            ? GRID_SIZE
-            : GRID_3D_HEIGHT_SIZE + GRID_3D_DEPTH_SIZE;
-
-    switch (type) {
-        case 'top':
-            return { x: width / 2, y: 0 };
-        case 'right':
-            return { x: width, y: height / 2 };
-        case 'bottom':
-            return { x: width / 2, y: height };
-        case 'left':
-            return { x: 0, y: height / 2 };
-        default:
-            return { x: 0, y: 0 };
-    }
+): {
+    top: Point;
+    right: Point;
+    bottom: Point;
+    left: Point;
+} => {
+    const { width, height } = getNodeSizeForDimension(dimension);
+    return {
+        top: { x: point.x + width / 2, y: point.y },
+        right: { x: point.x + width, y: point.y + height / 2 },
+        bottom: { x: point.x + width / 2, y: point.y + height },
+        left: { x: point.x, y: point.y + height / 2 },
+    };
 };

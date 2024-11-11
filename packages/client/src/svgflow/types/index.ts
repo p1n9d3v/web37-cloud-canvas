@@ -17,3 +17,11 @@ export type Node = {
     type: string;
     point: Point;
 };
+
+export type Edge = {
+    id: string;
+    sourceId: string;
+    targetId: string;
+    sourceAnchorType: AnchorType;
+    targetAnchorType: AnchorType;
+};

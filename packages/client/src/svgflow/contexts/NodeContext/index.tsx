@@ -18,7 +18,6 @@ type NodeContextProps = {
 
 const initialState: NodeState = {
     nodes: [],
-    selectedNodeId: null,
 };
 
 const NodeContext = createContext<NodeContextProps>({

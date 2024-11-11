@@ -1,8 +1,8 @@
 import Anchor from '@svgflow/components/Anchor';
 import Server from '@svgflow/components/Node/svgs/Server';
 import { GRID_SIZE } from '@svgflow/constants';
-import { AnchorType, Dimension, Node, Point } from '@svgflow/types';
-import { calculateAnchorPoint, getNodeSizeForDimension } from '@svgflow/utils';
+import { Dimension, Node, Point } from '@svgflow/types';
+import { calculateAnchorPoints, getNodeSizeForDimension } from '@svgflow/utils';
 import { createElement, memo, MouseEvent } from 'react';
 
 type Props = {
@@ -29,13 +29,13 @@ export default memo(
         const { id, type, point } = node;
         const { width, height } = getNodeSizeForDimension(dimension);
 
-        const anchors = ['top', 'right', 'bottom', 'left'].map((anchorType) => {
-            const anchorPoint = calculateAnchorPoint(
-                anchorType as AnchorType,
-                dimension
-            );
-            return { type: anchorType, point: anchorPoint };
-        });
+        const anchors = calculateAnchorPoints(
+            {
+                x: 0,
+                y: 0,
+            },
+            dimension
+        );
 
         const handleMouseDown = (event: MouseEvent) => {
             event.stopPropagation();
@@ -64,11 +64,11 @@ export default memo(
                 })}
 
                 {isSelected &&
-                    anchors.map((anchor) => (
+                    Object.entries(anchors).map(([anchorType, point]) => (
                         <Anchor
-                            key={`${id}-${anchor.type}`}
-                            cx={anchor.point.x}
-                            cy={anchor.point.y}
+                            key={`${id}-${anchorType}`}
+                            cx={point.x}
+                            cy={point.y}
                         />
                     ))}
             </g>

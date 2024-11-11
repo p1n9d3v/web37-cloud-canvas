@@ -2,14 +2,10 @@ import { Node } from '@cloudflow/types';
 
 export type NodeState = {
     nodes: Node[];
-    selectedNodeId: string | null;
 };
 
 export type NodeAction =
     | { type: 'ADD_NODE'; payload: Node }
-    | { type: 'REMOVE_NODE'; payload: { id: string } }
-    | { type: 'SELECT_NODE'; payload: { id: string } }
-    | { type: 'DESELECT_NODE'; payload: { id: string } }
     | {
           type: 'MOVE_NODE';
           payload: Pick<Node, 'id' | 'point'>;
@@ -17,7 +13,6 @@ export type NodeAction =
 
 export const initialNodeState: NodeState = {
     nodes: [],
-    selectedNodeId: null,
 };
 
 export const nodeReducer = (
@@ -36,9 +31,6 @@ export const nodeReducer = (
                         : node
                 ),
             };
-        case 'SELECT_NODE': {
-            return { ...state, selectedNodeId: action.payload.id };
-        }
         default:
             return state;
     }

@@ -1,5 +1,11 @@
 import Flow from '@svgflow/components/Flow';
 import Node from '@svgflow/components/Node';
+import {
+    GRID_3D_DEPTH_SIZE,
+    GRID_3D_HEIGHT_SIZE,
+    GRID_3D_WIDTH_SIZE,
+    GRID_SIZE,
+} from '@svgflow/constants';
 import { FlowProvider, useFlowContext } from '@svgflow/contexts/FlowCotext';
 import { NodeProvider, useNodeContext } from '@svgflow/contexts/NodeContext';
 import useDragNode from '@svgflow/hooks/useDragNode';
@@ -15,7 +21,7 @@ const getRandomPoint = () => {
 };
 
 export const SvgFlow = () => {
-    const { flowRef, dimension } = useFlowContext();
+    const { flowRef, dimension, changeDimension } = useFlowContext();
     const {
         viewBox,
         isPanning,
@@ -40,14 +46,21 @@ export const SvgFlow = () => {
         () =>
             nodes.filter((node) => {
                 const { x, y } = node.point;
+                const offsetWidth =
+                    dimension === '2d' ? GRID_SIZE : GRID_3D_WIDTH_SIZE;
+                const offsetHeight =
+                    dimension === '2d'
+                        ? GRID_SIZE
+                        : GRID_3D_HEIGHT_SIZE + GRID_3D_DEPTH_SIZE;
+
                 return (
-                    x >= viewBox.x &&
-                    x <= viewBox.x + viewBox.width &&
-                    y >= viewBox.y &&
-                    y <= viewBox.y + viewBox.height
+                    x >= viewBox.x - offsetWidth &&
+                    x <= viewBox.x + viewBox.width + offsetWidth &&
+                    y >= viewBox.y - offsetHeight &&
+                    y <= viewBox.y + viewBox.height + offsetHeight
                 );
             }),
-        [nodes, viewBox]
+        [nodes, viewBox, dimension]
     );
 
     useEffect(() => {
@@ -92,6 +105,17 @@ export const SvgFlow = () => {
                     onStartDragNode={handleStartDragNode}
                 />
             ))}
+
+            <rect
+                width="100px"
+                height="100px"
+                x="0"
+                y="0"
+                fill="red"
+                onClick={() =>
+                    changeDimension(dimension === '2d' ? '3d' : '2d')
+                }
+            />
         </Flow>
     );
 };

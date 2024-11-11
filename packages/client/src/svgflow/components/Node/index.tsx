@@ -1,12 +1,13 @@
 import Anchor from '@svgflow/components/Anchor';
 import Server from '@svgflow/components/Node/svgs/Server';
 import { GRID_SIZE } from '@svgflow/constants';
-import { Dimension, Node, Point } from '@svgflow/types';
+import { AnchorType, Dimension, Edge, Node, Point } from '@svgflow/types';
 import { calculateAnchorPoints, getNodeSizeForDimension } from '@svgflow/utils';
-import { createElement, memo, MouseEvent } from 'react';
+import { createElement, memo, MouseEvent, useMemo } from 'react';
 
 type Props = {
     node: Node;
+    visibleEdges: Edge[];
     dimension: Dimension;
     isSelected: boolean;
     onStartDragNode: (nodeId: string, point: Point) => void;
@@ -25,9 +26,38 @@ const getNodeComponent = (type: string) => {
 };
 
 export default memo(
-    ({ node, dimension, isSelected, onStartDragNode, onSelectNode }: Props) => {
+    ({
+        node,
+        dimension,
+        isSelected,
+        onStartDragNode,
+        onSelectNode,
+        visibleEdges,
+    }: Props) => {
         const { id, type, point } = node;
         const { width, height } = getNodeSizeForDimension(dimension);
+
+        //TODO: 모든 edge를 가져와서 찾을지 고민..
+        //
+        // const {
+        //     state: { edges },
+        // } = useEdgeContext();
+        //
+        // const connectedAnchors: AnchorType[] = edges
+        //     .filter((edge) => {
+        //         return edge.sourceId === id
+        //     })
+        //     .map((edge) => edge.sourceAnchorType)
+
+        const connectedAnchors: AnchorType[] = useMemo(
+            () =>
+                visibleEdges
+                    .filter((edge) => {
+                        return edge.sourceId === id;
+                    })
+                    .map((edge) => edge.sourceAnchorType),
+            [visibleEdges]
+        );
 
         const anchors = calculateAnchorPoints(
             {
@@ -63,14 +93,18 @@ export default memo(
                     height,
                 })}
 
-                {isSelected &&
-                    Object.entries(anchors).map(([anchorType, point]) => (
-                        <Anchor
-                            key={`${id}-${anchorType}`}
-                            cx={point.x}
-                            cy={point.y}
-                        />
-                    ))}
+                {Object.entries(anchors).map(([anchorType, point]) => (
+                    <Anchor
+                        key={`${id}-${anchorType}`}
+                        cx={point.x}
+                        cy={point.y}
+                        visible={
+                            connectedAnchors.includes(
+                                anchorType as AnchorType
+                            ) || isSelected
+                        }
+                    />
+                ))}
             </g>
         );
     }

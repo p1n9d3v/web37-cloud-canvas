@@ -17,8 +17,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 const getRandomPoint = () => {
     return {
-        x: Math.floor(Math.random() * 10000),
-        y: Math.floor(Math.random() * 10000),
+        x: Math.floor(Math.random() * 1000),
+        y: Math.floor(Math.random() * 1000),
     };
 };
 
@@ -97,7 +97,7 @@ export const SvgFlow = () => {
 
     useEffect(() => {
         // random node 생성
-        const newNodes = Array.from({ length: 5000 }, () => ({
+        const newNodes = Array.from({ length: 5 }, () => ({
             id: nanoid(),
             type: 'server',
             point: getRandomPoint(),
@@ -116,7 +116,7 @@ export const SvgFlow = () => {
             return anchors[Math.floor(Math.random() * anchors.length)];
         };
 
-        const newEdges = Array.from({ length: 2000 }, () => {
+        const newEdges = Array.from({ length: 2 }, () => {
             const sourceIndex = Math.floor(Math.random() * newNodes.length);
             let targetIndex = Math.floor(Math.random() * newNodes.length);
             while (targetIndex === sourceIndex) {
@@ -163,6 +163,7 @@ export const SvgFlow = () => {
                 <Node
                     key={node.id}
                     node={node}
+                    visibleEdges={visibleEdges}
                     dimension={dimension}
                     isSelected={node.id === selectedNodeId}
                     onStartDragNode={handleStartDragNode}
@@ -171,7 +172,12 @@ export const SvgFlow = () => {
             ))}
 
             {visibleEdges.map((edge) => (
-                <Edge key={edge.id} edge={edge} dimension={dimension} />
+                <Edge
+                    key={edge.id}
+                    edge={edge}
+                    visibleNodes={visibleNodes}
+                    dimension={dimension}
+                />
             ))}
 
             <rect

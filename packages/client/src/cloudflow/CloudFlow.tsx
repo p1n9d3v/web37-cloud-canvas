@@ -15,7 +15,7 @@ import { NodeProvider, useNodeContext } from '@cloudflow/contexts/NodeContext';
 import useConnection from '@cloudflow/hooks/useConnection';
 import useDragNode from '@cloudflow/hooks/useDragNode';
 import { nanoid } from 'nanoid';
-import { MouseEvent, useEffect } from 'react';
+import { MouseEvent, useCallback, useEffect } from 'react';
 
 const CloudFlow = () => {
     const { flowRef, dimension, changeDimension } = useFlowContext();
@@ -30,7 +30,8 @@ const CloudFlow = () => {
         state: { isConnecting, connection, sourceAnchor, targetAnchor },
     } = useConnectionContext();
 
-    const { draggingPoint, draggingId, dragNode, endDragNode } = useDragNode();
+    const { draggingPoint, draggingId, startDragNode, dragNode, endDragNode } =
+        useDragNode();
     const { connecting, endConnection } = useConnection();
 
     const handleMouseMoveFlow = (e: MouseEvent<SVGGElement>) => {
@@ -43,6 +44,15 @@ const CloudFlow = () => {
         endDragNode();
         endConnection();
     };
+
+    const handleMouseDownNode = useCallback((e: MouseEvent) => {
+        e.stopPropagation();
+        const id = e.currentTarget.id;
+        startDragNode(id, {
+            x: e.clientX,
+            y: e.clientY,
+        });
+    }, []);
 
     useEffect(() => {
         // Test Node
@@ -86,6 +96,7 @@ const CloudFlow = () => {
                                         : node
                                 }
                                 dimension={dimension}
+                                onMouseDown={handleMouseDownNode}
                             />
                         );
                     })}
@@ -100,16 +111,16 @@ const CloudFlow = () => {
                         y="0"
                         fill="blue"
                     />
-                    {edges.map((edge) => (
-                        <Edge key={edge.id} edge={edge} />
-                    ))}
-
-                    {isConnecting && connection && (
-                        <ConnectingEdge
-                            start={connection.start}
-                            end={connection.end}
-                        />
-                    )}
+                    {/* {edges.map((edge) => ( */}
+                    {/*     <Edge key={edge.id} edge={edge} /> */}
+                    {/* ))} */}
+                    {/**/}
+                    {/* {isConnecting && connection && ( */}
+                    {/*     <ConnectingEdge */}
+                    {/*         start={connection.start} */}
+                    {/*         end={connection.end} */}
+                    {/*     /> */}
+                    {/* )} */}
                 </Flow>
             )}
         </ZoomPan>
@@ -120,13 +131,13 @@ export default () => {
     return (
         <FlowProvider>
             <NodeProvider>
-                <DragProvider>
-                    <EdgeProvider>
-                        <ConnectionProvider>
-                            <CloudFlow />
-                        </ConnectionProvider>
-                    </EdgeProvider>
-                </DragProvider>
+                {/* <DragProvider> */}
+                {/*     <EdgeProvider> */}
+                {/*         <ConnectionProvider> */}
+                <CloudFlow />
+                {/*         </ConnectionProvider> */}
+                {/*     </EdgeProvider> */}
+                {/* </DragProvider> */}
             </NodeProvider>
         </FlowProvider>
     );

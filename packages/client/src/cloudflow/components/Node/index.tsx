@@ -6,12 +6,13 @@ import {
     calculateAnchorPoint,
     getNodeSizeForDimension,
 } from '@cloudflow/utils';
-import { createElement, memo, MouseEvent } from 'react';
+import { createElement, memo, MouseEvent, MouseEventHandler } from 'react';
 import ServerNode from './Svgs/ServerNode';
 
 type Props = {
     node: Node;
     dimension: Dimension;
+    onMouseDown: (e: MouseEvent) => void;
 };
 
 const getNodeComponent = (type: string) => {
@@ -25,47 +26,40 @@ const getNodeComponent = (type: string) => {
     }
 };
 
-export default memo(({ node: { id, type, point }, dimension }: Props) => {
-    const { startDragNode } = useDragNode();
+export default memo(
+    ({ node: { id, type, point }, dimension, onMouseDown }: Props) => {
+        const { width, height } = getNodeSizeForDimension(dimension);
 
-    const handleMouseDown = (e: MouseEvent<SVGGElement>) => {
-        e.stopPropagation(); // Prevent dragging the flow
+        const anchors = ['top', 'right', 'bottom', 'left'].map((anchorType) => {
+            const anchorPoint = calculateAnchorPoint(
+                anchorType as AnchorType,
+                dimension
+            );
+            return { type: anchorType, point: anchorPoint };
+        });
 
-        const { clientX, clientY } = e;
-        startDragNode(id, { x: clientX, y: clientY });
-    };
+        return (
+            <g
+                id={id}
+                style={{ transform: `translate(${point.x}px, ${point.y}px)` }}
+                onMouseDown={onMouseDown}
+            >
+                {createElement(getNodeComponent(type), {
+                    dimension,
+                    width,
+                    height,
+                })}
 
-    const { width, height } = getNodeSizeForDimension(dimension);
-
-    const anchors = ['top', 'right', 'bottom', 'left'].map((anchorType) => {
-        const anchorPoint = calculateAnchorPoint(
-            anchorType as AnchorType,
-            dimension
+                {anchors.map((anchor) => (
+                    <Anchor
+                        key={anchor.type}
+                        nodeId={id}
+                        type={anchor.type as AnchorType}
+                        cx={anchor.point.x}
+                        cy={anchor.point.y}
+                    />
+                ))}
+            </g>
         );
-        return { type: anchorType, point: anchorPoint };
-    });
-
-    return (
-        <g
-            id={id}
-            style={{ transform: `translate(${point.x}px, ${point.y}px)` }}
-            onMouseDown={handleMouseDown}
-        >
-            {createElement(getNodeComponent(type), {
-                dimension,
-                width,
-                height,
-            })}
-
-            {anchors.map((anchor) => (
-                <Anchor
-                    key={anchor.type}
-                    nodeId={id}
-                    type={anchor.type as AnchorType}
-                    cx={anchor.point.x}
-                    cy={anchor.point.y}
-                />
-            ))}
-        </g>
-    );
-});
+    }
+);

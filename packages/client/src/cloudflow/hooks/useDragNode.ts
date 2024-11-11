@@ -1,17 +1,18 @@
 import { GRID_3D_HEIGHT_SIZE, GRID_3D_WIDTH_SIZE } from '@cloudflow/constants';
-import { useDragContext } from '@cloudflow/contexts/DragContext';
 import { useFlowContext } from '@cloudflow/contexts/FlowContext';
 import { useNodeContext } from '@cloudflow/contexts/NodeContext';
 import { Point } from '@cloudflow/types';
 import { getDistance, getSvgPoint } from '@cloudflow/utils';
 import { GRID_SIZE } from '@constants';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default () => {
     const { flowRef, dimension } = useFlowContext();
     const { dispatch: dispatchNode } = useNodeContext();
-    const { startDragPoint, isDragging, draggingId, startDrag, endDrag } =
-        useDragContext();
+
+    const [isDragging, setIsDragging] = useState(false);
+    const [draggingId, setDraggingId] = useState<string | null>(null);
+    const [startDragPoint, setStartDragPoint] = useState<Point | null>(null);
     const [draggingPoint, setDraggingPoint] = useState<Point | null>(null);
 
     /* Relative Isometric grid calculations link: https://clintbellanger.net/articles/isometric_math/ */
@@ -76,11 +77,16 @@ export default () => {
 
         if (!svgPoint) return;
 
-        startDrag(id, svgPoint);
+        setStartDragPoint({
+            x: svgPoint.x,
+            y: svgPoint.y,
+        });
+        setDraggingId(id);
+        setIsDragging(true);
     };
 
     const dragNode = (cursorPoint: Point) => {
-        if (!isDragging || !draggingId || !flowRef.current) return;
+        if (!draggingId || !startDragPoint || !flowRef.current) return;
 
         const cursorSvgPoint = getSvgPoint(flowRef.current, {
             x: cursorPoint.x,
@@ -105,22 +111,20 @@ export default () => {
             );
 
             setDraggingPoint(newPoint);
-            // dispatchNode({
-            //     type: 'MOVE_NODE',
-            //     payload: { id: draggingId, point: newPoint },
-            // });
         }
     };
 
     const endDragNode = () => {
-        if (draggingId && draggingPoint) {
+        if (isDragging && draggingId && draggingPoint) {
             dispatchNode({
                 type: 'MOVE_NODE',
                 payload: { id: draggingId, point: draggingPoint },
             });
         }
         setDraggingPoint(null);
-        endDrag();
+        setDraggingId(null);
+        setStartDragPoint(null);
+        setIsDragging(false);
     };
 
     useEffect(() => {
@@ -129,8 +133,8 @@ export default () => {
 
     return {
         draggingId,
-        draggingPoint,
         startDragPoint,
+        draggingPoint,
         isDragging,
         startDragNode,
         dragNode,

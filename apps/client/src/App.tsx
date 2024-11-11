@@ -1,7 +1,8 @@
-import CloudFlow from '@cloudflow/CloudFlow';
+// import CloudFlow from '@cloudflow/CloudFlow';
 import Header from '@components/Header';
 import Sidebar from '@components/Sidebar';
 import Box from '@mui/material/Box';
+import SvgFlow from '@svgflow';
 
 function App() {
     return (
@@ -21,7 +22,7 @@ function App() {
                 }}
             >
                 <Header />
-                <CloudFlow />
+                <SvgFlow />
             </Box>
         </Box>
     );

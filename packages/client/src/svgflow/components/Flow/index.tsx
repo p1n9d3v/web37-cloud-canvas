@@ -12,6 +12,9 @@ type Props = {
     onEndPan: () => void;
     onDragNode: (point: Point) => void;
     onEndDragNode: () => void;
+    onMoveConnect: (point: Point) => void;
+    onEndConnect: () => void;
+    onDeSelectNode: () => void;
 };
 
 export default forwardRef<SVGSVGElement, Props>(
@@ -26,6 +29,9 @@ export default forwardRef<SVGSVGElement, Props>(
             onEndPan,
             onDragNode,
             onEndDragNode,
+            onMoveConnect,
+            onEndConnect,
+            onDeSelectNode,
         },
         ref
     ) => {
@@ -36,6 +42,7 @@ export default forwardRef<SVGSVGElement, Props>(
 
         const handleMouseDown = (event: MouseEvent) => {
             const { clientX, clientY } = event;
+            onDeSelectNode();
             onStartPan({
                 x: clientX,
                 y: clientY,
@@ -44,20 +51,21 @@ export default forwardRef<SVGSVGElement, Props>(
 
         const handleMouseMove = (event: MouseEvent) => {
             const { clientX, clientY } = event;
-            onMovePan({
+            const point = {
                 x: clientX,
                 y: clientY,
-            });
+            };
+            onMovePan(point);
 
-            onDragNode({
-                x: clientX,
-                y: clientY,
-            });
+            onDragNode(point);
+
+            onMoveConnect(point);
         };
 
         const handleMouseUp = () => {
             onEndPan();
             onEndDragNode();
+            onEndConnect();
         };
         return (
             <svg

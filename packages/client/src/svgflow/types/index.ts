@@ -25,3 +25,9 @@ export type Edge = {
     sourceAnchorType: AnchorType;
     targetAnchorType: AnchorType;
 };
+
+export type Connection = {
+    node: Node;
+    anchorType: AnchorType;
+    point: Point;
+};

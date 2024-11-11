@@ -1,3 +1,5 @@
+import { createMockNodesAndEdges } from '@/mocks/instance';
+import Connector from '@svgflow/components/Connector';
 import Edge from '@svgflow/components/Edge';
 import Flow from '@svgflow/components/Flow';
 import Node from '@svgflow/components/Node';
@@ -10,11 +12,10 @@ import {
 import { EdgeProvider, useEdgeContext } from '@svgflow/contexts/EdgeContext';
 import { FlowProvider, useFlowContext } from '@svgflow/contexts/FlowCotext';
 import { NodeProvider, useNodeContext } from '@svgflow/contexts/NodeContext';
+import useConnection from '@svgflow/hooks/useConnection';
 import useDragNode from '@svgflow/hooks/useDragNode';
 import useZoomPan from '@svgflow/hooks/useZoomPan';
-import { nanoid } from 'nanoid';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { createMockNodesAndEdges } from '@/mocks/instance';
 
 export const SvgFlow = () => {
     const { flowRef, dimension, changeDimension } = useFlowContext();
@@ -88,9 +89,21 @@ export const SvgFlow = () => {
         [edges, visibleNodes]
     );
 
+    const {
+        connection,
+        isConnecting,
+        handleStartConnect,
+        handleMoveConnect,
+        handleEndConnect,
+    } = useConnection(flowRef, visibleNodes, dimension);
+
     const handleSelectNode = useCallback((nodeId: string) => {
         setSelectedNodeId(nodeId);
     }, []);
+
+    const handleDeSelectNode = () => {
+        setSelectedNodeId(null);
+    };
 
     //mocks
     useEffect(() => {
@@ -129,6 +142,9 @@ export const SvgFlow = () => {
             onEndPan={handleEndPan}
             onDragNode={handleDragNode}
             onEndDragNode={handleEndDragNode}
+            onMoveConnect={handleMoveConnect}
+            onEndConnect={handleEndConnect}
+            onDeSelectNode={handleDeSelectNode}
         >
             {visibleNodes.map((node) => (
                 <Node
@@ -139,12 +155,20 @@ export const SvgFlow = () => {
                     // visibleEdges={visibleEdges}
                     onStartDragNode={handleStartDragNode}
                     onSelectNode={handleSelectNode}
+                    onStartConnect={handleStartConnect}
                 />
             ))}
 
             {visibleEdges.map((edge) => (
                 <Edge key={edge.id} edge={edge} dimension={dimension} />
             ))}
+
+            {isConnecting && connection && connection.target && (
+                <Connector
+                    start={connection.source.point}
+                    end={connection.target.point}
+                />
+            )}
 
             <rect
                 width="100px"

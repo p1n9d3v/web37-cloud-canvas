@@ -14,6 +14,7 @@ type Props = {
     isSelected: boolean;
     onStartDragNode: (nodeId: string, point: Point) => void;
     onSelectNode: (nodeId: string) => void;
+    onStartConnect: (node: Node, anchorType: AnchorType) => void;
 };
 
 const getNodeComponent = (type: string) => {
@@ -28,7 +29,14 @@ const getNodeComponent = (type: string) => {
 };
 
 export default memo(
-    ({ node, dimension, isSelected, onStartDragNode, onSelectNode }: Props) => {
+    ({
+        node,
+        dimension,
+        isSelected,
+        onStartDragNode,
+        onSelectNode,
+        onStartConnect,
+    }: Props) => {
         const theme = useTheme();
         const { id, type, point } = node;
         const { width, height } = getNodeSizeForDimension(dimension);
@@ -100,7 +108,7 @@ export default memo(
                         fill="none"
                         stroke={theme.palette.primary.main}
                         strokeWidth="2"
-                        stroke-dasharray={isSelected ? '10,5' : undefined}
+                        strokeDasharray={isSelected ? '10,5' : undefined}
                     >
                         <animate
                             attributeName="stroke-dashoffset"
@@ -121,6 +129,9 @@ export default memo(
                             connectedAnchors.includes(
                                 anchorType as AnchorType
                             ) || isSelected
+                        }
+                        onStartConnect={() =>
+                            onStartConnect(node, anchorType as AnchorType)
                         }
                     />
                 ))}

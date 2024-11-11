@@ -75,48 +75,51 @@ export default (flowRef: RefObject<SVGSVGElement>, dimension: Dimension) => {
         setIsDragging(true);
     }, []);
 
-    const handleDragNode = (point: Point) => {
-        if (!isDragging || !draggingId || !flowRef.current) return;
-        const cursorSvgPoint = getSvgPoint(flowRef.current, {
-            x: point.x,
-            y: point.y,
-        });
-
-        if (cursorSvgPoint) {
-            const distance = getDistance(
-                startDragPoint.current!,
-                cursorSvgPoint
-            );
-            const snappedSize = dimension === '2d' ? GRID_SIZE / 4 : 1 / 4;
-            if (distance < snappedSize) return;
-
-            const nodeElement = flowRef.current!.getElementById(
-                draggingId
-            ) as SVGGraphicsElement | null;
-            if (!nodeElement) return;
-
-            const newPoint = getGridAlignedPoint(
-                cursorSvgPoint,
-                nodeElement,
-                dimension,
-                snappedSize
-            );
-
-            dispatchNode({
-                type: 'MOVE_NODE',
-                payload: {
-                    id: draggingId,
-                    point: newPoint,
-                },
+    const handleDragNode = useCallback(
+        (point: Point) => {
+            if (!isDragging || !draggingId || !flowRef.current) return;
+            const cursorSvgPoint = getSvgPoint(flowRef.current, {
+                x: point.x,
+                y: point.y,
             });
-        }
-    };
 
-    const handleEndDragNode = () => {
+            if (cursorSvgPoint) {
+                const distance = getDistance(
+                    startDragPoint.current!,
+                    cursorSvgPoint
+                );
+                const snappedSize = dimension === '2d' ? GRID_SIZE / 4 : 1 / 4;
+                if (distance < snappedSize) return;
+
+                const nodeElement = flowRef.current!.getElementById(
+                    draggingId
+                ) as SVGGraphicsElement | null;
+                if (!nodeElement) return;
+
+                const newPoint = getGridAlignedPoint(
+                    cursorSvgPoint,
+                    nodeElement,
+                    dimension,
+                    snappedSize
+                );
+
+                dispatchNode({
+                    type: 'MOVE_NODE',
+                    payload: {
+                        id: draggingId,
+                        point: newPoint,
+                    },
+                });
+            }
+        },
+        [isDragging, draggingId, dimension]
+    );
+
+    const handleEndDragNode = useCallback(() => {
         setDraggingId(null);
         setIsDragging(false);
         startDragPoint.current = null;
-    };
+    }, []);
 
     return {
         isDragging,

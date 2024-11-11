@@ -33,6 +33,7 @@ export default () => {
         let nearestAnchor = null;
         let minDistance = Infinity;
 
+        //TODO: 모든 노드를 순회하면서 가장 가까운 anchor를 찾기 때문에 성능상 문제가 있음 그래도 200개 까지는 괜찮은 듯
         nodes.forEach((node) => {
             if (node.id === sourceAnchor?.nodeId) return;
 

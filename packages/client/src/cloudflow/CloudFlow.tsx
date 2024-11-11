@@ -30,7 +30,7 @@ const CloudFlow = () => {
         state: { isConnecting, connection, sourceAnchor, targetAnchor },
     } = useConnectionContext();
 
-    const { dragNode, endDragNode } = useDragNode();
+    const { draggingPoint, draggingId, dragNode, endDragNode } = useDragNode();
     const { connecting, endConnection } = useConnection();
 
     const handleMouseMoveFlow = (e: MouseEvent<SVGGElement>) => {
@@ -47,14 +47,19 @@ const CloudFlow = () => {
     useEffect(() => {
         // Test Node
         if (!flowRef.current) return;
-        dispatchNode({
-            type: 'ADD_NODE',
-            payload: {
-                id: `server-${nanoid()}`,
-                type: 'server',
-                point: { x: 0, y: 0 },
-            },
-        });
+        for (let i = 0; i < 500; i++) {
+            const x = Math.random() * 10000;
+            const y = Math.random() * 10000;
+
+            dispatchNode({
+                type: 'ADD_NODE',
+                payload: {
+                    id: `server-${nanoid()}`,
+                    type: 'server',
+                    point: { x, y },
+                },
+            });
+        }
     }, [flowRef]);
 
     return (
@@ -71,9 +76,19 @@ const CloudFlow = () => {
                         dimension={dimension}
                         showSubLines
                     />
-                    {nodes.map((node) => (
-                        <Node key={node.id} node={node} dimension={dimension} />
-                    ))}
+                    {nodes.map((node) => {
+                        return (
+                            <Node
+                                key={node.id}
+                                node={
+                                    node.id === draggingId && draggingPoint
+                                        ? { ...node, point: draggingPoint }
+                                        : node
+                                }
+                                dimension={dimension}
+                            />
+                        );
+                    })}
 
                     <rect
                         onClick={() =>

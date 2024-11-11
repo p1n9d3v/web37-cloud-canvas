@@ -5,13 +5,14 @@ import { useNodeContext } from '@cloudflow/contexts/NodeContext';
 import { Point } from '@cloudflow/types';
 import { getDistance, getSvgPoint } from '@cloudflow/utils';
 import { GRID_SIZE } from '@constants';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default () => {
     const { flowRef, dimension } = useFlowContext();
     const { dispatch: dispatchNode } = useNodeContext();
     const { startDragPoint, isDragging, draggingId, startDrag, endDrag } =
         useDragContext();
+    const [draggingPoint, setDraggingPoint] = useState<Point | null>(null);
 
     /* Relative Isometric grid calculations link: https://clintbellanger.net/articles/isometric_math/ */
     const gridToScreen = (col: number, row: number): Point => {
@@ -103,20 +104,32 @@ export default () => {
                 snappedSize
             );
 
-            dispatchNode({
-                type: 'MOVE_NODE',
-                payload: { id: draggingId, point: newPoint },
-            });
+            setDraggingPoint(newPoint);
+            // dispatchNode({
+            //     type: 'MOVE_NODE',
+            //     payload: { id: draggingId, point: newPoint },
+            // });
         }
     };
 
-    const endDragNode = () => endDrag();
+    const endDragNode = () => {
+        if (draggingId && draggingPoint) {
+            dispatchNode({
+                type: 'MOVE_NODE',
+                payload: { id: draggingId, point: draggingPoint },
+            });
+        }
+        setDraggingPoint(null);
+        endDrag();
+    };
 
     useEffect(() => {
         document.body.style.cursor = isDragging ? 'grabbing' : 'auto';
     }, [isDragging]);
 
     return {
+        draggingId,
+        draggingPoint,
         startDragPoint,
         isDragging,
         startDragNode,

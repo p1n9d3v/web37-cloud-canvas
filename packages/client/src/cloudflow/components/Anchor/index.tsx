@@ -1,7 +1,7 @@
 import useConnection from '@cloudflow/hooks/useConnection';
 import { useTheme } from '@mui/material';
 import { AnchorType } from '@types';
-import { MouseEvent } from 'react';
+import { memo, MouseEvent } from 'react';
 
 type Props = {
     nodeId: string;
@@ -10,7 +10,7 @@ type Props = {
     cy?: number;
 };
 
-export default ({ nodeId, type, cx, cy }: Props) => {
+export default memo(({ nodeId, type, cx, cy }: Props) => {
     const { startConnecting } = useConnection();
     const theme = useTheme();
     const color =
@@ -42,4 +42,4 @@ export default ({ nodeId, type, cx, cy }: Props) => {
             onMouseDown={handleMouseDown}
         />
     );
-};
+});

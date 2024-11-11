@@ -1,11 +1,11 @@
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String   @db.VarChar(30)
-  
-  privateArchitectures PrivateArchitecture[]
-  publicArchitectures  PublicArchitecture[]
-  stars                PublicArchitectureStar[]
-  imports              PublicArchitectureImport[]
+    id   Int    @id @default(autoincrement())
+    name String @db.VarChar(30)
 
-  @@map("user")
+    privateArchitectures PrivateArchitecture[]
+    publicArchitectures  PublicArchitecture[]
+    stars                PublicArchitectureStar[]
+    imports              PublicArchitectureImport[]
+
+    @@map("user")
 }

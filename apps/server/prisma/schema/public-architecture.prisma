@@ -1,17 +1,17 @@
 model PublicArchitecture {
-  id           Int      @id @default(autoincrement())
-  title        String   @db.Char(50)
-  authorId     Int      @map("author_id")
-  architecture Json
-  createdAt    DateTime @default(now()) @map("created_at")
-  cost         Float    @default(0)
-  starCount    Int      @default(0) @map("star_count")
-  importCount  Int      @default(0) @map("import_count")
-  tag          Json
-  
-  author       User     @relation(fields: [authorId], references: [id])
-  stars        PublicArchitectureStar[]
-  imports      PublicArchitectureImport[]
+    id           Int      @id @default(autoincrement())
+    title        String   @db.Char(50)
+    authorId     Int      @map("author_id")
+    architecture Json
+    createdAt    DateTime @default(now()) @map("created_at")
+    cost         Float    @default(0)
+    starCount    Int      @default(0) @map("star_count")
+    importCount  Int      @default(0) @map("import_count")
+    tag          Json
 
-  @@map("public_architecture")
+    author  User                       @relation(fields: [authorId], references: [id])
+    stars   PublicArchitectureStar[]
+    imports PublicArchitectureImport[]
+
+    @@map("public_architecture")
 }

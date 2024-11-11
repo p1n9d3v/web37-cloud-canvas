@@ -1,14 +1,15 @@
 import { useTheme } from '@mui/material';
-import { Dimension, Edge, Node } from '@svgflow/types';
+import { useNodeContext } from '@svgflow/contexts/NodeContext';
+import { Dimension, Edge } from '@svgflow/types';
 import { calculateAnchorPoints } from '@svgflow/utils';
 import { memo, useMemo } from 'react';
 
 type Props = {
     edge: Edge;
-    visibleNodes: Node[];
+    // visibleNodes: Node[];
     dimension: Dimension;
 };
-export default memo(({ edge, visibleNodes, dimension }: Props) => {
+export default memo(({ edge, dimension }: Props) => {
     const { id, sourceId, targetId, sourceAnchorType, targetAnchorType } = edge;
     const theme = useTheme();
     const color =
@@ -16,22 +17,22 @@ export default memo(({ edge, visibleNodes, dimension }: Props) => {
             ? theme.palette.grey[200]
             : theme.palette.grey[800];
 
-    //TODO: 보여지는 node에 대해서만 순회할지 고민...
-    //
-    // const {
-    //     state: { nodes },
-    // } = useNodeContext();
-    // const [sourceNode, targetNode] = useMemo(() => {
-    //     const source = nodes.find((node) => node.id === sourceId);
-    //     const target = nodes.find((node) => node.id === targetId);
-    //     return [source, target];
-    // }, [sourceId, targetId, nodes]);
-
+    const {
+        state: { nodes },
+    } = useNodeContext();
     const [sourceNode, targetNode] = useMemo(() => {
-        const source = visibleNodes.find((node) => node.id === sourceId);
-        const target = visibleNodes.find((node) => node.id === targetId);
+        const source = nodes.find((node) => node.id === sourceId);
+        const target = nodes.find((node) => node.id === targetId);
         return [source, target];
-    }, [sourceId, targetId, visibleNodes]);
+    }, [sourceId, targetId, nodes]);
+
+    //TODO: 보여지는 node에 대해서만 순회할지 고민.. 이렇게 하면 zoom/pan에서 너무많은 리렌더링이 발생함.
+    //
+    // const [sourceNode, targetNode] = useMemo(() => { const source = visibleNodes.find((node) => node.id === sourceId);
+    //     const target = visibleNodes.find((node) => node.id === targetId);
+    //     return [source, target];
+    // }, [sourceId, targetId, visibleNodes]);
+    //
 
     if (!sourceNode || !targetNode) return null;
 

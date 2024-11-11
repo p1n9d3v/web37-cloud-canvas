@@ -17,8 +17,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 const getRandomPoint = () => {
     return {
-        x: Math.floor(Math.random() * 1000),
-        y: Math.floor(Math.random() * 1000),
+        x: Math.floor(Math.random() * 10000),
+        y: Math.floor(Math.random() * 10000),
     };
 };
 
@@ -80,13 +80,16 @@ export const SvgFlow = () => {
                     (node) => node.id === edge.targetId
                 );
 
-                // 화면에 노드가 하나라도 없으면 엣지를 안보이게 할지 고민
+                //TODO: source만 target인 anchor는 보이지 않게 해놨음 이게 제일 베스트인듯
+                if (sourceNode) return true;
+                //TODO: 다보임
                 // if (sourceNode || targetNode) return true;
                 //
                 // return false;
-                if (!sourceNode || !targetNode) return false;
-
-                return true;
+                // TODO:  화면에 보이는 것만 렌더링
+                // if (!sourceNode || !targetNode) return false;
+                //
+                // return true;
             }),
         [edges, visibleNodes]
     );
@@ -97,7 +100,7 @@ export const SvgFlow = () => {
 
     useEffect(() => {
         // random node 생성
-        const newNodes = Array.from({ length: 5 }, () => ({
+        const newNodes = Array.from({ length: 200 }, () => ({
             id: nanoid(),
             type: 'server',
             point: getRandomPoint(),
@@ -116,7 +119,7 @@ export const SvgFlow = () => {
             return anchors[Math.floor(Math.random() * anchors.length)];
         };
 
-        const newEdges = Array.from({ length: 2 }, () => {
+        const newEdges = Array.from({ length: 100 }, () => {
             const sourceIndex = Math.floor(Math.random() * newNodes.length);
             let targetIndex = Math.floor(Math.random() * newNodes.length);
             while (targetIndex === sourceIndex) {
@@ -163,21 +166,16 @@ export const SvgFlow = () => {
                 <Node
                     key={node.id}
                     node={node}
-                    visibleEdges={visibleEdges}
                     dimension={dimension}
                     isSelected={node.id === selectedNodeId}
+                    // visibleEdges={visibleEdges}
                     onStartDragNode={handleStartDragNode}
                     onSelectNode={handleSelectNode}
                 />
             ))}
 
             {visibleEdges.map((edge) => (
-                <Edge
-                    key={edge.id}
-                    edge={edge}
-                    visibleNodes={visibleNodes}
-                    dimension={dimension}
-                />
+                <Edge key={edge.id} edge={edge} dimension={dimension} />
             ))}
 
             <rect

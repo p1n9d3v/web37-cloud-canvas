@@ -1,28 +1,88 @@
-import { ViewBox } from '@cloudflow/types';
-import { forwardRef, MouseEventHandler, ReactNode } from 'react';
+import Background from '@cloudflow/components/Background';
+import { Dimension, Point, ViewBox } from '@cloudflow/types';
+import { forwardRef, MouseEvent, ReactNode, WheelEvent } from 'react';
 
 type Props = {
-    viewBox: ViewBox;
-    onMouseDown?: MouseEventHandler<SVGSVGElement>;
-    onMouseUp?: MouseEventHandler<SVGSVGElement>;
-    onMouseMove?: MouseEventHandler<SVGSVGElement>;
     children: ReactNode;
+    dimension: Dimension;
+    viewBox: ViewBox;
+    onZoom: (deltaY: number, point: Point) => void;
+    onStartPan: (point: Point) => void;
+    onMovePan: (point: Point) => void;
+    onEndPan: () => void;
+    onDragNode: (point: Point) => void;
+    onEndDragNode: () => void;
+    onMoveConnect: (point: Point) => void;
+    onEndConnect: () => void;
+    onDeSelectNode: () => void;
 };
 
 export default forwardRef<SVGSVGElement, Props>(
-    ({ viewBox, children, onMouseDown, onMouseUp, onMouseMove }, ref) => {
-        const { point, width, height } = viewBox;
+    (
+        {
+            viewBox,
+            dimension,
+            children,
+            onZoom,
+            onStartPan,
+            onMovePan,
+            onEndPan,
+            onDragNode,
+            onEndDragNode,
+            onMoveConnect,
+            onEndConnect,
+            onDeSelectNode,
+        },
+        ref
+    ) => {
+        const handleWheel = (event: WheelEvent) => {
+            const { deltaY, clientX, clientY } = event;
+            onZoom(deltaY, { x: clientX, y: clientY });
+        };
 
+        const handleMouseDown = (event: MouseEvent) => {
+            const { clientX, clientY } = event;
+            onDeSelectNode();
+            onStartPan({
+                x: clientX,
+                y: clientY,
+            });
+        };
+
+        const handleMouseMove = (event: MouseEvent) => {
+            const { clientX, clientY } = event;
+            const point = {
+                x: clientX,
+                y: clientY,
+            };
+            onMovePan(point);
+
+            onDragNode(point);
+
+            onMoveConnect(point);
+        };
+
+        const handleMouseUp = () => {
+            onEndPan();
+            onEndDragNode();
+            onEndConnect();
+        };
         return (
             <svg
                 ref={ref}
                 width="100%"
                 height="100%"
-                viewBox={`${point.x} ${point.y} ${width} ${height}`}
-                onMouseUp={onMouseUp}
-                onMouseDown={onMouseDown}
-                onMouseMove={onMouseMove}
+                viewBox={Object.values(viewBox).join(' ')}
+                onMouseUp={handleMouseUp}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onWheel={handleWheel}
             >
+                <Background
+                    viewBox={viewBox}
+                    dimension={dimension}
+                    showSubLines
+                />
                 {children}
             </svg>
         );

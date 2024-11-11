@@ -1,21 +1,20 @@
-import { GRID_3D_HEIGHT_SIZE, GRID_3D_WIDTH_SIZE } from '@cloudflow/constants';
-import { useFlowContext } from '@cloudflow/contexts/FlowContext';
+import {
+    GRID_3D_HEIGHT_SIZE,
+    GRID_3D_WIDTH_SIZE,
+    GRID_SIZE,
+} from '@cloudflow/constants';
 import { useNodeContext } from '@cloudflow/contexts/NodeContext';
-import { Point } from '@cloudflow/types';
+import { Dimension, Point } from '@cloudflow/types';
 import { getDistance, getSvgPoint } from '@cloudflow/utils';
-import { GRID_SIZE } from '@constants';
-import { useEffect, useRef, useState } from 'react';
+import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 
-export default () => {
-    const { flowRef, dimension } = useFlowContext();
+export default (flowRef: RefObject<SVGSVGElement>, dimension: Dimension) => {
     const { dispatch: dispatchNode } = useNodeContext();
+    const startDragPoint = useRef<Point | null>(null);
 
-    const [isDragging, setIsDragging] = useState(false);
     const [draggingId, setDraggingId] = useState<string | null>(null);
-    const [startDragPoint, setStartDragPoint] = useState<Point | null>(null);
-    const [draggingPoint, setDraggingPoint] = useState<Point | null>(null);
+    const [isDragging, setIsDragging] = useState(false);
 
-    /* Relative Isometric grid calculations link: https://clintbellanger.net/articles/isometric_math/ */
     const gridToScreen = (col: number, row: number): Point => {
         const x = (col - row) * (GRID_3D_WIDTH_SIZE / 2);
         const y = (col + row) * (GRID_3D_HEIGHT_SIZE / 2);
@@ -56,88 +55,76 @@ export default () => {
             const snappedCol = Math.floor(col / gridSize) * gridSize;
             const snappedRow = Math.floor(row / gridSize) * gridSize;
 
-            const { x, y } = gridToScreen(snappedCol, snappedRow);
-
-            return {
-                x,
-                y,
-            };
+            return gridToScreen(snappedCol, snappedRow);
         } else {
             throw new Error('Invalid dimension');
         }
     };
 
-    const startDragNode = (id: string, cursorPoint: Point) => {
-        if (!flowRef.current) return;
-
-        const svgPoint = getSvgPoint(flowRef.current, {
-            x: cursorPoint.x,
-            y: cursorPoint.y,
+    const handleStartDragNode = useCallback((nodeId: string, point: Point) => {
+        const svgPoint = getSvgPoint(flowRef.current!, {
+            x: point.x,
+            y: point.y,
         });
 
-        if (!svgPoint) return;
-
-        setStartDragPoint({
+        startDragPoint.current = {
             x: svgPoint.x,
             y: svgPoint.y,
-        });
-        setDraggingId(id);
+        };
+        setDraggingId(nodeId);
         setIsDragging(true);
-    };
+    }, []);
 
-    const dragNode = (cursorPoint: Point) => {
-        if (!draggingId || !startDragPoint || !flowRef.current) return;
-
-        const cursorSvgPoint = getSvgPoint(flowRef.current, {
-            x: cursorPoint.x,
-            y: cursorPoint.y,
-        });
-
-        if (cursorSvgPoint) {
-            const distance = getDistance(startDragPoint, cursorSvgPoint);
-            const snappedSize = dimension === '2d' ? GRID_SIZE / 4 : 1 / 4;
-            if (distance < snappedSize) return;
-
-            const nodeElement = document.getElementById(
-                draggingId
-            ) as SVGGraphicsElement | null;
-            if (!nodeElement) return;
-
-            const newPoint = getGridAlignedPoint(
-                cursorSvgPoint,
-                nodeElement,
-                dimension,
-                snappedSize
-            );
-
-            setDraggingPoint(newPoint);
-        }
-    };
-
-    const endDragNode = () => {
-        if (isDragging && draggingId && draggingPoint) {
-            dispatchNode({
-                type: 'MOVE_NODE',
-                payload: { id: draggingId, point: draggingPoint },
+    const handleDragNode = useCallback(
+        (point: Point) => {
+            if (!isDragging || !draggingId || !flowRef.current) return;
+            const cursorSvgPoint = getSvgPoint(flowRef.current, {
+                x: point.x,
+                y: point.y,
             });
-        }
-        setDraggingPoint(null);
-        setDraggingId(null);
-        setStartDragPoint(null);
-        setIsDragging(false);
-    };
 
-    useEffect(() => {
-        document.body.style.cursor = isDragging ? 'grabbing' : 'auto';
-    }, [isDragging]);
+            if (cursorSvgPoint) {
+                const distance = getDistance(
+                    startDragPoint.current!,
+                    cursorSvgPoint
+                );
+                const snappedSize = dimension === '2d' ? GRID_SIZE / 4 : 1 / 4;
+                if (distance < snappedSize) return;
+
+                const nodeElement = flowRef.current!.getElementById(
+                    draggingId
+                ) as SVGGraphicsElement | null;
+                if (!nodeElement) return;
+
+                const newPoint = getGridAlignedPoint(
+                    cursorSvgPoint,
+                    nodeElement,
+                    dimension,
+                    snappedSize
+                );
+
+                dispatchNode({
+                    type: 'MOVE_NODE',
+                    payload: {
+                        id: draggingId,
+                        point: newPoint,
+                    },
+                });
+            }
+        },
+        [isDragging, draggingId, dimension]
+    );
+
+    const handleEndDragNode = useCallback(() => {
+        setDraggingId(null);
+        setIsDragging(false);
+        startDragPoint.current = null;
+    }, []);
 
     return {
-        draggingId,
-        startDragPoint,
-        draggingPoint,
         isDragging,
-        startDragNode,
-        dragNode,
-        endDragNode,
+        handleStartDragNode,
+        handleDragNode,
+        handleEndDragNode,
     };
 };

@@ -1,29 +1,20 @@
 import {
-    EdgeAction,
     edgeReducer,
     EdgeState,
-    initialEdgeState,
+    initialState,
 } from '@cloudflow/contexts/EdgeContext/reducer';
-import {
-    createContext,
-    Dispatch,
-    PropsWithChildren,
-    useContext,
-    useReducer,
-} from 'react';
+import { createContext, useContext, useReducer } from 'react';
 
-type EdgeContextProps = {
+const EdgeContext = createContext<{
     state: EdgeState;
-    dispatch: Dispatch<EdgeAction>;
-};
-
-const EdgeContext = createContext<EdgeContextProps>({
-    state: initialEdgeState,
-    dispatch: () => {},
+    dispatch: React.Dispatch<any>;
+}>({
+    state: initialState,
+    dispatch: () => null,
 });
 
-export const EdgeProvider = ({ children }: PropsWithChildren) => {
-    const [state, dispatch] = useReducer(edgeReducer, initialEdgeState);
+export const EdgeProvider = ({ children }: { children: React.ReactNode }) => {
+    const [state, dispatch] = useReducer(edgeReducer, initialState);
     return (
         <EdgeContext.Provider value={{ state, dispatch }}>
             {children}
@@ -31,11 +22,4 @@ export const EdgeProvider = ({ children }: PropsWithChildren) => {
     );
 };
 
-export const useEdgeContext = () => {
-    const context = useContext(EdgeContext);
-    if (!context) {
-        throw new Error('EdgeContext : context is undefined');
-    }
-
-    return context;
-};
+export const useEdgeContext = () => useContext(EdgeContext);

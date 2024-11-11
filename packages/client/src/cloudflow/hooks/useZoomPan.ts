@@ -1,78 +1,25 @@
+// useZoomPan.ts
 import { Point, ViewBox } from '@cloudflow/types';
-import { getRelativeCoordinatesForViewBox } from '@cloudflow/utils';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { getSvgPoint } from '@cloudflow/utils';
+import { RefObject, useLayoutEffect, useState } from 'react';
 
-//TODO: SVG를 이용하면 getRelativeCoordinatesForViewBox 함수를 안쓰고도 구현할 수 있을 것 같다. 추후 변경 예정
-export default () => {
-    const zoomPanRef = useRef<HTMLDivElement>(null);
+export default function useZoomPan(flowRef: RefObject<SVGSVGElement>) {
     const [viewBox, setViewBox] = useState<ViewBox>({
-        point: { x: 0, y: 0 },
-        width: zoomPanRef.current?.clientWidth || 0,
-        height: zoomPanRef.current?.clientHeight || 0,
+        x: 0,
+        y: 0,
+        width: document.documentElement.clientWidth,
+        height: document.documentElement.clientHeight,
     });
-    const [isDragging, setIsDragging] = useState(false);
-
-    const dragStart = useRef({ x: 0, y: 0 });
-    const startPoint = useRef({ x: 0, y: 0 });
-
-    const zoom = (deltaY: number, cursorPoint: Point) => {
-        const zoomFactor = deltaY > 0 ? 1.1 : 0.9;
-
-        const { x: mouseX, y: mouseY } = getRelativeCoordinatesForViewBox(
-            cursorPoint.x,
-            cursorPoint.y,
-            zoomPanRef,
-            viewBox
-        );
-
-        setViewBox(({ width, height, point }) => {
-            const newWidth = width * zoomFactor;
-            const newHeight = height * zoomFactor;
-            return {
-                point: {
-                    x: mouseX - (mouseX - point.x) * zoomFactor,
-                    y: mouseY - (mouseY - point.y) * zoomFactor,
-                },
-                width: newWidth,
-                height: newHeight,
-            };
-        });
-    };
-
-    const startDragPan = (cursorPoint: Point) => {
-        setIsDragging(true);
-        dragStart.current = { x: cursorPoint.x, y: cursorPoint.y };
-        startPoint.current = { ...viewBox.point };
-    };
-
-    const dragPan = (cursorPoint: Point) => {
-        if (!isDragging || !zoomPanRef.current) return;
-
-        const deltaX = cursorPoint.x - dragStart.current.x;
-        const deltaY = cursorPoint.y - dragStart.current.y;
-
-        const rect = zoomPanRef.current.getBoundingClientRect();
-        const scaleX = viewBox.width / rect.width;
-        const scaleY = viewBox.height / rect.height;
-
-        setViewBox((prev) => ({
-            ...prev,
-            point: {
-                x: startPoint.current.x - deltaX * scaleX,
-                y: startPoint.current.y - deltaY * scaleY,
-            },
-        }));
-    };
-
-    const endDragPan = () => setIsDragging(false);
+    const [isPanning, setIsPanning] = useState(false);
+    const [startPoint, setStartPoint] = useState<Point>({ x: 0, y: 0 });
 
     useLayoutEffect(() => {
-        if (zoomPanRef.current) {
+        if (flowRef.current) {
             const updateViewBoxSize = () => {
                 setViewBox((prev) => ({
                     ...prev,
-                    width: zoomPanRef.current!.clientWidth,
-                    height: zoomPanRef.current!.clientHeight,
+                    width: flowRef.current!.clientWidth,
+                    height: flowRef.current!.clientHeight,
                 }));
             };
             updateViewBoxSize();
@@ -84,17 +31,61 @@ export default () => {
         }
     }, []);
 
-    useEffect(() => {
-        document.body.style.cursor = isDragging ? 'grabbing' : 'auto';
-    }, [isDragging]);
+    const handleZoom = (wheelY: number, cursorPoint: Point) => {
+        if (!flowRef.current) return;
+        const zoomFactor = wheelY > 0 ? 1.1 : 0.9;
+
+        const cursorSvgPoint = getSvgPoint(flowRef.current, cursorPoint);
+        if (!cursorSvgPoint) return;
+
+        setViewBox((prev) => {
+            const newWidth = prev.width * zoomFactor;
+            const newHeight = prev.height * zoomFactor;
+
+            const deltaX = (cursorSvgPoint.x - prev.x) * (1 - zoomFactor);
+            const deltaY = (cursorSvgPoint.y - prev.y) * (1 - zoomFactor);
+
+            return {
+                x: prev.x + deltaX,
+                y: prev.y + deltaY,
+                width: newWidth,
+                height: newHeight,
+            };
+        });
+    };
+
+    const handleStartPan = (point: Point) => {
+        setIsPanning(true);
+        setStartPoint(point);
+    };
+
+    const handleMovePan = (point: Point) => {
+        if (!isPanning || !flowRef.current) return;
+
+        const dx =
+            (startPoint.x - point.x) *
+            (viewBox.width / flowRef.current.clientWidth);
+        const dy =
+            (startPoint.y - point.y) *
+            (viewBox.height / flowRef.current.clientHeight);
+
+        setViewBox((prev) => ({
+            ...prev,
+            x: prev.x + dx,
+            y: prev.y + dy,
+        }));
+
+        setStartPoint(point);
+    };
+
+    const handleEndPan = () => setIsPanning(false);
 
     return {
-        zoomPanRef,
         viewBox,
-        isDragging,
-        zoom,
-        startDragPan,
-        dragPan,
-        endDragPan,
+        isPanning,
+        handleZoom,
+        handleStartPan,
+        handleMovePan,
+        handleEndPan,
     };
-};
+}

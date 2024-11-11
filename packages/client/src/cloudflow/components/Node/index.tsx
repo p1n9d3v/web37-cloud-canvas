@@ -1,24 +1,29 @@
+import { useTheme } from '@mui/material';
 import Anchor from '@cloudflow/components/Anchor';
+import Server from '@cloudflow/components/Node/svgs/Server';
 import { GRID_SIZE } from '@cloudflow/constants';
-import useDragNode from '@cloudflow/hooks/useDragNode';
-import { AnchorType, Dimension, Node } from '@cloudflow/types';
+import { useEdgeContext } from '@cloudflow/contexts/EdgeContext';
+import { AnchorType, Dimension, Edge, Node, Point } from '@cloudflow/types';
 import {
-    calculateAnchorPoint,
+    calculateAnchorPoints,
     getNodeSizeForDimension,
 } from '@cloudflow/utils';
-import { createElement, memo, MouseEvent, MouseEventHandler } from 'react';
-import ServerNode from './Svgs/ServerNode';
+import { createElement, memo, MouseEvent, useMemo } from 'react';
 
 type Props = {
     node: Node;
+    // visibleEdges: Edge[];
     dimension: Dimension;
-    onMouseDown: (e: MouseEvent) => void;
+    isSelected: boolean;
+    onStartDragNode: (nodeId: string, point: Point) => void;
+    onSelectNode: (nodeId: string) => void;
+    onStartConnect: (node: Node, anchorType: AnchorType) => void;
 };
 
 const getNodeComponent = (type: string) => {
     switch (type) {
         case 'server':
-            return ServerNode;
+            return Server;
         default:
             return () => (
                 <rect width={GRID_SIZE} height={GRID_SIZE} fill="gray" />
@@ -27,22 +32,71 @@ const getNodeComponent = (type: string) => {
 };
 
 export default memo(
-    ({ node: { id, type, point }, dimension, onMouseDown }: Props) => {
+    ({
+        node,
+        dimension,
+        isSelected,
+        onStartDragNode,
+        onSelectNode,
+        onStartConnect,
+    }: Props) => {
+        const theme = useTheme();
+        const { id, type, point } = node;
         const { width, height } = getNodeSizeForDimension(dimension);
 
-        const anchors = ['top', 'right', 'bottom', 'left'].map((anchorType) => {
-            const anchorPoint = calculateAnchorPoint(
-                anchorType as AnchorType,
-                dimension
-            );
-            return { type: anchorType, point: anchorPoint };
-        });
+        const {
+            state: { edges },
+        } = useEdgeContext();
+
+        const connectedAnchors: AnchorType[] = useMemo(
+            () =>
+                edges
+                    .filter((edge) => {
+                        return edge.sourceId === id;
+                    })
+                    .map((edge) => edge.sourceAnchorType),
+            [edges]
+        );
+
+        //TODO: 화면에 보이는 edge에 관련해서 찾을지 고민.. 이렇게 하면 zoom/pan에서 너무 많은 리렌더링이 발생함
+        //
+        // const connectedAnchors: AnchorType[] = useMemo(
+        //     () =>
+        //         visibleEdges
+        //             .filter((edge) => {
+        //                 return edge.sourceId === id;
+        //             })
+        //             .map((edge) => edge.sourceAnchorType),
+        //     [visibleEdges]
+        // );
+
+        const anchors = calculateAnchorPoints(
+            {
+                x: 0,
+                y: 0,
+            },
+            dimension
+        );
+
+        const handleMouseDown = (event: MouseEvent) => {
+            event.stopPropagation();
+            const { clientX, clientY } = event;
+            onStartDragNode(id, {
+                x: clientX,
+                y: clientY,
+            });
+        };
+
+        const handleDbClick = () => {
+            onSelectNode(id);
+        };
 
         return (
             <g
                 id={id}
                 style={{ transform: `translate(${point.x}px, ${point.y}px)` }}
-                onMouseDown={onMouseDown}
+                onMouseDown={handleMouseDown}
+                onDoubleClick={handleDbClick}
             >
                 {createElement(getNodeComponent(type), {
                     dimension,
@@ -50,13 +104,38 @@ export default memo(
                     height,
                 })}
 
-                {anchors.map((anchor) => (
+                {dimension === '2d' && (
+                    <rect
+                        width={width}
+                        height={height}
+                        fill="none"
+                        stroke={theme.palette.primary.main}
+                        strokeWidth="2"
+                        strokeDasharray={isSelected ? '10,5' : undefined}
+                    >
+                        <animate
+                            attributeName="stroke-dashoffset"
+                            from="0"
+                            to="15"
+                            dur="1.5s"
+                            repeatCount="indefinite"
+                        />
+                    </rect>
+                )}
+
+                {Object.entries(anchors).map(([anchorType, point]) => (
                     <Anchor
-                        key={anchor.type}
-                        nodeId={id}
-                        type={anchor.type as AnchorType}
-                        cx={anchor.point.x}
-                        cy={anchor.point.y}
+                        key={`${id}-${anchorType}`}
+                        cx={point.x}
+                        cy={point.y}
+                        visible={
+                            connectedAnchors.includes(
+                                anchorType as AnchorType
+                            ) || isSelected
+                        }
+                        onStartConnect={() =>
+                            onStartConnect(node, anchorType as AnchorType)
+                        }
                     />
                 ))}
             </g>

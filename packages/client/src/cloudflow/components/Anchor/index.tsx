@@ -1,36 +1,23 @@
-import useConnection from '@cloudflow/hooks/useConnection';
 import { useTheme } from '@mui/material';
-import { AnchorType } from '@types';
-import { memo, MouseEvent } from 'react';
+import { MouseEvent } from 'react';
 
 type Props = {
-    nodeId: string;
-    type: AnchorType;
+    visible: boolean;
     cx?: number;
     cy?: number;
+    onStartConnect: () => void;
 };
 
-export default memo(({ nodeId, type, cx, cy }: Props) => {
-    const { startConnecting } = useConnection();
+export default ({ cx, cy, visible, onStartConnect }: Props) => {
     const theme = useTheme();
     const color =
         theme.palette.mode === 'dark'
             ? theme.palette.grey[200]
             : theme.palette.grey[800];
 
-    const handleMouseDown = (e: MouseEvent<SVGCircleElement>) => {
+    const handleMouseDown = (e: MouseEvent) => {
         e.stopPropagation();
-
-        const { currentTarget } = e;
-        const anchorRect = currentTarget.getBoundingClientRect();
-        const anchorCenterX = anchorRect.left + anchorRect.width / 2;
-        const anchorCenterY = anchorRect.top + anchorRect.height / 2;
-
-        startConnecting({
-            nodeId,
-            type,
-            point: { x: anchorCenterX, y: anchorCenterY },
-        });
+        onStartConnect();
     };
 
     return (
@@ -39,7 +26,10 @@ export default memo(({ nodeId, type, cx, cy }: Props) => {
             fill={color}
             cx={cx}
             cy={cy}
+            style={{
+                visibility: visible ? 'visible' : 'hidden',
+            }}
             onMouseDown={handleMouseDown}
         />
     );
-});
+};

@@ -2,7 +2,7 @@
 import Header from '@components/Header';
 import Sidebar from '@components/Sidebar';
 import Box from '@mui/material/Box';
-import SvgFlow from '@svgflow';
+import ClodFlow from '@cloudflow';
 
 function App() {
     return (
@@ -22,7 +22,7 @@ function App() {
                 }}
             >
                 <Header />
-                <SvgFlow />
+                <ClodFlow />
             </Box>
         </Box>
     );

@@ -1,4 +1,4 @@
-import { Dimension } from '@svgflow/types';
+import { Dimension } from '@cloudflow/types';
 import {
     createContext,
     PropsWithChildren,

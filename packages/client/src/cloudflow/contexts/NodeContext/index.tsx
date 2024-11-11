@@ -1,6 +1,6 @@
 import {
-    nodeReducer,
     NodeAction,
+    nodeReducer,
     NodeState,
 } from '@cloudflow/contexts/NodeContext/reducer';
 import {
@@ -18,7 +18,6 @@ type NodeContextProps = {
 
 const initialState: NodeState = {
     nodes: [],
-    selectedNodeIds: new Set(),
 };
 
 const NodeContext = createContext<NodeContextProps>({

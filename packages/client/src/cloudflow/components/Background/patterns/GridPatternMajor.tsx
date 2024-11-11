@@ -24,10 +24,10 @@ export default ({ points, dimension }: Props) => {
         <g>
             <pattern
                 id="gridPatternMajor"
-                x="0"
-                y={y}
                 width={width}
                 height={height}
+                x="0"
+                y={y}
                 patternUnits="userSpaceOnUse"
             >
                 <path

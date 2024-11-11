@@ -1,5 +1,5 @@
 import { useTheme } from '@mui/material';
-import { Point } from '@svgflow/types';
+import { Point } from '@cloudflow/types';
 
 type Props = {
     start: Point;

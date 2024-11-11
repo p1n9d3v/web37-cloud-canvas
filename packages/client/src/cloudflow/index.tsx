@@ -1,20 +1,20 @@
 import { createMockNodesAndEdges } from '@/mocks/instance';
-import Connector from '@svgflow/components/Connector';
-import Edge from '@svgflow/components/Edge';
-import Flow from '@svgflow/components/Flow';
-import Node from '@svgflow/components/Node';
+import Connector from '@cloudflow/components/Connector';
+import Edge from '@cloudflow/components/Edge';
+import Flow from '@cloudflow/components/Flow';
+import Node from '@cloudflow/components/Node';
 import {
     GRID_3D_DEPTH_SIZE,
     GRID_3D_HEIGHT_SIZE,
     GRID_3D_WIDTH_SIZE,
     GRID_SIZE,
-} from '@svgflow/constants';
-import { EdgeProvider, useEdgeContext } from '@svgflow/contexts/EdgeContext';
-import { FlowProvider, useFlowContext } from '@svgflow/contexts/FlowCotext';
-import { NodeProvider, useNodeContext } from '@svgflow/contexts/NodeContext';
-import useConnection from '@svgflow/hooks/useConnection';
-import useDragNode from '@svgflow/hooks/useDragNode';
-import useZoomPan from '@svgflow/hooks/useZoomPan';
+} from '@cloudflow/constants';
+import { EdgeProvider, useEdgeContext } from '@cloudflow/contexts/EdgeContext';
+import { FlowProvider, useFlowContext } from '@cloudflow/contexts/FlowCotext';
+import { NodeProvider, useNodeContext } from '@cloudflow/contexts/NodeContext';
+import useConnection from '@cloudflow/hooks/useConnection';
+import useDragNode from '@cloudflow/hooks/useDragNode';
+import useZoomPan from '@cloudflow/hooks/useZoomPan';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export const SvgFlow = () => {

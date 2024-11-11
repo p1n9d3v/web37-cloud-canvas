@@ -4,17 +4,11 @@ export type Point = {
     x: number;
     y: number;
 };
-export type ViewBox = {
-    point: Point;
+
+export interface ViewBox extends Point {
     width: number;
     height: number;
-};
-
-export type Anchor = {
-    nodeId: string;
-    type: AnchorType;
-    point: Point;
-};
+}
 
 export type AnchorType = 'top' | 'right' | 'bottom' | 'left';
 
@@ -26,14 +20,14 @@ export type Node = {
 
 export type Edge = {
     id: string;
-    source: {
-        id: string;
-        anchorType: AnchorType;
-        point: Point;
-    };
-    target: {
-        id: string;
-        anchorType: AnchorType;
-        point: Point;
-    };
+    sourceId: string;
+    targetId: string;
+    sourceAnchorType: AnchorType;
+    targetAnchorType: AnchorType;
+};
+
+export type Connection = {
+    node: Node;
+    anchorType: AnchorType;
+    point: Point;
 };

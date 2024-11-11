@@ -14,13 +14,7 @@ import useDragNode from '@svgflow/hooks/useDragNode';
 import useZoomPan from '@svgflow/hooks/useZoomPan';
 import { nanoid } from 'nanoid';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-
-const getRandomPoint = () => {
-    return {
-        x: Math.floor(Math.random() * 10000),
-        y: Math.floor(Math.random() * 10000),
-    };
-};
+import { createMockNodesAndEdges } from '@/mocks/instance';
 
 export const SvgFlow = () => {
     const { flowRef, dimension, changeDimension } = useFlowContext();
@@ -76,19 +70,19 @@ export const SvgFlow = () => {
                 const sourceNode = visibleNodes.find(
                     (node) => node.id === edge.sourceId
                 );
-                const targetNode = visibleNodes.find(
-                    (node) => node.id === edge.targetId
-                );
 
-                //TODO: source만 target인 anchor는 보이지 않게 해놨음 이게 제일 베스트인듯
+                // INFO: source만 target인 anchor는 보이지 않게 해놨음 이게 제일 베스트인듯
                 if (sourceNode) return true;
-                //TODO: 다보임
+
+                // const targetNode = visibleNodes.find(
+                //     (node) => node.id === edge.targetId
+                // );
+                // INFO: 다보임
                 // if (sourceNode || targetNode) return true;
-                //
                 // return false;
-                // TODO:  화면에 보이는 것만 렌더링
-                // if (!sourceNode || !targetNode) return false;
                 //
+                // INFO:  화면에 보이는 것만 렌더링
+                // if (!sourceNode || !targetNode) return false;
                 // return true;
             }),
         [edges, visibleNodes]
@@ -98,44 +92,18 @@ export const SvgFlow = () => {
         setSelectedNodeId(nodeId);
     }, []);
 
+    //mocks
     useEffect(() => {
-        // random node 생성
-        const newNodes = Array.from({ length: 200 }, () => ({
-            id: nanoid(),
-            type: 'server',
-            point: getRandomPoint(),
-        }));
+        const { nodes, edges } = createMockNodesAndEdges(100, 100);
 
-        newNodes.forEach((node) => {
+        nodes.forEach((node) => {
             dispatchNode({
                 type: 'ADD_NODE',
                 payload: node,
             });
         });
 
-        // random edge 생성
-        const randomAnchorType = () => {
-            const anchors = ['top', 'right', 'bottom', 'left'];
-            return anchors[Math.floor(Math.random() * anchors.length)];
-        };
-
-        const newEdges = Array.from({ length: 100 }, () => {
-            const sourceIndex = Math.floor(Math.random() * newNodes.length);
-            let targetIndex = Math.floor(Math.random() * newNodes.length);
-            while (targetIndex === sourceIndex) {
-                targetIndex = Math.floor(Math.random() * newNodes.length);
-            }
-
-            return {
-                id: nanoid(),
-                sourceId: newNodes[sourceIndex].id,
-                targetId: newNodes[targetIndex].id,
-                sourceAnchorType: randomAnchorType(),
-                targetAnchorType: randomAnchorType(),
-            };
-        });
-
-        newEdges.forEach((edge) => {
+        edges.forEach((edge) => {
             dispatchEdge({
                 type: 'ADD_EDGE',
                 payload: edge,

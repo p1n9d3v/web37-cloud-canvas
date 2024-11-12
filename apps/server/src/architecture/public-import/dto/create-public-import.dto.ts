@@ -1,1 +1,3 @@
-export class CreatePublicImportDto {}
+export class CreatePublicImportDto {
+    architectureId: number;
+}

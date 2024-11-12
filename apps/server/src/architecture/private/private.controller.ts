@@ -2,10 +2,11 @@ import {
     Controller,
     Get,
     Post,
-    Body,
     Patch,
     Param,
     Delete,
+    Body,
+    ParseIntPipe,
 } from '@nestjs/common';
 import { PrivateService } from './private.service';
 import { CreatePrivateDto } from './dto/create-private.dto';
@@ -15,31 +16,34 @@ import { UpdatePrivateDto } from './dto/update-private.dto';
 export class PrivateController {
     constructor(private readonly privateService: PrivateService) {}
 
-    @Post()
-    create(@Body() createPrivateDto: CreatePrivateDto) {
-        return this.privateService.create(createPrivateDto);
+    @Get()
+    getPrivateArchitectures() {
+        return this.privateService.getPrivateArchitectures();
     }
 
-    @Get()
-    findAll() {
-        return this.privateService.findAll();
+    @Post()
+    createPrivateArchitecture(@Body() createPrivateDto: CreatePrivateDto) {
+        return this.privateService.createPrivateArchitecture(createPrivateDto);
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.privateService.findOne(+id);
+    getPrivateArchitecture(@Param('id', ParseIntPipe) id: number) {
+        return this.privateService.getPrivateArchitecture(id);
     }
 
     @Patch(':id')
-    update(
-        @Param('id') id: string,
+    updatePrivateArchitecture(
+        @Param('id', ParseIntPipe) id: number,
         @Body() updatePrivateDto: UpdatePrivateDto,
     ) {
-        return this.privateService.update(+id, updatePrivateDto);
+        return this.privateService.updatePrivateArchitecture(
+            id,
+            updatePrivateDto,
+        );
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.privateService.remove(+id);
+    deletePrivateArchitecture(@Param('id', ParseIntPipe) id: number) {
+        return this.deletePrivateArchitecture(id);
     }
 }

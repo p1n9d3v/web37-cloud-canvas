@@ -1,26 +1,29 @@
 import { Injectable } from '@nestjs/common';
-import { CreatePrivateDto } from './dto/create-private.dto';
 import { UpdatePrivateDto } from './dto/update-private.dto';
+import { PrivateRepository } from './private.repository';
+import { CreatePrivateDto } from './dto/create-private.dto';
 
 @Injectable()
 export class PrivateService {
-  create(createPrivateDto: CreatePrivateDto) {
-    return 'This action adds a new private';
-  }
+    constructor(private readonly repository: PrivateRepository) {}
 
-  findAll() {
-    return `This action returns all private`;
-  }
+    getPrivateArchitectures() {
+        return this.repository.findAll();
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} private`;
-  }
+    createPrivateArchitecture(createPrivateDto: CreatePrivateDto) {
+        return this.repository.create(createPrivateDto);
+    }
 
-  update(id: number, updatePrivateDto: UpdatePrivateDto) {
-    return `This action updates a #${id} private`;
-  }
+    getPrivateArchitecture(id: number) {
+        return this.repository.findById(id);
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} private`;
-  }
+    updatePrivateArchitecture(id: number, updatePrivateDto: UpdatePrivateDto) {
+        return this.repository.update(id, updatePrivateDto);
+    }
+
+    deletePrivateArchitecture(id: number) {
+        return this.repository.delete(id);
+    }
 }

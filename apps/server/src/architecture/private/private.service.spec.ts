@@ -1,18 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrivateService } from './private.service';
+import { PrivateRepository } from './private.repository';
 
 describe('PrivateService', () => {
-  let service: PrivateService;
+    let service: PrivateService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [PrivateService],
-    }).compile();
+    beforeEach(async () => {
+        const module: TestingModule = await Test.createTestingModule({
+            providers: [PrivateService, PrivateRepository],
+        }).compile();
 
-    service = module.get<PrivateService>(PrivateService);
-  });
+        service = module.get<PrivateService>(PrivateService);
+    });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+    it('should be defined', () => {
+        expect(service).toBeDefined();
+    });
 });

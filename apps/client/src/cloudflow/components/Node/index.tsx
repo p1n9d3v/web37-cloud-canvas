@@ -1,18 +1,17 @@
-import { useTheme } from '@mui/material';
 import Anchor from '@cloudflow/components/Anchor';
 import Server from '@cloudflow/components/Node/svgs/Server';
 import { GRID_SIZE } from '@cloudflow/constants';
 import { useEdgeContext } from '@cloudflow/contexts/EdgeContext';
-import { AnchorType, Dimension, Edge, Node, Point } from '@cloudflow/types';
+import { AnchorType, Dimension, Node, Point } from '@cloudflow/types';
 import {
     calculateAnchorPoints,
     getNodeSizeForDimension,
 } from '@cloudflow/utils';
+import { useTheme } from '@mui/material';
 import { createElement, memo, MouseEvent, useMemo } from 'react';
 
 type Props = {
     node: Node;
-    // visibleEdges: Edge[];
     dimension: Dimension;
     isSelected: boolean;
     onStartDragNode: (nodeId: string, point: Point) => void;
@@ -55,7 +54,7 @@ export default memo(
                         return edge.sourceId === id;
                     })
                     .map((edge) => edge.sourceAnchorType),
-            [edges]
+            [edges],
         );
 
         //TODO: 화면에 보이는 edge에 관련해서 찾을지 고민.. 이렇게 하면 zoom/pan에서 너무 많은 리렌더링이 발생함
@@ -63,11 +62,11 @@ export default memo(
         // const connectedAnchors: AnchorType[] = useMemo(
         //     () =>
         //         visibleEdges
-        //             .filter((edge) => {
-        //                 return edge.sourceId === id;
+        //             .filter((edge: any) => {
+        //                 return edge.source.id === id;
         //             })
-        //             .map((edge) => edge.sourceAnchorType),
-        //     [visibleEdges]
+        //             .map((edge: any) => edge.source.anchorType),
+        //     [visibleEdges],
         // );
 
         const anchors = calculateAnchorPoints(
@@ -75,7 +74,7 @@ export default memo(
                 x: 0,
                 y: 0,
             },
-            dimension
+            dimension,
         );
 
         const handleMouseDown = (event: MouseEvent) => {
@@ -130,7 +129,7 @@ export default memo(
                         cy={point.y}
                         visible={
                             connectedAnchors.includes(
-                                anchorType as AnchorType
+                                anchorType as AnchorType,
                             ) || isSelected
                         }
                         onStartConnect={() =>
@@ -140,5 +139,5 @@ export default memo(
                 ))}
             </g>
         );
-    }
+    },
 );

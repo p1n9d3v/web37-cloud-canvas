@@ -17,7 +17,7 @@ import { RefObject, useCallback, useState } from 'react';
 export default (
     flowRef: RefObject<SVGSVGElement>,
     visibleNodes: Node[],
-    dimension: Dimension
+    dimension: Dimension,
 ) => {
     const { dispatch: dispatchEdge } = useEdgeContext();
     const [connection, setConnection] = useState<{
@@ -35,7 +35,7 @@ export default (
             });
             setIsConnecting(true);
         },
-        [dimension]
+        [dimension],
     );
 
     const handleMoveConnect = (point: Point) => {
@@ -69,12 +69,17 @@ export default (
                         point: svgPoint,
                         anchorType: prev.source.anchorType,
                     },
-                }
+                },
         );
     };
 
     const handleEndConnect = () => {
-        if (isConnecting && connection?.source && connection.target) {
+        if (
+            isConnecting &&
+            connection?.source &&
+            connection.target &&
+            connection.source.node.id !== connection.target.node.id
+        ) {
             const { source, target } = connection;
             dispatchEdge({
                 type: 'ADD_EDGE',

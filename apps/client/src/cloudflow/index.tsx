@@ -62,31 +62,39 @@ export const SvgFlow = () => {
                     y <= viewBox.y + viewBox.height + offsetHeight
                 );
             }),
-        [nodes, viewBox, dimension]
+        [nodes, viewBox, dimension],
     );
 
     const visibleEdges = useMemo(
         () =>
-            edges.filter((edge) => {
-                const sourceNode = visibleNodes.find(
-                    (node) => node.id === edge.sourceId
-                );
+            edges
+                .map((edge) => {
+                    const sourceNode = visibleNodes.find(
+                        (node) => node.id === edge.sourceId,
+                    );
 
-                // INFO: source만 target인 anchor는 보이지 않게 해놨음 이게 제일 베스트인듯
-                if (sourceNode) return true;
+                    //INFO: 화면에 보여지는 것만 하려면 visibleNodes로 필터링 단, Edge는 보이지 않는데 anchor만 보이는 경우가 있음
+                    //이는 Node에서 visibleEdges를 이용해서 안찾고 있어서 그럼, visibleEdges를 이용해서 찾게되면 zoom/pan에서 너무 많은 리렌더링이 발생함
+                    const targetNode = nodes.find(
+                        (node) => node.id === edge.targetId,
+                    );
 
-                // const targetNode = visibleNodes.find(
-                //     (node) => node.id === edge.targetId
-                // );
-                // INFO: 다보임
-                // if (sourceNode || targetNode) return true;
-                // return false;
-                //
-                // INFO:  화면에 보이는 것만 렌더링
-                // if (!sourceNode || !targetNode) return false;
-                // return true;
-            }),
-        [edges, visibleNodes]
+                    return sourceNode && targetNode
+                        ? {
+                              id: edge.id,
+                              source: {
+                                  ...sourceNode,
+                                  anchorType: edge.sourceAnchorType,
+                              },
+                              target: {
+                                  ...targetNode,
+                                  anchorType: edge.targetAnchorType,
+                              },
+                          }
+                        : null;
+                })
+                .filter((edge) => edge !== null),
+        [edges, visibleNodes, nodes],
     );
 
     const {
@@ -152,7 +160,6 @@ export const SvgFlow = () => {
                     node={node}
                     dimension={dimension}
                     isSelected={node.id === selectedNodeId}
-                    // visibleEdges={visibleEdges}
                     onStartDragNode={handleStartDragNode}
                     onSelectNode={handleSelectNode}
                     onStartConnect={handleStartConnect}

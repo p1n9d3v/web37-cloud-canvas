@@ -1,70 +1,70 @@
-import { useTheme } from '@mui/material';
-import { useNodeContext } from '@cloudflow/contexts/NodeContext';
-import { Dimension, Edge } from '@cloudflow/types';
+import { AnchorType, Dimension, Node } from '@cloudflow/types';
 import { calculateAnchorPoints } from '@cloudflow/utils';
-import { memo, useMemo } from 'react';
+import { useTheme } from '@mui/material';
+import { memo } from 'react';
+
+//TODO: Edge 타입 병합 필요
+type NewEdge = {
+    id: string;
+    source: Node & { anchorType: AnchorType };
+    target: Node & { anchorType: AnchorType };
+};
 
 type Props = {
-    edge: Edge;
-    // visibleNodes: Node[];
+    edge: NewEdge;
     dimension: Dimension;
 };
-export default memo(({ edge, dimension }: Props) => {
-    const { id, sourceId, targetId, sourceAnchorType, targetAnchorType } = edge;
-    const theme = useTheme();
-    const color =
-        theme.palette.mode === 'dark'
-            ? theme.palette.grey[200]
-            : theme.palette.grey[800];
+export default memo(
+    ({ edge, dimension }: Props) => {
+        const { id, source, target } = edge;
+        const theme = useTheme();
+        const color =
+            theme.palette.mode === 'dark'
+                ? theme.palette.grey[200]
+                : theme.palette.grey[800];
 
-    const {
-        state: { nodes },
-    } = useNodeContext();
-    const [sourceNode, targetNode] = useMemo(() => {
-        const source = nodes.find((node) => node.id === sourceId);
-        const target = nodes.find((node) => node.id === targetId);
-        return [source, target];
-    }, [sourceId, targetId, nodes]);
+        const sourceAnchors = calculateAnchorPoints(source.point, dimension);
+        const targetAnchors = calculateAnchorPoints(target.point, dimension);
 
-    //TODO: 보여지는 node에 대해서만 순회할지 고민.. 이렇게 하면 zoom/pan에서 너무많은 리렌더링이 발생함.
-    //
-    // const [sourceNode, targetNode] = useMemo(() => { const source = visibleNodes.find((node) => node.id === sourceId);
-    //     const target = visibleNodes.find((node) => node.id === targetId);
-    //     return [source, target];
-    // }, [sourceId, targetId, visibleNodes]);
-    //
+        const sourcePoint = sourceAnchors[source.anchorType];
+        const targetPoint = targetAnchors[target.anchorType];
 
-    if (!sourceNode || !targetNode) return null;
+        const linePathD = `M ${sourcePoint.x} ${sourcePoint.y} L ${targetPoint.x} ${targetPoint.y}`;
 
-    const sourceAnchors = calculateAnchorPoints(sourceNode.point, dimension);
-    const targetAnchors = calculateAnchorPoints(targetNode.point, dimension);
-
-    const sourcePoint = sourceAnchors[sourceAnchorType];
-    const targetPoint = targetAnchors[targetAnchorType];
-
-    const linePathD = `M ${sourcePoint.x} ${sourcePoint.y} L ${targetPoint.x} ${targetPoint.y}`;
-
-    return (
-        <g id={id}>
-            <defs>
-                <marker
-                    id="arrowhead"
-                    markerWidth="5"
-                    markerHeight="5"
-                    refX="5"
-                    refY="2.5"
-                    orient="auto"
-                >
-                    <path d="M 0 0 L 5 2.5 L 0 5 Z" fill={color} />
-                </marker>
-            </defs>
-            <path
-                d={linePathD}
-                stroke={color}
-                fill="none"
-                strokeWidth={2}
-                markerEnd="url(#arrowhead)"
-            />
-        </g>
-    );
-});
+        return (
+            <g id={id}>
+                <defs>
+                    <marker
+                        id="arrowhead"
+                        markerWidth="5"
+                        markerHeight="5"
+                        refX="5"
+                        refY="2.5"
+                        orient="auto"
+                    >
+                        <path d="M 0 0 L 5 2.5 L 0 5 Z" fill={color} />
+                    </marker>
+                </defs>
+                <path
+                    d={linePathD}
+                    stroke={color}
+                    fill="none"
+                    strokeWidth={2}
+                    markerEnd="url(#arrowhead)"
+                />
+            </g>
+        );
+    },
+    (prevProps, nextProps) => {
+        const { edge: prevEdge } = prevProps;
+        const { edge: nextEdge } = nextProps;
+        const { source: prevSource, target: prevTarget } = prevEdge;
+        const { source: nextSource, target: nextTarget } = nextEdge;
+        return (
+            prevSource.point.x === nextSource.point.x &&
+            prevSource.point.y === nextSource.point.y &&
+            prevTarget.point.x === nextTarget.point.x &&
+            prevTarget.point.y === nextTarget.point.y
+        );
+    },
+);

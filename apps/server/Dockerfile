@@ -1,19 +1,16 @@
 FROM node:20 AS development
 WORKDIR /development
 COPY ./pnpm-lock.yaml ./apps/server/package*.json  .
-RUN npm install -g pnpm
-RUN pnpm install
+RUN npm install -g pnpm && pnpm install
 
 FROM node:20 AS build
 WORKDIR /build
-RUN mkdir -p /build/server
-RUN npm install -g pnpm
+RUN mkdir -p /build/server && npm install -g pnpm
 COPY --from=development /development/node_modules/ /build/server/node_modules
 COPY --from=development /development/pnpm-lock.yaml /build/server/
 COPY ./apps/server/ /build/server/
 WORKDIR /build/server
-RUN npx prisma generate && npm run build && rm -rf node_modules
-RUN pnpm install --frozen-lockfile --prod
+RUN npx prisma generate && npm run build && rm -rf node_modules && pnpm install --frozen-lockfile --prod
 
 FROM node:20-slim AS production
 WORKDIR /app

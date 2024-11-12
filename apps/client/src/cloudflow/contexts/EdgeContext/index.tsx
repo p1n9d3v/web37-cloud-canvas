@@ -1,4 +1,5 @@
 import {
+    EdgeAction,
     edgeReducer,
     EdgeState,
     initialState,
@@ -7,7 +8,7 @@ import { createContext, useContext, useReducer } from 'react';
 
 const EdgeContext = createContext<{
     state: EdgeState;
-    dispatch: React.Dispatch<any>;
+    dispatch: React.Dispatch<EdgeAction>;
 }>({
     state: initialState,
     dispatch: () => null,

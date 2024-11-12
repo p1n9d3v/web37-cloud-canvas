@@ -51,9 +51,9 @@ export default memo(
             () =>
                 edges
                     .filter((edge) => {
-                        return edge.sourceId === id;
+                        return edge.source.id === id;
                     })
-                    .map((edge) => edge.sourceAnchorType),
+                    .map((edge) => edge.source.anchorType),
             [edges],
         );
 

@@ -1,4 +1,5 @@
 import { nanoid } from 'nanoid';
+import { AnchorType } from '../src/cloudflow/types';
 const getRandomPoint = () => {
     return {
         x: Math.floor(Math.random() * 10000),
@@ -13,7 +14,7 @@ const randomAnchorType = () => {
 
 export const createMockNodesAndEdges = (
     nodeCount: number,
-    edgeCount: number
+    edgeCount: number,
 ) => {
     const nodes = Array.from({ length: nodeCount }, () => ({
         id: nanoid(),
@@ -30,10 +31,14 @@ export const createMockNodesAndEdges = (
 
         return {
             id: nanoid(),
-            sourceId: nodes[sourceIndex].id,
-            targetId: nodes[targetIndex].id,
-            sourceAnchorType: randomAnchorType(),
-            targetAnchorType: randomAnchorType(),
+            source: {
+                ...nodes[sourceIndex],
+                anchorType: randomAnchorType() as AnchorType,
+            },
+            target: {
+                ...nodes[targetIndex],
+                anchorType: randomAnchorType() as AnchorType,
+            },
         };
     });
 

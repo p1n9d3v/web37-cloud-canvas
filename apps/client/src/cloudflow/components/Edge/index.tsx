@@ -1,7 +1,7 @@
-import { AnchorType, Dimension, Node } from '@cloudflow/types';
+import { AnchorType, Dimension, Node, Point } from '@cloudflow/types';
 import { calculateAnchorPoints } from '@cloudflow/utils';
 import { useTheme } from '@mui/material';
-import { memo } from 'react';
+import { memo, MouseEvent } from 'react';
 
 //TODO: Edge 타입 병합 필요
 type NewEdge = {
@@ -12,10 +12,19 @@ type NewEdge = {
 
 type Props = {
     edge: NewEdge;
+    isSelected: boolean;
     dimension: Dimension;
+    onStartSplitEdge: () => void;
+    onSelectEdge: (edgeId: string) => void;
 };
 export default memo(
-    ({ edge, dimension }: Props) => {
+    ({
+        edge,
+        dimension,
+        isSelected,
+        onStartSplitEdge,
+        onSelectEdge,
+    }: Props) => {
         const { id, source, target } = edge;
         const theme = useTheme();
         const color =
@@ -29,7 +38,14 @@ export default memo(
         const sourcePoint = sourceAnchors[source.anchorType];
         const targetPoint = targetAnchors[target.anchorType];
 
-        const linePathD = `M ${sourcePoint.x} ${sourcePoint.y} L ${targetPoint.x} ${targetPoint.y}`;
+        const handleMouseDown = (event: MouseEvent) => {
+            event.stopPropagation();
+            onStartSplitEdge();
+        };
+
+        const handleClick = () => {
+            onSelectEdge(edge.id);
+        };
 
         return (
             <g id={id}>
@@ -45,26 +61,28 @@ export default memo(
                         <path d="M 0 0 L 5 2.5 L 0 5 Z" fill={color} />
                     </marker>
                 </defs>
-                <path
-                    d={linePathD}
-                    stroke={color}
-                    fill="none"
+                <line
+                    x1={sourcePoint.x}
+                    y1={sourcePoint.y}
+                    x2={targetPoint.x}
+                    y2={targetPoint.y}
+                    stroke={isSelected ? 'green' : color}
                     strokeWidth={2}
-                    markerEnd="url(#arrowhead)"
+                    markerEnd="url(#arrowhead) "
+                    onMouseDown={handleMouseDown}
+                    onClick={handleClick}
                 />
             </g>
         );
     },
     (prevProps, nextProps) => {
-        const { edge: prevEdge } = prevProps;
-        const { edge: nextEdge } = nextProps;
-        const { source: prevSource, target: prevTarget } = prevEdge;
-        const { source: nextSource, target: nextTarget } = nextEdge;
         return (
-            prevSource.point.x === nextSource.point.x &&
-            prevSource.point.y === nextSource.point.y &&
-            prevTarget.point.x === nextTarget.point.x &&
-            prevTarget.point.y === nextTarget.point.y
+            JSON.stringify(prevProps.edge.source) ===
+                JSON.stringify(nextProps.edge.source) &&
+            JSON.stringify(prevProps.edge.target) ===
+                JSON.stringify(nextProps.edge.target) &&
+            prevProps.dimension === nextProps.dimension &&
+            prevProps.isSelected === nextProps.isSelected
         );
     },
 );

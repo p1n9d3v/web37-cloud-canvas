@@ -10,7 +10,7 @@ export interface ViewBox extends Point {
     height: number;
 }
 
-export type AnchorType = 'top' | 'right' | 'bottom' | 'left';
+export type AnchorType = 'top' | 'right' | 'bottom' | 'left' | 'center';
 
 export type Node = {
     id: string;
@@ -20,14 +20,11 @@ export type Node = {
 
 export type Edge = {
     id: string;
-    sourceId: string;
-    targetId: string;
-    sourceAnchorType: AnchorType;
-    targetAnchorType: AnchorType;
+    source: Node & { anchorType: AnchorType };
+    target: Node & { anchorType: AnchorType };
 };
 
 export type Connection = {
     node: Node;
     anchorType: AnchorType;
-    point: Point;
 };

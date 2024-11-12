@@ -15,6 +15,8 @@ import { NodeProvider, useNodeContext } from '@cloudflow/contexts/NodeContext';
 import useConnection from '@cloudflow/hooks/useConnection';
 import useDragNode from '@cloudflow/hooks/useDragNode';
 import useZoomPan from '@cloudflow/hooks/useZoomPan';
+import { Point } from '@cloudflow/types';
+import { getSvgPoint } from '@cloudflow/utils';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export const SvgFlow = () => {
@@ -70,13 +72,13 @@ export const SvgFlow = () => {
             edges
                 .map((edge) => {
                     const sourceNode = visibleNodes.find(
-                        (node) => node.id === edge.sourceId,
+                        (node) => node.id === edge.source.id,
                     );
 
                     //INFO: 화면에 보여지는 것만 하려면 visibleNodes로 필터링 단, Edge는 보이지 않는데 anchor만 보이는 경우가 있음
                     //이는 Node에서 visibleEdges를 이용해서 안찾고 있어서 그럼, visibleEdges를 이용해서 찾게되면 zoom/pan에서 너무 많은 리렌더링이 발생함
                     const targetNode = nodes.find(
-                        (node) => node.id === edge.targetId,
+                        (node) => node.id === edge.target.id,
                     );
 
                     return sourceNode && targetNode
@@ -84,11 +86,11 @@ export const SvgFlow = () => {
                               id: edge.id,
                               source: {
                                   ...sourceNode,
-                                  anchorType: edge.sourceAnchorType,
+                                  anchorType: edge.source.anchorType,
                               },
                               target: {
                                   ...targetNode,
-                                  anchorType: edge.targetAnchorType,
+                                  anchorType: edge.target.anchorType,
                               },
                           }
                         : null;
@@ -111,6 +113,24 @@ export const SvgFlow = () => {
 
     const handleDeSelectNode = () => {
         setSelectedNodeId(null);
+    };
+
+    const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
+    const [circlePoint, setCirclePoint] = useState<Point | null>(null);
+    const handleSelectEdge = useCallback((edgeId: string) => {
+        setSelectedEdgeId(edgeId);
+    }, []);
+    const handleStartSplitEdge = useCallback(() => {}, []);
+
+    const handleMoveSplitEdge = (point: Point) => {
+        if (!selectedEdgeId || !flowRef.current) return;
+
+        const svgPoint = getSvgPoint(flowRef.current, point);
+        setCirclePoint(svgPoint);
+    };
+
+    const handleEndSplitEdge = () => {
+        setSelectedEdgeId(null);
     };
 
     //mocks
@@ -153,13 +173,15 @@ export const SvgFlow = () => {
             onMoveConnect={handleMoveConnect}
             onEndConnect={handleEndConnect}
             onDeSelectNode={handleDeSelectNode}
+            onMoveSplitEdge={handleMoveSplitEdge}
+            onEndSplitEdge={handleEndSplitEdge}
         >
             {visibleNodes.map((node) => (
                 <Node
                     key={node.id}
                     node={node}
                     dimension={dimension}
-                    isSelected={node.id === selectedNodeId}
+                    isSelected={true}
                     onStartDragNode={handleStartDragNode}
                     onSelectNode={handleSelectNode}
                     onStartConnect={handleStartConnect}
@@ -167,13 +189,20 @@ export const SvgFlow = () => {
             ))}
 
             {visibleEdges.map((edge) => (
-                <Edge key={edge.id} edge={edge} dimension={dimension} />
+                <Edge
+                    key={edge.id}
+                    edge={edge}
+                    dimension={dimension}
+                    isSelected={edge.id === selectedEdgeId}
+                    onStartSplitEdge={handleStartSplitEdge}
+                    onSelectEdge={handleSelectEdge}
+                />
             ))}
 
             {isConnecting && connection && connection.target && (
                 <Connector
-                    start={connection.source.point}
-                    end={connection.target.point}
+                    start={connection.source.node.point}
+                    end={connection.target.node!.point!}
                 />
             )}
 

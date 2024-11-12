@@ -15,6 +15,8 @@ type Props = {
     onMoveConnect: (point: Point) => void;
     onEndConnect: () => void;
     onDeSelectNode: () => void;
+    onMoveSplitEdge: (point: Point) => void;
+    onEndSplitEdge: () => void;
 };
 
 export default forwardRef<SVGSVGElement, Props>(
@@ -32,8 +34,10 @@ export default forwardRef<SVGSVGElement, Props>(
             onMoveConnect,
             onEndConnect,
             onDeSelectNode,
+            onMoveSplitEdge,
+            onEndSplitEdge,
         },
-        ref
+        ref,
     ) => {
         const handleWheel = (event: WheelEvent) => {
             const { deltaY, clientX, clientY } = event;
@@ -60,12 +64,15 @@ export default forwardRef<SVGSVGElement, Props>(
             onDragNode(point);
 
             onMoveConnect(point);
+
+            onMoveSplitEdge(point);
         };
 
         const handleMouseUp = () => {
             onEndPan();
             onEndDragNode();
             onEndConnect();
+            onEndSplitEdge();
         };
         return (
             <svg
@@ -86,5 +93,5 @@ export default forwardRef<SVGSVGElement, Props>(
                 {children}
             </svg>
         );
-    }
+    },
 );

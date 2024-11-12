@@ -1,1 +1,3 @@
-export class CreatePublicStarDto {}
+export class CreatePublicStarDto {
+    architectureId: number;
+}

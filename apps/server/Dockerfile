@@ -1,14 +1,27 @@
-FROM node:20 AS build
-WORKDIR /app
-COPY . .
-RUN npm install && npx prisma generate && npm run build && rm -rf node_modules && npm install --production && npm cache clean --force
+FROM node:20 AS development
+WORKDIR /development
+COPY ./pnpm-lock.yaml ./apps/server/package*.json  .
+RUN npm install -g pnpm
+RUN pnpm install
 
-FROM node:20-slim
+FROM node:20 AS build
+WORKDIR /build
+RUN mkdir -p /build/server
+RUN npm install -g pnpm
+COPY --from=development /development/node_modules/ /build/server/node_modules
+COPY --from=development /development/pnpm-lock.yaml /build/server/
+COPY ./apps/server/ /build/server/
+WORKDIR /build/server
+RUN npx prisma generate && npm run build && rm -rf node_modules
+RUN pnpm install --frozen-lockfile --prod
+
+FROM node:20-slim AS production
 WORKDIR /app
-RUN apt-get update -y && apt-get install -y openssl
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/dist ./dist
+RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
+COPY --from=build /build/server/node_modules ./node_modules
+COPY --from=build /build/server/dist ./dist
 
 ENV DATABASE_URL=mysql://johndoe:randompassword@localhost:3306/mydb
+ENV PORT=3000
 EXPOSE 3000
 ENTRYPOINT ["node", "./dist/src/main.js"]

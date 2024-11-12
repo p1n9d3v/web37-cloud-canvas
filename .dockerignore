@@ -1,0 +1,4 @@
+apps/server/Dockerfile
+apps/server/node_modules
+apps/server/test
+apps/server/.gitignore

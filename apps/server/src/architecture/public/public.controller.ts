@@ -5,7 +5,7 @@ import {
     Body,
     Patch,
     Param,
-    Delete,
+    Delete
 } from '@nestjs/common';
 import { PublicService } from './public.service';
 import { CreatePublicDto } from './dto/create-public.dto';
@@ -13,30 +13,31 @@ import { UpdatePublicDto } from './dto/update-public.dto';
 
 @Controller()
 export class PublicController {
-    constructor(private readonly publicService: PublicService) {}
-
-    @Post()
-    create(@Body() createPublicDto: CreatePublicDto) {
-        return this.publicService.create(createPublicDto);
+    constructor(private readonly publicService: PublicService) {
     }
 
     @Get()
-    findAll() {
-        return this.publicService.findAll();
+    getPublicArchitectures() {
+        return this.publicService.getPublicArchitectures();
+    }
+
+    @Post()
+    createPublicArchitecture(@Body() createPublicDto: CreatePublicDto) {
+        return this.publicService.createPublicArchitecture(createPublicDto);
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.publicService.findOne(+id);
-    }
-
-    @Patch(':id')
-    update(@Param('id') id: string, @Body() updatePublicDto: UpdatePublicDto) {
-        return this.publicService.update(+id, updatePublicDto);
+    getPublicArchitecture(@Param('id') id: string) {
+        return this.publicService.getPublicArchitecture(+id);
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.publicService.remove(+id);
+    deletePublicArchitecture(@Param('id') id: string) {
+        return this.publicService.deletePublicArchitecture(+id);
+    }
+
+    @Patch(':id')
+    updatePublicArchitecture(@Param('id') id: string, @Body() updatePublicDto: UpdatePublicDto) {
+        return this.publicService.updatePublicArchitecture(+id, updatePublicDto);
     }
 }

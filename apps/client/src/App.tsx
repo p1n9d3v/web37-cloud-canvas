@@ -1,7 +1,8 @@
-import CanvasFlow from '@components/CanvasFlow';
+// import CloudFlow from '@cloudflow/CloudFlow';
 import Header from '@components/Header';
 import Sidebar from '@components/Sidebar';
 import Box from '@mui/material/Box';
+import ClodFlow from '@cloudflow';
 
 function App() {
     return (
@@ -21,7 +22,7 @@ function App() {
                 }}
             >
                 <Header />
-                <CanvasFlow />
+                <ClodFlow />
             </Box>
         </Box>
     );

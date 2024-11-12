@@ -9,6 +9,8 @@
         "allowSyntheticDefaultImports": true, // default import 허용
         "baseUrl": ".",
         "paths": {
+            "@cloudflow": ["src/cloudflow/index.tsx"],
+            "@cloudflow/*": ["src/cloudflow/*"],
             "@components/*": ["src/components/*"],
             "@hooks/*": ["src/hooks/*"],
             "@utils/*": ["src/utils/*"],

@@ -81,45 +81,48 @@ export const SvgFlow = () => {
     }, [isDragging, isPanning]);
 
     useEffect(() => {
+        const removeNode = (nodeId: string) => {
+            dispatchNode({
+                type: 'REMOVE_NODE',
+                payload: { nodeId },
+            });
+        };
+
+        const removeEdge = (edgeId: string) => {
+            const edge = edges.find((edge) => edge.id === edgeId);
+            if (!edge) return;
+            const { source, target } = edge!;
+            if (target.type === 'pointer' && source.type === 'pointer') {
+                dispatchNode({
+                    type: 'REMOVE_NODE',
+                    payload: { nodeId: source.id },
+                });
+            } else if (target.type === 'pointer') {
+                dispatchNode({
+                    type: 'REMOVE_NODE',
+                    payload: { nodeId: target.id },
+                });
+            } else if (source.type === 'pointer') {
+                dispatchNode({
+                    type: 'REMOVE_NODE',
+                    payload: { nodeId: source.id },
+                });
+            }
+
+            dispatchEdge({
+                type: 'REMOVE_EDGE',
+                payload: { edgeId },
+            });
+        };
+
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Backspace') {
                 if (selectedNodeId) {
-                    dispatchNode({
-                        type: 'REMOVE_NODE',
-                        payload: { nodeId: selectedNodeId },
-                    });
+                    removeNode(selectedNodeId);
                 }
 
                 if (selectedEdgeId) {
-                    const edge = edges.find(
-                        (edge) => edge.id === selectedEdgeId,
-                    );
-                    if (!edge) return;
-                    const { source, target } = edge!;
-                    if (
-                        target.type === 'pointer' &&
-                        source.type === 'pointer'
-                    ) {
-                        dispatchNode({
-                            type: 'REMOVE_NODE',
-                            payload: { nodeId: source.id },
-                        });
-                    } else if (target.type === 'pointer') {
-                        dispatchNode({
-                            type: 'REMOVE_NODE',
-                            payload: { nodeId: target.id },
-                        });
-                    } else if (source.type === 'pointer') {
-                        dispatchNode({
-                            type: 'REMOVE_NODE',
-                            payload: { nodeId: source.id },
-                        });
-                    }
-
-                    dispatchEdge({
-                        type: 'REMOVE_EDGE',
-                        payload: { edgeId: selectedEdgeId },
-                    });
+                    removeEdge(selectedEdgeId);
                 }
             }
         };

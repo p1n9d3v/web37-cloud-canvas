@@ -1,24 +1,18 @@
 import { Dimension, Edge, Point } from '@cloudflow/types';
 import { calculateAnchorPoints } from '@cloudflow/utils';
 import { useTheme } from '@mui/material';
-import { memo, MouseEvent, useState } from 'react';
+import { memo, MouseEvent } from 'react';
 
 type Props = {
     edge: Edge;
     isSelected: boolean;
     dimension: Dimension;
-    onStartSplitEdge: (point: Point) => void;
+    onSplitEdge: (edgeId: string, point: Point) => void;
     onSelectEdge: (edgeId: string) => void;
 };
 
 export default memo(
-    ({
-        edge,
-        dimension,
-        isSelected,
-        onStartSplitEdge,
-        onSelectEdge,
-    }: Props) => {
+    ({ edge, dimension, isSelected, onSplitEdge, onSelectEdge }: Props) => {
         const { id, source, target, type } = edge;
         const theme = useTheme();
 
@@ -41,7 +35,7 @@ export default memo(
             event.stopPropagation();
             if (!isSelected) return;
             const { clientX, clientY } = event;
-            onStartSplitEdge({ x: clientX, y: clientY });
+            onSplitEdge(id, { x: clientX, y: clientY });
         };
 
         return (

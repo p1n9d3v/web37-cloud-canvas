@@ -14,10 +14,8 @@ import { FlowProvider, useFlowContext } from '@cloudflow/contexts/FlowCotext';
 import { NodeProvider, useNodeContext } from '@cloudflow/contexts/NodeContext';
 import useConnection from '@cloudflow/hooks/useConnection';
 import useDragNode from '@cloudflow/hooks/useDragNode';
+import useSplitEdge from '@cloudflow/hooks/useSplitEdge';
 import useZoomPan from '@cloudflow/hooks/useZoomPan';
-import { Node as NodeType, Point } from '@cloudflow/types';
-import { getSvgPoint } from '@cloudflow/utils';
-import { nanoid } from 'nanoid';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export const SvgFlow = () => {
@@ -30,12 +28,15 @@ export const SvgFlow = () => {
         handleMovePan,
         handleEndPan,
     } = useZoomPan(flowRef);
+
     const {
         isDragging,
         handleStartDragNode,
         handleDragNode,
         handleEndDragNode,
     } = useDragNode(flowRef, dimension);
+
+    const { handleSplitEdge } = useSplitEdge(flowRef);
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
     const {
@@ -122,33 +123,6 @@ export const SvgFlow = () => {
         setSelectedEdgeId(edgeId);
     }, []);
 
-    const handleStartSplitEdge = useCallback(
-        (point: Point) => {
-            if (!flowRef.current || !selectedEdgeId) return;
-            const svgPoint = getSvgPoint(flowRef.current, point);
-            const pointer: NodeType = {
-                id: nanoid(),
-                type: 'pointer',
-                point: svgPoint,
-            };
-            dispatchNode({
-                type: 'ADD_NODE',
-                payload: pointer,
-            });
-
-            dispatchEdge({
-                type: 'SPLIT_EDGE',
-                payload: {
-                    edgeId: selectedEdgeId,
-                    pointer,
-                },
-            });
-
-            setSelectedEdgeId(null);
-        },
-        [selectedEdgeId],
-    );
-
     //mocks
     useEffect(() => {
         const { nodes, edges } = createMockNodesAndEdges(100, 100);
@@ -196,7 +170,7 @@ export const SvgFlow = () => {
                     edge={edge}
                     dimension={dimension}
                     isSelected={edge.id === selectedEdgeId}
-                    onStartSplitEdge={handleStartSplitEdge}
+                    onSplitEdge={handleSplitEdge}
                     onSelectEdge={handleSelectEdge}
                 />
             ))}

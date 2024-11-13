@@ -96,7 +96,7 @@ export const edgeReducer = (
                 id: nanoid(),
                 source: pointer,
                 target,
-                type: 'arrow',
+                type: target.type === 'pointer' ? 'line' : 'arrow',
             };
 
             return {

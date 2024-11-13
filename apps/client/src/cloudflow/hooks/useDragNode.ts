@@ -3,13 +3,25 @@ import {
     GRID_3D_WIDTH_SIZE,
     GRID_SIZE,
 } from '@cloudflow/constants';
+import { useEdgeContext } from '@cloudflow/contexts/EdgeContext';
 import { useNodeContext } from '@cloudflow/contexts/NodeContext';
-import { Dimension, Point } from '@cloudflow/types';
-import { getDistance, getSvgPoint } from '@cloudflow/utils';
+import { AnchorsPoint, AnchorType, Dimension, Point } from '@cloudflow/types';
+import {
+    calculateAnchorPoints,
+    getDistance,
+    getSvgPoint,
+} from '@cloudflow/utils';
 import { RefObject, useCallback, useRef, useState } from 'react';
 
 export default (flowRef: RefObject<SVGSVGElement>, dimension: Dimension) => {
-    const { dispatch: dispatchNode } = useNodeContext();
+    const {
+        state: { edges },
+        dispatch: dispatchEdge,
+    } = useEdgeContext();
+    const {
+        state: { nodes },
+        dispatch: dispatchNode,
+    } = useNodeContext();
     const startDragPoint = useRef<Point | null>(null);
 
     const [draggingId, setDraggingId] = useState<string | null>(null);
@@ -78,7 +90,7 @@ export default (flowRef: RefObject<SVGSVGElement>, dimension: Dimension) => {
     const handleDragNode = useCallback(
         (point: Point) => {
             if (!isDragging || !draggingId || !flowRef.current) return;
-            const cursorSvgPoint = getSvgPoint(flowRef.current, {
+            const cursorSvgPoint = getSvgPoint(flowRef.current!, {
                 x: point.x,
                 y: point.y,
             });
@@ -91,14 +103,12 @@ export default (flowRef: RefObject<SVGSVGElement>, dimension: Dimension) => {
                 const snappedSize = dimension === '2d' ? GRID_SIZE / 4 : 1 / 4;
                 if (distance < snappedSize / 2) return;
 
-                const nodeElement = flowRef.current!.getElementById(
-                    draggingId,
-                ) as SVGGraphicsElement | null;
+                const nodeElement = flowRef.current!.getElementById(draggingId);
                 if (!nodeElement) return;
 
                 const newPoint = getGridAlignedPoint(
                     cursorSvgPoint,
-                    nodeElement,
+                    nodeElement as SVGSVGElement,
                     dimension,
                     snappedSize,
                 );
@@ -110,10 +120,101 @@ export default (flowRef: RefObject<SVGSVGElement>, dimension: Dimension) => {
                         point: newPoint,
                     },
                 });
+
+                updateEdgesToNearestAnchors(newPoint);
             }
         },
         [isDragging, draggingId, dimension],
     );
+
+    const findNearestAnchorPair = (
+        draggingAnchorPoints: AnchorsPoint,
+        connectedAnchorPoints: AnchorsPoint,
+    ) => {
+        let nearestAnchorPair = {
+            draggingAnchorType: null as AnchorType | null,
+            connectedAnchorType: null as AnchorType | null,
+            distance: Infinity,
+        };
+
+        Object.entries(draggingAnchorPoints).forEach(
+            ([draggingAnchorType, draggingAnchorPoint]) => {
+                Object.entries(connectedAnchorPoints).forEach(
+                    ([connectedAnchorType, connectedAnchorPoint]) => {
+                        if (draggingAnchorType === connectedAnchorType) return;
+
+                        const distance = getDistance(
+                            draggingAnchorPoint,
+                            connectedAnchorPoint,
+                        );
+
+                        if (distance < nearestAnchorPair.distance) {
+                            nearestAnchorPair = {
+                                draggingAnchorType:
+                                    draggingAnchorType as AnchorType,
+                                connectedAnchorType:
+                                    connectedAnchorType as AnchorType,
+                                distance,
+                            };
+                        }
+                    },
+                );
+            },
+        );
+
+        return nearestAnchorPair;
+    };
+
+    const updateEdgesToNearestAnchors = (cursorSvgPoint: Point) => {
+        const connectedEdges = edges.filter((edge) => {
+            return (
+                edge.source.id === draggingId || edge.target.id === draggingId
+            );
+        });
+
+        if (connectedEdges.length === 0) return;
+
+        const draggingAnchorPoints = calculateAnchorPoints(
+            cursorSvgPoint,
+            dimension,
+        );
+
+        connectedEdges.forEach((edge) => {
+            const { source, target } = edge;
+
+            const isDraggingSource = source.id === draggingId;
+            const connectedAnchorPoints = calculateAnchorPoints(
+                isDraggingSource ? target.point : source.point,
+                dimension,
+            );
+
+            const nearestAnchorPair = findNearestAnchorPair(
+                draggingAnchorPoints,
+                connectedAnchorPoints,
+            );
+
+            dispatchEdge({
+                type: 'UPDATE_EDGE',
+                payload: {
+                    edgeId: edge.id,
+                    data: {
+                        source: {
+                            ...source,
+                            anchorType: isDraggingSource
+                                ? nearestAnchorPair.draggingAnchorType!
+                                : nearestAnchorPair.connectedAnchorType!,
+                        },
+                        target: {
+                            ...target,
+                            anchorType: isDraggingSource
+                                ? nearestAnchorPair.connectedAnchorType!
+                                : nearestAnchorPair.draggingAnchorType!,
+                        },
+                    },
+                },
+            });
+        });
+    };
 
     const handleEndDragNode = useCallback(() => {
         setDraggingId(null);

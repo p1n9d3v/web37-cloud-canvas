@@ -4,7 +4,7 @@ import {
     GRID_3D_WIDTH_SIZE,
     GRID_SIZE,
 } from '@cloudflow/constants';
-import { AnchorType, Dimension, Point } from '@cloudflow/types';
+import { AnchorsPoint, Dimension, Point } from '@cloudflow/types';
 
 export const getDistance = (point1: Point, point2: Point) => {
     return Math.sqrt((point1.x - point2.x) ** 2 + (point1.y - point2.y) ** 2);
@@ -31,7 +31,7 @@ export const getNodeSizeForDimension = (dimension: Dimension) => {
 export const calculateAnchorPoints = (
     point: Point,
     dimension: Dimension,
-): Record<AnchorType, Point> => {
+): AnchorsPoint => {
     const { width, height } = getNodeSizeForDimension(dimension);
 
     return {

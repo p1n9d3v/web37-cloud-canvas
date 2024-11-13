@@ -11,6 +11,7 @@ export const initialEdgeState: EdgeState = {
 
 export type EdgeAction =
     | { type: 'ADD_EDGE'; payload: Edge }
+    | { type: 'UPDATE_EDGE'; payload: { edgeId: string; data: Partial<Edge> } }
     | { type: 'REMOVE_EDGE'; payload: { edgeId: string } }
     | {
           type: 'SPLIT_EDGE';
@@ -27,6 +28,19 @@ export const edgeReducer = (
     switch (action.type) {
         case 'ADD_EDGE':
             return { ...state, edges: [...state.edges, action.payload] };
+        case 'UPDATE_EDGE':
+            return {
+                ...state,
+                edges: state.edges.map((edge) => {
+                    if (edge.id === action.payload.edgeId) {
+                        return {
+                            ...edge,
+                            ...action.payload.data,
+                        };
+                    }
+                    return edge;
+                }),
+            };
         case 'REMOVE_EDGE': {
             const edgeToRemove = state.edges.find(
                 (edge) => edge.id === action.payload.edgeId,

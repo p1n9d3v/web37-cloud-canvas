@@ -10,6 +10,7 @@ services:
       - redis-data:/data
     networks:
       - cloud-canvas-network
+      - cloud-canvas-database-network
 
   mysql:
     image: mysql:8.0
@@ -23,15 +24,13 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
-      - ./config/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ../../config/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - cloud-canvas-network
+      - cloud-canvas-database-network
 
   back:
     image: geonhyukseo/cloud-canvas-server
-    build:
-      context: .
-      dockerfile: ./apps/server/Dockerfile
     container_name: back
     environment:
       DATABASE_URL: mysql://cloud_canvas_user:password@mysql:3306/cloud_canvas
@@ -46,9 +45,6 @@ services:
 
   front:
     image: geonhyukseo/cloud-canvas-client
-    build:
-      context: .
-      dockerfile: ./apps/client/Dockerfile
     container_name: front
     ports:
       - "5001:5000"
@@ -58,6 +54,8 @@ services:
 networks:
   cloud-canvas-network:
     driver: bridge
+  cloud-canvas-database-network:
+    driver: brige
 
 volumes:
   redis-data:

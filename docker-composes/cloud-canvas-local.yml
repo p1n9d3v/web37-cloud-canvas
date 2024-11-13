@@ -1,0 +1,78 @@
+services:
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      retries: 3
+      start_period: 10s
+      timeout: 5s
+    networks:
+      - cloud-canvas-network
+      - cloud-canvas-database-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: cloud_canvas
+      MYSQL_USER: cloud_canvas_user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ../config/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ../config/mysql/log.cnf:/etc/mysql/conf.d/log.cnf:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cloud-canvas-network
+      - cloud-canvas-database-network
+
+  back:
+    build:
+      context: ../
+      dockerfile: apps/server/Dockerfile
+    container_name: back
+    environment:
+      DATABASE_URL: mysql://cloud_canvas_user:password@mysql:3306/cloud_canvas
+    ports:
+      - "3000:3000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    entrypoint: sh -c "npx prisma migrate dev && node ./dist/src/main.js"
+    networks:
+      - cloud-canvas-network
+
+  front:
+    build:
+      context: ../
+      dockerfile: apps/client/Dockerfile
+    container_name: front
+    ports:
+      - "5001:5000"
+    networks:
+      - cloud-canvas-network
+
+networks:
+  cloud-canvas-network:
+    driver: bridge
+
+volumes:
+  redis-data:
+    driver: local
+  mysql-data:
+    driver: local

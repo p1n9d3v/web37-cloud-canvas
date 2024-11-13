@@ -1,2 +1,0 @@
-GRANT ALL PRIVILEGES ON *.* TO 'cloud_canvas_user'@'%';
-FLUSH PRIVILEGES;

@@ -32,7 +32,7 @@ export const createMockNodesAndEdges = (
 
         return {
             id: nanoid(),
-            type: 'line',
+            type: 'arrow',
             source: {
                 ...nodes[sourceIndex],
                 anchorType: randomAnchorType() as AnchorType,

@@ -1,6 +1,6 @@
 import { Dimension, ViewBox } from '@cloudflow/types';
-import GridPatternMajor from './Patterns/GridPatternMajor';
-import GridPatternMinor from './Patterns/GridPatternMinor';
+import GridPatternMajor from './patterns/GridPatternMajor';
+import GridPatternMinor from './patterns/GridPatternMinor';
 
 export default ({
     viewBox,

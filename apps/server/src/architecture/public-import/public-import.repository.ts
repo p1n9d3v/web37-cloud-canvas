@@ -7,29 +7,20 @@ export class PublicImportRepository {
     }
 
     async create(userId: number, architectureId: number) {
-        return this.prisma.$transaction(async (prisma) => {
-            const import_ = await prisma.publicArchitectureImport.create({
-                data: {
-                    userId,
-                    publicArchitectureId: architectureId
-                },
-                include: {
-                    publicArchitecture: true,
-                    user: {
-                        select: {
-                            id: true,
-                            name: true
-                        }
+        return this.prisma.publicArchitectureImport.create({
+            data: {
+                userId,
+                publicArchitectureId: architectureId
+            },
+            include: {
+                publicArchitecture: true,
+                user: {
+                    select: {
+                        id: true,
+                        name: true
                     }
                 }
-            });
-
-            await prisma.publicArchitecture.update({
-                where: { id: architectureId },
-                data: { importCount: { increment: 1 } }
-            });
-
-            return import_;
+            }
         });
     }
 

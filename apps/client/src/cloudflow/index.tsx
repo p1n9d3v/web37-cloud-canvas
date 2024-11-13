@@ -8,12 +8,14 @@ import { FlowProvider, useFlowContext } from '@cloudflow/contexts/FlowCotext';
 import { NodeProvider, useNodeContext } from '@cloudflow/contexts/NodeContext';
 import useConnection from '@cloudflow/hooks/useConnection';
 import useDragNode from '@cloudflow/hooks/useDragNode';
+import useMocks from '@cloudflow/hooks/useMocks';
 import useSplitEdge from '@cloudflow/hooks/useSplitEdge';
 import useVisible from '@cloudflow/hooks/useVisible';
 import useZoomPan from '@cloudflow/hooks/useZoomPan';
 import { useCallback, useEffect, useState } from 'react';
 
 export const SvgFlow = () => {
+    useMocks();
     const { flowRef, dimension, changeDimension } = useFlowContext();
     const {
         viewBox,
@@ -35,11 +37,9 @@ export const SvgFlow = () => {
 
     const {
         state: { nodes },
-        dispatch: dispatchNode,
     } = useNodeContext();
     const {
         state: { edges },
-        dispatch: dispatchEdge,
     } = useEdgeContext();
 
     const { visibleCloudNode, visibleEdges } = useVisible({
@@ -70,25 +70,6 @@ export const SvgFlow = () => {
 
     const handleSelectEdge = useCallback((edgeId: string) => {
         setSelectedEdgeId(edgeId);
-    }, []);
-
-    //mocks
-    useEffect(() => {
-        const { nodes, edges } = createMockNodesAndEdges(100, 100);
-
-        nodes.forEach((node) => {
-            dispatchNode({
-                type: 'ADD_NODE',
-                payload: node,
-            });
-        });
-
-        edges.forEach((edge) => {
-            dispatchEdge({
-                type: 'ADD_EDGE',
-                payload: edge,
-            });
-        });
     }, []);
 
     useEffect(() => {

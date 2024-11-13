@@ -16,7 +16,7 @@ WORKDIR /build/apps/client
 RUN npm run build && rm -rf node_modules && pnpm install --frozen-lockfile --prod
 
 FROM nginx:alpine AS production
-COPY --from=build /build/client/dist /usr/share/nginx/html
+COPY --from=build /build/apps/client/dist /usr/share/nginx/html
 COPY ./apps/nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
 ENV PORT=5000

@@ -18,20 +18,25 @@ export class PrivateController {
 
     @Get()
     getPrivateArchitectures() {
-        return this.privateService.getPrivateArchitectures();
+        const userId = 1; // #TODO: userId 받아오기
+        return this.privateService.getPrivateArchitectures(userId);
     }
 
     @Post()
     createPrivateArchitecture(@Body() createPrivateDto: CreatePrivateDto) {
-        return this.privateService.createPrivateArchitecture(createPrivateDto);
+        const userId = 1; // #TODO: userId 받아오기
+        return this.privateService.createPrivateArchitecture(
+            userId,
+            createPrivateDto,
+        );
     }
 
-    @Get(':id')
+    @Get(':id') // #TODO: userId로 조회하려는 데이터가 해당 유저의 것인지 확인
     getPrivateArchitecture(@Param('id', ParseIntPipe) id: number) {
         return this.privateService.getPrivateArchitecture(id);
     }
 
-    @Patch(':id')
+    @Patch(':id') // #TODO: userId로 조회하려는 데이터가 해당 유저의 것인지 확인
     updatePrivateArchitecture(
         @Param('id', ParseIntPipe) id: number,
         @Body() updatePrivateDto: UpdatePrivateDto,
@@ -42,7 +47,7 @@ export class PrivateController {
         );
     }
 
-    @Delete(':id')
+    @Delete(':id') // #TODO: userId로 조회하려는 데이터가 해당 유저의 것인지 확인
     deletePrivateArchitecture(@Param('id', ParseIntPipe) id: number) {
         return this.deletePrivateArchitecture(id);
     }

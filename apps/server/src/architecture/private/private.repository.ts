@@ -5,18 +5,34 @@ import { CreatePrivateDto } from './dto/create-private.dto';
 export class PrivateRepository {
     constructor(private readonly prisma: PrismaService) {}
 
-    findAll() {
-        this.prisma.privateArchitecture.findMany();
+    findAll(userId: number) {
+        return this.prisma.privateArchitecture.findMany({
+            where: {
+                authorId: userId,
+            },
+            select: {
+                id: true,
+                title: true,
+                authorId: true,
+                createdAt: true,
+                updatedAt: true,
+            },
+        });
     }
 
-    create(createPrivateDto: CreatePrivateDto) {
+    create(userId: number, createPrivateDto: CreatePrivateDto) {
         return this.prisma.privateArchitecture.create({
-            data: createPrivateDto,
+            data: {
+                ...createPrivateDto,
+                authorId: userId,
+            },
         });
     }
 
     findById(id: number) {
-        return this.prisma.privateArchitecture.findUnique({ where: { id } });
+        return this.prisma.privateArchitecture.findUnique({
+            where: { id },
+        });
     }
 
     update(id: number, updatePrivateDto: UpdatePrivateDto) {
@@ -27,6 +43,8 @@ export class PrivateRepository {
     }
 
     delete(id: number) {
-        return this.prisma.privateArchitecture.delete({ where: { id } });
+        return this.prisma.privateArchitecture.delete({
+            where: { id },
+        });
     }
 }

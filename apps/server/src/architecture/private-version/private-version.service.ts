@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePrivateVersionDto } from './dto/create-private-version.dto';
 import { PrivateVersionRepository } from './private-version.repository';
 
@@ -18,6 +18,10 @@ export class PrivateVersionService {
     }
 
     deleteVersion(versionId: number) {
-        return this.repository.delete(versionId);
+        try {
+            return this.repository.delete(versionId);
+        } catch (error) {
+            throw new NotFoundException('Architecture version not found');
+        }
     }
 }

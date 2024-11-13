@@ -30,9 +30,10 @@ export const getNodeSizeForDimension = (dimension: Dimension) => {
 
 export const calculateAnchorPoints = (
     point: Point,
-    dimension: Dimension
+    dimension: Dimension,
 ): Record<AnchorType, Point> => {
     const { width, height } = getNodeSizeForDimension(dimension);
+
     return {
         top: { x: point.x + width / 2, y: point.y },
         right: { x: point.x + width, y: point.y + height / 2 },

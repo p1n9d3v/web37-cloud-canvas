@@ -1,31 +1,26 @@
-import { useTheme } from '@mui/material';
+import { ANCHOR_RADIUS } from '@cloudflow/constants';
 import { MouseEvent } from 'react';
 
 type Props = {
     visible: boolean;
+    color: string;
     cx?: number;
     cy?: number;
-    onStartConnect: () => void;
+    onStartConnect?: () => void;
 };
 
-export default ({ cx, cy, visible, onStartConnect }: Props) => {
-    const theme = useTheme();
-    const color =
-        theme.palette.mode === 'dark'
-            ? theme.palette.grey[200]
-            : theme.palette.grey[800];
-
+export default ({ cx, cy, visible, color, onStartConnect }: Props) => {
     const handleMouseDown = (e: MouseEvent) => {
         e.stopPropagation();
-        onStartConnect();
+        onStartConnect && onStartConnect();
     };
 
     return (
         <circle
-            r={5}
-            fill={color}
+            r={ANCHOR_RADIUS}
             cx={cx}
             cy={cy}
+            fill={color}
             style={{
                 visibility: visible ? 'visible' : 'hidden',
             }}

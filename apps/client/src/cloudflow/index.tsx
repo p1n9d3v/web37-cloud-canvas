@@ -15,8 +15,9 @@ import { NodeProvider, useNodeContext } from '@cloudflow/contexts/NodeContext';
 import useConnection from '@cloudflow/hooks/useConnection';
 import useDragNode from '@cloudflow/hooks/useDragNode';
 import useZoomPan from '@cloudflow/hooks/useZoomPan';
-import { Point } from '@cloudflow/types';
+import { Node as NodeType, Point } from '@cloudflow/types';
 import { getSvgPoint } from '@cloudflow/utils';
+import { nanoid } from 'nanoid';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export const SvgFlow = () => {
@@ -46,7 +47,7 @@ export const SvgFlow = () => {
         dispatch: dispatchEdge,
     } = useEdgeContext();
 
-    const visibleNodes = useMemo(
+    const visibleCloudNode = useMemo(
         () =>
             nodes.filter((node) => {
                 const { x, y } = node.point;
@@ -71,7 +72,7 @@ export const SvgFlow = () => {
         () =>
             edges
                 .map((edge) => {
-                    const sourceNode = visibleNodes.find(
+                    const sourceNode = visibleCloudNode.find(
                         (node) => node.id === edge.source.id,
                     );
 
@@ -83,7 +84,7 @@ export const SvgFlow = () => {
 
                     return sourceNode && targetNode
                         ? {
-                              id: edge.id,
+                              ...edge,
                               source: {
                                   ...sourceNode,
                                   anchorType: edge.source.anchorType,
@@ -96,7 +97,7 @@ export const SvgFlow = () => {
                         : null;
                 })
                 .filter((edge) => edge !== null),
-        [edges, visibleNodes, nodes],
+        [edges, visibleCloudNode, nodes],
     );
 
     const {
@@ -105,7 +106,7 @@ export const SvgFlow = () => {
         handleStartConnect,
         handleMoveConnect,
         handleEndConnect,
-    } = useConnection(flowRef, visibleNodes, dimension);
+    } = useConnection(flowRef, visibleCloudNode, dimension);
 
     const handleSelectNode = useCallback((nodeId: string) => {
         setSelectedNodeId(nodeId);
@@ -116,22 +117,37 @@ export const SvgFlow = () => {
     };
 
     const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
-    const [circlePoint, setCirclePoint] = useState<Point | null>(null);
+
     const handleSelectEdge = useCallback((edgeId: string) => {
         setSelectedEdgeId(edgeId);
     }, []);
-    const handleStartSplitEdge = useCallback(() => {}, []);
 
-    const handleMoveSplitEdge = (point: Point) => {
-        if (!selectedEdgeId || !flowRef.current) return;
+    const handleStartSplitEdge = useCallback(
+        (point: Point) => {
+            if (!flowRef.current || !selectedEdgeId) return;
+            const svgPoint = getSvgPoint(flowRef.current, point);
+            const pointer: NodeType = {
+                id: nanoid(),
+                type: 'pointer',
+                point: svgPoint,
+            };
+            dispatchNode({
+                type: 'ADD_NODE',
+                payload: pointer,
+            });
 
-        const svgPoint = getSvgPoint(flowRef.current, point);
-        setCirclePoint(svgPoint);
-    };
+            dispatchEdge({
+                type: 'SPLIT_EDGE',
+                payload: {
+                    edgeId: selectedEdgeId,
+                    pointer,
+                },
+            });
 
-    const handleEndSplitEdge = () => {
-        setSelectedEdgeId(null);
-    };
+            setSelectedEdgeId(null);
+        },
+        [selectedEdgeId],
+    );
 
     //mocks
     useEffect(() => {
@@ -155,7 +171,7 @@ export const SvgFlow = () => {
     useEffect(() => {
         if (flowRef.current) {
             flowRef.current.style.cursor =
-                isDragging || isPanning ? 'grab' : 'auto';
+                isDragging || isPanning ? 'move' : 'auto';
         }
     }, [isDragging, isPanning]);
 
@@ -173,21 +189,7 @@ export const SvgFlow = () => {
             onMoveConnect={handleMoveConnect}
             onEndConnect={handleEndConnect}
             onDeSelectNode={handleDeSelectNode}
-            onMoveSplitEdge={handleMoveSplitEdge}
-            onEndSplitEdge={handleEndSplitEdge}
         >
-            {visibleNodes.map((node) => (
-                <Node
-                    key={node.id}
-                    node={node}
-                    dimension={dimension}
-                    isSelected={true}
-                    onStartDragNode={handleStartDragNode}
-                    onSelectNode={handleSelectNode}
-                    onStartConnect={handleStartConnect}
-                />
-            ))}
-
             {visibleEdges.map((edge) => (
                 <Edge
                     key={edge.id}
@@ -196,6 +198,18 @@ export const SvgFlow = () => {
                     isSelected={edge.id === selectedEdgeId}
                     onStartSplitEdge={handleStartSplitEdge}
                     onSelectEdge={handleSelectEdge}
+                />
+            ))}
+
+            {visibleCloudNode.map((node) => (
+                <Node
+                    key={node.id}
+                    node={node}
+                    dimension={dimension}
+                    isSelected={node.id === selectedNodeId}
+                    onStartDragNode={handleStartDragNode}
+                    onSelectNode={handleSelectNode}
+                    onStartConnect={handleStartConnect}
                 />
             ))}
 

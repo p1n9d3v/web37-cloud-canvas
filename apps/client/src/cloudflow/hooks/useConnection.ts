@@ -17,7 +17,7 @@ import { RefObject, useCallback, useState } from 'react';
 type TargetConnection = {
     node?: {
         id: string | null;
-    } & Omit<Partial<Connection['node']>, 'id'>;
+    } & Omit<Partial<Connection['node']>, 'id' | 'type'>;
     anchorType?: AnchorType;
 };
 
@@ -82,7 +82,7 @@ export default (
                     target: nearestConnection ?? {
                         node: {
                             id: null,
-                            type: 'connection',
+                            type: null,
                             point: svgPoint,
                         },
                         anchorType: prev.target?.anchorType,
@@ -104,6 +104,7 @@ export default (
                 type: 'ADD_EDGE',
                 payload: {
                     id: nanoid(),
+                    type: 'arrow',
                     source: {
                         ...source.node,
                         anchorType: source.anchorType,

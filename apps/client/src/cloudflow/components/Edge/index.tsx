@@ -1,22 +1,16 @@
-import { AnchorType, Dimension, Node, Point } from '@cloudflow/types';
+import { Dimension, Edge, Point } from '@cloudflow/types';
 import { calculateAnchorPoints } from '@cloudflow/utils';
 import { useTheme } from '@mui/material';
-import { memo, MouseEvent } from 'react';
-
-//TODO: Edge 타입 병합 필요
-type NewEdge = {
-    id: string;
-    source: Node & { anchorType: AnchorType };
-    target: Node & { anchorType: AnchorType };
-};
+import { memo, MouseEvent, useState } from 'react';
 
 type Props = {
-    edge: NewEdge;
+    edge: Edge;
     isSelected: boolean;
     dimension: Dimension;
-    onStartSplitEdge: () => void;
+    onStartSplitEdge: (point: Point) => void;
     onSelectEdge: (edgeId: string) => void;
 };
+
 export default memo(
     ({
         edge,
@@ -25,30 +19,33 @@ export default memo(
         onStartSplitEdge,
         onSelectEdge,
     }: Props) => {
-        const { id, source, target } = edge;
+        const { id, source, target, type } = edge;
         const theme = useTheme();
-        const color =
-            theme.palette.mode === 'dark'
-                ? theme.palette.grey[200]
-                : theme.palette.grey[800];
 
         const sourceAnchors = calculateAnchorPoints(source.point, dimension);
         const targetAnchors = calculateAnchorPoints(target.point, dimension);
 
-        const sourcePoint = sourceAnchors[source.anchorType];
-        const targetPoint = targetAnchors[target.anchorType];
+        const sourcePoint = source.anchorType
+            ? sourceAnchors[source.anchorType]
+            : source.point;
+        const targetPoint = target.anchorType
+            ? targetAnchors[target.anchorType]
+            : target.point;
 
-        const handleMouseDown = (event: MouseEvent) => {
+        const handleClick = (event: MouseEvent) => {
             event.stopPropagation();
-            onStartSplitEdge();
+            onSelectEdge(id);
         };
 
-        const handleClick = () => {
-            onSelectEdge(edge.id);
+        const handleDbClick = (event: MouseEvent) => {
+            event.stopPropagation();
+            if (!isSelected) return;
+            const { clientX, clientY } = event;
+            onStartSplitEdge({ x: clientX, y: clientY });
         };
 
         return (
-            <g id={id}>
+            <g id={id} data-type="flow-line">
                 <defs>
                     <marker
                         id="arrowhead"
@@ -58,7 +55,10 @@ export default memo(
                         refY="2.5"
                         orient="auto"
                     >
-                        <path d="M 0 0 L 5 2.5 L 0 5 Z" fill={color} />
+                        <path
+                            d="M 0 0 L 5 2.5 L 0 5 Z"
+                            fill={theme.palette.text.primary}
+                        />
                     </marker>
                 </defs>
                 <line
@@ -66,11 +66,15 @@ export default memo(
                     y1={sourcePoint.y}
                     x2={targetPoint.x}
                     y2={targetPoint.y}
-                    stroke={isSelected ? 'green' : color}
-                    strokeWidth={2}
-                    markerEnd="url(#arrowhead) "
-                    onMouseDown={handleMouseDown}
+                    stroke={
+                        isSelected
+                            ? theme.palette.error.main
+                            : theme.palette.text.primary
+                    }
+                    strokeWidth={3}
+                    markerEnd={type === 'arrow' ? 'url(#arrowhead)' : ''}
                     onClick={handleClick}
+                    onDoubleClick={handleDbClick}
                 />
             </g>
         );

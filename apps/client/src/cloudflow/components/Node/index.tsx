@@ -1,14 +1,15 @@
-import Anchor from '@cloudflow/components/Anchor';
-import Server from '@cloudflow/components/Node/svgs/Server';
-import { GRID_SIZE } from '@cloudflow/constants';
-import { useEdgeContext } from '@cloudflow/contexts/EdgeContext';
-import { AnchorType, Dimension, Node, Point } from '@cloudflow/types';
+import CloudNode from '@cloudflow/components/Node/CloudNode';
+import CommonNode from '@cloudflow/components/Node/CommonNode';
 import {
-    calculateAnchorPoints,
-    getNodeSizeForDimension,
-} from '@cloudflow/utils';
-import { useTheme } from '@mui/material';
-import { createElement, memo, MouseEvent, useMemo } from 'react';
+    AnchorType,
+    CloudNodeType,
+    CommonNodeType,
+    Dimension,
+    Node,
+    Point,
+} from '@cloudflow/types';
+import { getNodeSizeForDimension } from '@cloudflow/utils';
+import { memo, MouseEvent } from 'react';
 
 type Props = {
     node: Node;
@@ -19,16 +20,8 @@ type Props = {
     onStartConnect: (node: Node, anchorType: AnchorType) => void;
 };
 
-const getNodeComponent = (type: string) => {
-    switch (type) {
-        case 'server':
-            return Server;
-        default:
-            return () => (
-                <rect width={GRID_SIZE} height={GRID_SIZE} fill="gray" />
-            );
-    }
-};
+const cloudNodeType = ['server'];
+const commonNodeType = ['pointer'];
 
 export default memo(
     ({
@@ -39,43 +32,8 @@ export default memo(
         onSelectNode,
         onStartConnect,
     }: Props) => {
-        const theme = useTheme();
         const { id, type, point } = node;
         const { width, height } = getNodeSizeForDimension(dimension);
-
-        const {
-            state: { edges },
-        } = useEdgeContext();
-
-        const connectedAnchors: AnchorType[] = useMemo(
-            () =>
-                edges
-                    .filter((edge) => {
-                        return edge.source.id === id;
-                    })
-                    .map((edge) => edge.source.anchorType),
-            [edges],
-        );
-
-        //TODO: 화면에 보이는 edge에 관련해서 찾을지 고민.. 이렇게 하면 zoom/pan에서 너무 많은 리렌더링이 발생함
-        //
-        // const connectedAnchors: AnchorType[] = useMemo(
-        //     () =>
-        //         visibleEdges
-        //             .filter((edge: any) => {
-        //                 return edge.source.id === id;
-        //             })
-        //             .map((edge: any) => edge.source.anchorType),
-        //     [visibleEdges],
-        // );
-
-        const anchors = calculateAnchorPoints(
-            {
-                x: 0,
-                y: 0,
-            },
-            dimension,
-        );
 
         const handleMouseDown = (event: MouseEvent) => {
             event.stopPropagation();
@@ -93,50 +51,30 @@ export default memo(
         return (
             <g
                 id={id}
+                data-type="flow-node"
                 style={{ transform: `translate(${point.x}px, ${point.y}px)` }}
                 onMouseDown={handleMouseDown}
                 onDoubleClick={handleDbClick}
             >
-                {createElement(getNodeComponent(type), {
-                    dimension,
-                    width,
-                    height,
-                })}
-
-                {dimension === '2d' && (
-                    <rect
+                {cloudNodeType.includes(type) && (
+                    <CloudNode
+                        nodeId={id}
+                        type={type as CloudNodeType}
                         width={width}
                         height={height}
-                        fill="none"
-                        stroke={theme.palette.primary.main}
-                        strokeWidth="2"
-                        strokeDasharray={isSelected ? '10,5' : undefined}
-                    >
-                        <animate
-                            attributeName="stroke-dashoffset"
-                            from="0"
-                            to="15"
-                            dur="1.5s"
-                            repeatCount="indefinite"
-                        />
-                    </rect>
-                )}
-
-                {Object.entries(anchors).map(([anchorType, point]) => (
-                    <Anchor
-                        key={`${id}-${anchorType}`}
-                        cx={point.x}
-                        cy={point.y}
-                        visible={
-                            connectedAnchors.includes(
-                                anchorType as AnchorType,
-                            ) || isSelected
-                        }
-                        onStartConnect={() =>
-                            onStartConnect(node, anchorType as AnchorType)
+                        dimension={dimension}
+                        isSelected={isSelected}
+                        onStartConnect={(anchorType: AnchorType) =>
+                            onStartConnect(node, anchorType)
                         }
                     />
-                ))}
+                )}
+                {commonNodeType.includes(type) && (
+                    <CommonNode
+                        type={type as CommonNodeType}
+                        isSelected={isSelected}
+                    />
+                )}
             </g>
         );
     },

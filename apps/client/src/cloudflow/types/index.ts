@@ -14,20 +14,23 @@ export type AnchorType = 'top' | 'right' | 'bottom' | 'left';
 
 export type Node = {
     id: string;
-    type: string;
+    type: CommonNodeType | CloudNodeType;
     point: Point;
 };
 
+export type NodeWithAnchor = Node & { anchorType?: AnchorType };
+
 export type Edge = {
     id: string;
-    sourceId: string;
-    targetId: string;
-    sourceAnchorType: AnchorType;
-    targetAnchorType: AnchorType;
+    source: NodeWithAnchor;
+    target: NodeWithAnchor;
+    type: 'line' | 'arrow';
 };
 
 export type Connection = {
     node: Node;
     anchorType: AnchorType;
-    point: Point;
 };
+
+export type CommonNodeType = 'pointer';
+export type CloudNodeType = 'server';

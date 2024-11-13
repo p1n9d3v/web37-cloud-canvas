@@ -6,7 +6,7 @@ import {
 import { useNodeContext } from '@cloudflow/contexts/NodeContext';
 import { Dimension, Point } from '@cloudflow/types';
 import { getDistance, getSvgPoint } from '@cloudflow/utils';
-import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { RefObject, useCallback, useRef, useState } from 'react';
 
 export default (flowRef: RefObject<SVGSVGElement>, dimension: Dimension) => {
     const { dispatch: dispatchNode } = useNodeContext();
@@ -23,7 +23,7 @@ export default (flowRef: RefObject<SVGSVGElement>, dimension: Dimension) => {
 
     const screenToGrid = (
         x: number,
-        y: number
+        y: number,
     ): { col: number; row: number } => {
         const col =
             (x / (GRID_3D_WIDTH_SIZE / 2) + y / (GRID_3D_HEIGHT_SIZE / 2)) / 2;
@@ -36,14 +36,14 @@ export default (flowRef: RefObject<SVGSVGElement>, dimension: Dimension) => {
         cursorPoint: Point,
         nodeElement: SVGGraphicsElement,
         dimension: '2d' | '3d',
-        gridSize: number
+        gridSize: number,
     ): Point => {
         const bbox = nodeElement.getBBox();
         const newX = cursorPoint.x - bbox.width / 2;
         const newY = cursorPoint.y - bbox.height / 2;
         if (dimension === '2d') {
-            const gridAlignedX = Math.floor(newX / gridSize) * gridSize;
-            const gridAlignedY = Math.floor(newY / gridSize) * gridSize;
+            const gridAlignedX = Math.round(newX / gridSize) * gridSize;
+            const gridAlignedY = Math.round(newY / gridSize) * gridSize;
 
             return {
                 x: gridAlignedX,
@@ -52,8 +52,8 @@ export default (flowRef: RefObject<SVGSVGElement>, dimension: Dimension) => {
         } else if (dimension === '3d') {
             const { col, row } = screenToGrid(newX, newY);
 
-            const snappedCol = Math.floor(col / gridSize) * gridSize;
-            const snappedRow = Math.floor(row / gridSize) * gridSize;
+            const snappedCol = Math.round(col / gridSize) * gridSize;
+            const snappedRow = Math.round(row / gridSize) * gridSize;
 
             return gridToScreen(snappedCol, snappedRow);
         } else {
@@ -86,13 +86,13 @@ export default (flowRef: RefObject<SVGSVGElement>, dimension: Dimension) => {
             if (cursorSvgPoint) {
                 const distance = getDistance(
                     startDragPoint.current!,
-                    cursorSvgPoint
+                    cursorSvgPoint,
                 );
                 const snappedSize = dimension === '2d' ? GRID_SIZE / 4 : 1 / 4;
-                if (distance < snappedSize) return;
+                if (distance < snappedSize / 2) return;
 
                 const nodeElement = flowRef.current!.getElementById(
-                    draggingId
+                    draggingId,
                 ) as SVGGraphicsElement | null;
                 if (!nodeElement) return;
 
@@ -100,7 +100,7 @@ export default (flowRef: RefObject<SVGSVGElement>, dimension: Dimension) => {
                     cursorSvgPoint,
                     nodeElement,
                     dimension,
-                    snappedSize
+                    snappedSize,
                 );
 
                 dispatchNode({
@@ -112,7 +112,7 @@ export default (flowRef: RefObject<SVGSVGElement>, dimension: Dimension) => {
                 });
             }
         },
-        [isDragging, draggingId, dimension]
+        [isDragging, draggingId, dimension],
     );
 
     const handleEndDragNode = useCallback(() => {

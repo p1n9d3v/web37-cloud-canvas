@@ -5,7 +5,8 @@ import {
     Body,
     Patch,
     Param,
-    Delete
+    Delete,
+    ParseIntPipe,
 } from '@nestjs/common';
 import { PublicService } from './public.service';
 import { CreatePublicDto } from './dto/create-public.dto';
@@ -13,8 +14,7 @@ import { UpdatePublicDto } from './dto/update-public.dto';
 
 @Controller()
 export class PublicController {
-    constructor(private readonly publicService: PublicService) {
-    }
+    constructor(private readonly publicService: PublicService) {}
 
     @Get()
     getPublicArchitectures() {
@@ -27,17 +27,20 @@ export class PublicController {
     }
 
     @Get(':id')
-    getPublicArchitecture(@Param('id') id: string) {
-        return this.publicService.getPublicArchitecture(+id);
+    getPublicArchitecture(@Param('id', ParseIntPipe) id: number) {
+        return this.publicService.getPublicArchitecture(id);
     }
 
     @Delete(':id')
-    deletePublicArchitecture(@Param('id') id: string) {
-        return this.publicService.deletePublicArchitecture(+id);
+    deletePublicArchitecture(@Param('id', ParseIntPipe) id: number) {
+        return this.publicService.deletePublicArchitecture(id);
     }
 
     @Patch(':id')
-    updatePublicArchitecture(@Param('id') id: string, @Body() updatePublicDto: UpdatePublicDto) {
-        return this.publicService.updatePublicArchitecture(+id, updatePublicDto);
+    updatePublicArchitecture(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() updatePublicDto: UpdatePublicDto,
+    ) {
+        return this.publicService.updatePublicArchitecture(id, updatePublicDto);
     }
 }

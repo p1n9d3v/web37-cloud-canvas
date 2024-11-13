@@ -1,4 +1,4 @@
-import { Controller, Post, Delete, Param } from '@nestjs/common';
+import { Controller, Post, Delete, Param, ParseIntPipe } from '@nestjs/common';
 import { PublicStarService } from './public-star.service';
 
 @Controller()
@@ -7,15 +7,15 @@ export class PublicStarController {
     }
 
     @Post()
-    createPublicArchitectureStar(@Param('architectureId') architectureId: string) {
+    createPublicArchitectureStar(@Param('architectureId', ParseIntPipe) architectureId: number) {
         return this.publicStarService.create({
-            architectureId: +architectureId
+            architectureId: architectureId
         });
     }
 
     @Delete()
-    remove(@Param('architectureId') architectureId: string) {
-        return this.publicStarService.remove(+architectureId);
+    remove(@Param('architectureId', ParseIntPipe) architectureId: number) {
+        return this.publicStarService.remove(architectureId);
     }
 }
 

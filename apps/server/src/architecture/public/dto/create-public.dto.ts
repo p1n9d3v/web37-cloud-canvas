@@ -1,9 +1,21 @@
+import { IsArray, IsNotEmpty, IsNumber, IsObject, IsString } from 'class-validator';
+
 export class CreatePublicDto {
+    @IsString()
+    @IsNotEmpty()
     title: string;
 
-    architecture: any;
+    @IsObject()
+    @IsNotEmpty()
+    architecture: Record<string, any>;
 
+    @IsNumber()
+    @IsNotEmpty()
     cost: number;
 
-    tag: any;
+
+    @IsArray()
+    @IsString({ each: true })
+    @IsNotEmpty({ each: true })
+    tag: string[];
 }

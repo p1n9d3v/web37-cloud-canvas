@@ -1,4 +1,4 @@
-import { Controller, Post, Param } from '@nestjs/common';
+import { Controller, Post, Param, ParseIntPipe } from '@nestjs/common';
 import { PublicImportService } from './public-import.service';
 
 @Controller()
@@ -7,9 +7,9 @@ export class PublicImportController {
     }
 
     @Post()
-    create(@Param('architectureId') architectureId: string) {
+    create(@Param('architectureId', ParseIntPipe) architectureId: number) {
         return this.publicImportService.create({
-            architectureId: +architectureId
+            architectureId: architectureId
         });
     }
 }

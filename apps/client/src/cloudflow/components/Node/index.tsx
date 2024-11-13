@@ -52,6 +52,7 @@ export default memo(
             <g
                 id={id}
                 data-type="flow-node"
+                data-node-type={type}
                 style={{ transform: `translate(${point.x}px, ${point.y}px)` }}
                 onMouseDown={handleMouseDown}
                 onDoubleClick={handleDbClick}

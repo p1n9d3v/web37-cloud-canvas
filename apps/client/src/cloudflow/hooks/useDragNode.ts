@@ -18,10 +18,7 @@ export default (flowRef: RefObject<SVGSVGElement>, dimension: Dimension) => {
         state: { edges },
         dispatch: dispatchEdge,
     } = useEdgeContext();
-    const {
-        state: { nodes },
-        dispatch: dispatchNode,
-    } = useNodeContext();
+    const { dispatch: dispatchNode } = useNodeContext();
     const startDragPoint = useRef<Point | null>(null);
 
     const [draggingId, setDraggingId] = useState<string | null>(null);
@@ -121,7 +118,11 @@ export default (flowRef: RefObject<SVGSVGElement>, dimension: Dimension) => {
                     },
                 });
 
-                updateEdgesToNearestAnchors(newPoint);
+                if (
+                    (nodeElement as SVGGElement).dataset.nodeType !== 'pointer'
+                ) {
+                    updateEdgesToNearestAnchors(newPoint);
+                }
             }
         },
         [isDragging, draggingId, dimension],

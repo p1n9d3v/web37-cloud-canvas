@@ -62,7 +62,7 @@ export default memo(
                     y2={targetPoint.y}
                     stroke={
                         isSelected
-                            ? theme.palette.error.main
+                            ? theme.palette.info.main
                             : theme.palette.text.primary
                     }
                     strokeWidth={3}

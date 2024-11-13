@@ -13,8 +13,8 @@ export class PublicService {
         return this.publicRepository.findAll();
     }
 
-    async createPublicArchitecture(dto: CreatePublicDto) {
-        return await this.publicRepository.create(dto);
+    async createPublicArchitecture(userId: number, dto: CreatePublicDto) {
+        return await this.publicRepository.create(userId, dto);
     }
 
     async getPublicArchitecture(id: number) {

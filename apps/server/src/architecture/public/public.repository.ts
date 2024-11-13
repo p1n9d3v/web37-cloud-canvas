@@ -44,14 +44,12 @@ export class PublicRepository {
         });
     }
 
-    async create(dto: CreatePublicDto) {
+    async create(userId: number, createPublicDto: CreatePublicDto) {
+
         return this.prisma.publicArchitecture.create({
             data: {
-                title: dto.title,
-                architecture: dto.architecture,
-                cost: dto.cost,
-                tag: dto.tag,
-                authorId: 1
+                ...createPublicDto,
+                authorId: userId
             },
             include: {
                 author: {
@@ -64,10 +62,10 @@ export class PublicRepository {
         });
     }
 
-    async update(id: number, dto: UpdatePublicDto) {
+    async update(id: number, updatePublicDto: UpdatePublicDto) {
         return this.prisma.publicArchitecture.update({
             where: { id },
-            data: dto,
+            data: updatePublicDto,
             include: {
                 author: {
                     select: {

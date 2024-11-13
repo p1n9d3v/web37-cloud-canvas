@@ -8,8 +8,7 @@ export class PublicImportController {
 
     @Post()
     create(@Param('architectureId', ParseIntPipe) architectureId: number) {
-        return this.publicImportService.create({
-            architectureId: architectureId
-        });
+        const userId = 1;
+        return this.publicImportService.create(userId, architectureId);
     }
 }

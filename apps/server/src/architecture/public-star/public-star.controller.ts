@@ -8,14 +8,13 @@ export class PublicStarController {
 
     @Post()
     createPublicArchitectureStar(@Param('architectureId', ParseIntPipe) architectureId: number) {
-        return this.publicStarService.create({
-            architectureId: architectureId
-        });
+        const userId = 1;
+        return this.publicStarService.create(userId, architectureId);
     }
 
     @Delete()
     remove(@Param('architectureId', ParseIntPipe) architectureId: number) {
-        return this.publicStarService.remove(architectureId);
+        return this.publicStarService.delete(architectureId);
     }
 }
 

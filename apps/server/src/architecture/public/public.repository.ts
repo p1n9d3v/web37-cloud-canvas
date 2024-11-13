@@ -8,7 +8,7 @@ export class PublicRepository {
     constructor(private readonly prisma: PrismaService) {
     }
 
-    async findAll() {
+    findAll() {
         return this.prisma.publicArchitecture.findMany({
             include: {
                 author: {
@@ -24,7 +24,7 @@ export class PublicRepository {
         });
     }
 
-    async findById(id: number) {
+    findById(id: number) {
         return this.prisma.publicArchitecture.findUnique({
             where: { id },
             include: {
@@ -44,7 +44,7 @@ export class PublicRepository {
         });
     }
 
-    async create(userId: number, createPublicDto: CreatePublicDto) {
+    create(userId: number, createPublicDto: CreatePublicDto) {
 
         return this.prisma.publicArchitecture.create({
             data: {
@@ -62,7 +62,7 @@ export class PublicRepository {
         });
     }
 
-    async update(id: number, updatePublicDto: UpdatePublicDto) {
+    update(id: number, updatePublicDto: UpdatePublicDto) {
         return this.prisma.publicArchitecture.update({
             where: { id },
             data: updatePublicDto,
@@ -77,7 +77,7 @@ export class PublicRepository {
         });
     }
 
-    async delete(id: number) {
+    delete(id: number) {
         return this.prisma.publicArchitecture.delete({
             where: { id }
         });

@@ -34,3 +34,5 @@ export type Connection = {
 
 export type CommonNodeType = 'pointer';
 export type CloudNodeType = 'server';
+
+export type AnchorsPoint = Record<AnchorType, Point>;

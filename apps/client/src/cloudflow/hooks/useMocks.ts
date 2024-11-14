@@ -11,7 +11,7 @@ export default () => {
     const [mockEdges, setMockEdges] = useState<Edge[]>([]);
 
     useEffect(() => {
-        const { nodes, edges } = createMockNodesAndEdges(50, 50);
+        const { nodes, edges } = createMockNodesAndEdges(200, 50);
         setMockNodes(nodes);
         setMockEdges(edges);
     }, []);

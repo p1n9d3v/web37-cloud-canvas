@@ -214,6 +214,11 @@ export default (flowRef: RefObject<SVGSVGElement>, dimension: Dimension) => {
                 connectedAnchorPoints,
             );
 
+            // 포인터일 경우 anchorType을 변경하지 않음
+            if (target.type === 'pointer' || source.type === 'pointer') {
+                nearestAnchorPair.connectedAnchorType = null;
+            }
+
             dispatchEdge({
                 type: 'UPDATE_EDGE',
                 payload: {

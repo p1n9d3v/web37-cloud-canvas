@@ -1,26 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import { PublicImportRepository } from './public-import.repository';
 import { CreatePublicImportDto } from './dto/create-public-import.dto';
-import { UpdatePublicImportDto } from './dto/update-public-import.dto';
 
 @Injectable()
 export class PublicImportService {
-  create(createPublicImportDto: CreatePublicImportDto) {
-    return 'This action adds a new publicImport';
-  }
+    constructor(private readonly publicImportRepository: PublicImportRepository) {
+    }
 
-  findAll() {
-    return `This action returns all publicImport`;
-  }
+    async create(userId: number, architectureId: number) {
+        const exists = await this.publicImportRepository.architectureExists(architectureId);
+        if (!exists) {
+            throw new NotFoundException('Architecture not found');
+        }
 
-  findOne(id: number) {
-    return `This action returns a #${id} publicImport`;
-  }
-
-  update(id: number, updatePublicImportDto: UpdatePublicImportDto) {
-    return `This action updates a #${id} publicImport`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} publicImport`;
-  }
+        try {
+            return await this.publicImportRepository.create(userId, architectureId);
+        } catch (error) {
+            if (error.code === 'P2002') {
+                throw new ConflictException('Already imported this architecture');
+            }
+            throw error;
+        }
+    }
 }

@@ -78,6 +78,9 @@ importers:
       '@nestjs/common':
         specifier: ^10.0.0
         version: 10.4.7(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/config':
+        specifier: ^3.3.0
+        version: 3.3.0(@nestjs/common@10.4.7(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(rxjs@7.8.1)
       '@nestjs/core':
         specifier: ^10.0.0
         version: 10.4.7(@nestjs/common@10.4.7(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.4.7)(reflect-metadata@0.2.2)(rxjs@7.8.1)
@@ -114,6 +117,9 @@ importers:
       passport-jwt:
         specifier: ^4.0.1
         version: 4.0.1
+      prisma:
+        specifier: ^5.22.0
+        version: 5.22.0
       reflect-metadata:
         specifier: ^0.2.0
         version: 0.2.2
@@ -124,9 +130,6 @@ importers:
       '@nestjs/cli':
         specifier: ^10.0.0
         version: 10.4.7(@swc/core@1.9.2)
-      '@nestjs/config':
-        specifier: ^3.3.0
-        version: 3.3.0(@nestjs/common@10.4.7(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(rxjs@7.8.1)
       '@nestjs/schematics':
         specifier: ^10.0.0
         version: 10.2.3(chokidar@3.6.0)(typescript@5.6.3)
@@ -178,9 +181,6 @@ importers:
       prettier:
         specifier: ^3.0.0
         version: 3.3.3
-      prisma:
-        specifier: ^5.22.0
-        version: 5.22.0
       source-map-support:
         specifier: ^0.5.21
         version: 0.5.21
@@ -230,6 +230,31 @@ importers:
       tsup:
         specifier: ^8.3.5
         version: 8.3.5(@swc/core@1.9.2)(jiti@1.21.6)(postcss@8.4.49)(tsx@4.19.2)(typescript@5.6.3)(yaml@2.5.1)
+      tsx:
+        specifier: ^4.19.2
+        version: 4.19.2
+
+  packages/cli:
+    dependencies:
+      chalk:
+        specifier: 4.1.2
+        version: 4.1.2
+      express:
+        specifier: ^4.21.1
+        version: 4.21.1
+      open:
+        specifier: ^10.1.0
+        version: 10.1.0
+    devDependencies:
+      '@types/node':
+        specifier: ^22.8.2
+        version: 22.8.2
+      cross-env:
+        specifier: ^7.0.3
+        version: 7.0.3
+      tsup:
+        specifier: ^8.3.5
+        version: 8.3.5(@swc/core@1.9.1)(jiti@1.21.6)(postcss@8.4.47)(tsx@4.19.2)(typescript@5.6.3)(yaml@2.5.1)
       tsx:
         specifier: ^4.19.2
         version: 4.19.2
@@ -6343,7 +6368,6 @@ snapshots:
       typescript: 5.6.3
     transitivePeerDependencies:
       - chokidar
-
   '@nestjs/swagger@8.0.5(@nestjs/common@10.4.7(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.7)(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)':
     dependencies:
       '@microsoft/tsdoc': 0.15.0
@@ -8674,6 +8698,37 @@ snapshots:
       - babel-plugin-macros
       - supports-color
 
+  jest-config@29.7.0(@types/node@22.8.2)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@swc/core@1.9.1)(@types/node@20.17.6)(typescript@5.6.3)):
+    dependencies:
+      '@babel/core': 7.26.0
+      '@jest/test-sequencer': 29.7.0
+      '@jest/types': 29.6.3
+      babel-jest: 29.7.0(@babel/core@7.26.0)
+      chalk: 4.1.2
+      ci-info: 3.9.0
+      deepmerge: 4.3.1
+      glob: 7.2.3
+      graceful-fs: 4.2.11
+      jest-circus: 29.7.0(babel-plugin-macros@3.1.0)
+      jest-environment-node: 29.7.0
+      jest-get-type: 29.6.3
+      jest-regex-util: 29.6.3
+      jest-resolve: 29.7.0
+      jest-runner: 29.7.0
+      jest-util: 29.7.0
+      jest-validate: 29.7.0
+      micromatch: 4.0.8
+      parse-json: 5.2.0
+      pretty-format: 29.7.0
+      slash: 3.0.0
+      strip-json-comments: 3.1.1
+    optionalDependencies:
+      '@types/node': 22.8.2
+      ts-node: 10.9.2(@swc/core@1.9.1)(@types/node@20.17.6)(typescript@5.6.3)
+    transitivePeerDependencies:
+      - babel-plugin-macros
+      - supports-color
+
   jest-diff@29.7.0:
     dependencies:
       chalk: 4.1.2
@@ -8699,6 +8754,7 @@ snapshots:
       '@jest/fake-timers': 29.7.0
       '@jest/types': 29.6.3
       '@types/node': 22.9.0
+
       jest-mock: 29.7.0
       jest-util: 29.7.0
 

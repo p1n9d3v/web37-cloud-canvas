@@ -33,7 +33,7 @@ export default forwardRef<SVGSVGElement, Props>(
             onEndConnect,
             onDeSelectNode,
         },
-        ref
+        ref,
     ) => {
         const handleWheel = (event: WheelEvent) => {
             const { deltaY, clientX, clientY } = event;
@@ -86,5 +86,5 @@ export default forwardRef<SVGSVGElement, Props>(
                 {children}
             </svg>
         );
-    }
+    },
 );

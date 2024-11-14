@@ -14,6 +14,13 @@ import {
 import { nanoid } from 'nanoid';
 import { RefObject, useCallback, useState } from 'react';
 
+type TargetConnection = {
+    node?: {
+        id: string | null;
+    } & Omit<Partial<Connection['node']>, 'id' | 'type'>;
+    anchorType?: AnchorType;
+};
+
 export default (
     flowRef: RefObject<SVGSVGElement>,
     visibleNodes: Node[],
@@ -22,7 +29,7 @@ export default (
     const { dispatch: dispatchEdge } = useEdgeContext();
     const [connection, setConnection] = useState<{
         source: Connection;
-        target?: Connection;
+        target?: TargetConnection;
     } | null>(null);
     const [isConnecting, setIsConnecting] = useState(false);
 
@@ -31,7 +38,13 @@ export default (
             const anchors = calculateAnchorPoints(node.point, dimension);
             const point = anchors[anchorType];
             setConnection({
-                source: { node, point, anchorType },
+                source: {
+                    node: {
+                        ...node,
+                        point,
+                    },
+                    anchorType,
+                },
             });
             setIsConnecting(true);
         },
@@ -52,8 +65,10 @@ export default (
                 if (distance < snappedThreshold && distance < minDistance) {
                     minDistance = distance;
                     nearestConnection = {
-                        node,
-                        point: anchorPoint,
+                        node: {
+                            ...node,
+                            point: anchorPoint,
+                        },
                         anchorType: anchorType as AnchorType,
                     };
                 }
@@ -65,9 +80,12 @@ export default (
                 prev && {
                     ...prev,
                     target: nearestConnection ?? {
-                        node: prev.source.node,
-                        point: svgPoint,
-                        anchorType: prev.source.anchorType,
+                        node: {
+                            id: null,
+                            type: null,
+                            point: svgPoint,
+                        },
+                        anchorType: prev.target?.anchorType,
                     },
                 },
         );
@@ -78,17 +96,23 @@ export default (
             isConnecting &&
             connection?.source &&
             connection.target &&
-            connection.source.node.id !== connection.target.node.id
+            connection.target.node?.id &&
+            connection.source.node.id !== connection.target.node?.id
         ) {
             const { source, target } = connection;
             dispatchEdge({
                 type: 'ADD_EDGE',
                 payload: {
                     id: nanoid(),
-                    sourceId: source.node.id,
-                    targetId: target.node.id,
-                    sourceAnchorType: source.anchorType,
-                    targetAnchorType: target.anchorType,
+                    type: 'arrow',
+                    source: {
+                        ...source.node,
+                        anchorType: source.anchorType,
+                    },
+                    target: {
+                        ...(target.node as Node),
+                        anchorType: target.anchorType as AnchorType,
+                    },
                 },
             });
         }

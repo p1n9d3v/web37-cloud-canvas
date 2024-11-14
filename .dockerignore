@@ -1,0 +1,9 @@
+apps/server/Dockerfile
+apps/server/node_modules
+apps/server/test
+apps/server/.gitignore
+
+apps/client/Dockerfile
+apps/client/node_modules
+apps/client/test
+apps/server/mocks

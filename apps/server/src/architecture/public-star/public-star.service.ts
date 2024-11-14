@@ -1,26 +1,37 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import { PublicStarRepository } from './public-star.repository';
 import { CreatePublicStarDto } from './dto/create-public-star.dto';
-import { UpdatePublicStarDto } from './dto/update-public-star.dto';
 
 @Injectable()
 export class PublicStarService {
-  create(createPublicStarDto: CreatePublicStarDto) {
-    return 'This action adds a new publicStar';
-  }
+    constructor(private readonly publicStarRepository: PublicStarRepository) {
+    }
 
-  findAll() {
-    return `This action returns all publicStar`;
-  }
+    async create(userId: number, architectureId: number) {
+        const exists = await this.publicStarRepository.architectureExists(architectureId);
 
-  findOne(id: number) {
-    return `This action returns a #${id} publicStar`;
-  }
+        if (!exists) {
+            throw new NotFoundException('Architecture not found');
+        }
 
-  update(id: number, updatePublicStarDto: UpdatePublicStarDto) {
-    return `This action updates a #${id} publicStar`;
-  }
+        try {
+            return await this.publicStarRepository.create(userId, architectureId);
+        } catch (error) {
+            if (error.code === 'P2002') {
+                throw new ConflictException('Already starred this architecture');
+            }
+            throw error;
+        }
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} publicStar`;
-  }
+    async delete(architectureId: number) {
+        try {
+            return await this.publicStarRepository.remove(1, architectureId);
+        } catch (error) {
+            if (error.code === 'P2025') {
+                throw new NotFoundException('Star not found');
+            }
+            throw error;
+        }
+    }
 }

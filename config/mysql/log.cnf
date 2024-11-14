@@ -2,8 +2,8 @@
 general_log=ON
 log_output=FILE
 general_log_file=/var/log/mysql/general.log
-log_error=/var/log/mysql/error.log
+log_error=/var/log/mysql/error.err
 slow_query_log=ON
-slow_query_log_file=/var/log/mysql/slow.log
+slow_query_log_file=/var/log/mysql/slow/slow.log
 long_query_time=2
 log-queries-not-using-indexes

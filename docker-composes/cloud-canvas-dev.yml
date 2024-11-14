@@ -28,18 +28,29 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
-      - ../../config/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ../config/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ../config/mysql/log.cnf:/etc/mysql/conf.d/log.cnf:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
+    command:
+      - sh
+      - -c
+      - |
+        mkdir -p /var/log/mysql && \
+        touch /var/log/mysql/general.log && \
+        tail -f /var/log/mysql/general.log & \
+        exec docker-entrypoint.sh mysqld
     networks:
       - cloud-canvas-network
       - cloud-canvas-database-network
 
   back:
-    image: geonhyukseo/cloud-canvas-server:dev
+    build:
+      context: ../
+      dockerfile: apps/server/Dockerfile
     container_name: back
     environment:
       DATABASE_URL: mysql://cloud_canvas_user:password@mysql:3306/cloud_canvas
@@ -50,23 +61,27 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    entrypoint: sh -c "dockerize -wait tcp://mysql:3306 -timeout 20s && npx prisma migrate dev && node ./dist/src/main.js"
+    entrypoint: sh -c "npx prisma migrate dev && node ./dist/src/main.js"
     networks:
       - cloud-canvas-network
+    restart: unless-stopped
 
   front:
-    image: geonhyukseo/cloud-canvas-client:dev
+    build:
+      context: ../
+      dockerfile: apps/client/Dockerfile
     container_name: front
     ports:
       - "5001:5000"
     networks:
       - cloud-canvas-network
+    restart: unless-stopped
 
 networks:
   cloud-canvas-network:
     driver: bridge
   cloud-canvas-database-network:
-    driver: brige
+    driver: bridge
 
 volumes:
   redis-data:

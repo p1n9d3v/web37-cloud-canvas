@@ -162,7 +162,7 @@ export const SvgFlow = () => {
                 ))}
             </g>
 
-            <g id="flow-dnoes">
+            <g id="flow-nodes">
                 {visibleCloudNode.map((node) => (
                     <Node
                         key={node.id}

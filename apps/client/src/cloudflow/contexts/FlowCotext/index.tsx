@@ -21,7 +21,7 @@ const FlowContext = createContext<FlowContextProps>({
 
 export const FlowProvider = ({ children }: PropsWithChildren) => {
     const flowRef = useRef<SVGSVGElement>(null);
-    const [dimension, setDimension] = useState<Dimension>('3d');
+    const [dimension, setDimension] = useState<Dimension>('2d');
 
     const changeDimension = (dimension: Dimension) => setDimension(dimension);
 

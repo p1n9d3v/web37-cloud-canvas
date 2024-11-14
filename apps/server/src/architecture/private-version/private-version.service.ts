@@ -1,26 +1,27 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePrivateVersionDto } from './dto/create-private-version.dto';
-import { UpdatePrivateVersionDto } from './dto/update-private-version.dto';
+import { PrivateVersionRepository } from './private-version.repository';
 
 @Injectable()
 export class PrivateVersionService {
-  create(createPrivateVersionDto: CreatePrivateVersionDto) {
-    return 'This action adds a new privateVersion';
-  }
+    constructor(private readonly repository: PrivateVersionRepository) {}
 
-  findAll() {
-    return `This action returns all privateVersion`;
-  }
+    getVersions(architectureId: number) {
+        return this.repository.findByPrivateArchitectureId(architectureId);
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} privateVersion`;
-  }
+    createVersion(
+        architectureId: number,
+        createPrivateVersionDto: CreatePrivateVersionDto,
+    ) {
+        return this.repository.create(architectureId, createPrivateVersionDto);
+    }
 
-  update(id: number, updatePrivateVersionDto: UpdatePrivateVersionDto) {
-    return `This action updates a #${id} privateVersion`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} privateVersion`;
-  }
+    deleteVersion(versionId: number) {
+        try {
+            return this.repository.delete(versionId);
+        } catch (error) {
+            throw new NotFoundException('Architecture version not found');
+        }
+    }
 }

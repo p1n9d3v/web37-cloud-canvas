@@ -1,26 +1,49 @@
-import { Injectable } from '@nestjs/common';
-import { CreatePrivateDto } from './dto/create-private.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UpdatePrivateDto } from './dto/update-private.dto';
+import { PrivateRepository } from './private.repository';
+import { CreatePrivateDto } from './dto/create-private.dto';
 
 @Injectable()
 export class PrivateService {
-  create(createPrivateDto: CreatePrivateDto) {
-    return 'This action adds a new private';
-  }
+    constructor(private readonly repository: PrivateRepository) {}
 
-  findAll() {
-    return `This action returns all private`;
-  }
+    getPrivateArchitectures(userId: number) {
+        return this.repository.findAll(userId);
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} private`;
-  }
+    createPrivateArchitecture(
+        userId: number,
+        createPrivateDto: CreatePrivateDto,
+    ) {
+        return this.repository.create(userId, createPrivateDto);
+    }
 
-  update(id: number, updatePrivateDto: UpdatePrivateDto) {
-    return `This action updates a #${id} private`;
-  }
+    async getPrivateArchitecture(id: number) {
+        const privateArchitecture = await this.repository.findById(id);
 
-  remove(id: number) {
-    return `This action removes a #${id} private`;
-  }
+        if (!privateArchitecture) {
+            throw new NotFoundException('Private architecture not found');
+        }
+
+        return privateArchitecture;
+    }
+
+    async updatePrivateArchitecture(
+        id: number,
+        updatePrivateDto: UpdatePrivateDto,
+    ) {
+        try {
+            return await this.repository.update(id, updatePrivateDto);
+        } catch (error) {
+            throw new NotFoundException('Private architecture not found');
+        }
+    }
+
+    async deletePrivateArchitecture(id: number) {
+        try {
+            return await this.repository.delete(id);
+        } catch (error) {
+            throw new NotFoundException('Private architecture not found');
+        }
+    }
 }

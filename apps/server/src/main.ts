@@ -1,19 +1,29 @@
 import { NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { swaggerConfig } from './swagger/swagger.config';
+import { ValidationPipe } from '@nestjs/common';
+import helmet from 'helmet';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
-    const config = new DocumentBuilder()
-        .setTitle('Cloud Canvas API')
-        .setDescription('Cloud Canvas API description')
-        .setVersion('1.0')
-        .addTag('API')
-        .build();
+    swaggerConfig(app);
 
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api', app, document);
+    app.use(helmet());
+    app.use(cookieParser());
+
+    app.useGlobalPipes(
+        new ValidationPipe({
+            transform: true,
+            whitelist: true,
+            forbidNonWhitelisted: true,
+            skipMissingProperties: false,
+            validateCustomDecorators: true,
+            disableErrorMessages: false,
+        }),
+    );
+
     await app.listen(3000);
 }
 bootstrap();

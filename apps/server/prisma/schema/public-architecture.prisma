@@ -5,8 +5,6 @@ model PublicArchitecture {
     architecture Json
     createdAt    DateTime @default(now()) @map("created_at")
     cost         Float    @default(0)
-    starCount    Int      @default(0) @map("star_count")
-    importCount  Int      @default(0) @map("import_count")
     tag          Json
 
     author  User                       @relation(fields: [authorId], references: [id])

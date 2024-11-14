@@ -1,26 +1,44 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Get, Post, Delete, Patch, Param, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { CreatePublicDto } from './dto/create-public.dto';
 import { UpdatePublicDto } from './dto/update-public.dto';
+import { PublicRepository } from './public.repository';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class PublicService {
-  create(createPublicDto: CreatePublicDto) {
-    return 'This action adds a new public';
-  }
+    constructor(private readonly publicRepository: PublicRepository) {
+    }
 
-  findAll() {
-    return `This action returns all public`;
-  }
+    async getPublicArchitectures() {
+        return this.publicRepository.findAll();
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} public`;
-  }
+    async createPublicArchitecture(userId: number, dto: CreatePublicDto) {
+        return await this.publicRepository.create(userId, dto);
+    }
 
-  update(id: number, updatePublicDto: UpdatePublicDto) {
-    return `This action updates a #${id} public`;
-  }
+    async getPublicArchitecture(id: number) {
+        const architecture = await this.publicRepository.findById(id);
+        if (!architecture) {
+            throw new NotFoundException('Architecture not found');
+        }
+        return architecture;
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} public`;
-  }
+    async deletePublicArchitecture(id: number) {
+        const architecture = await this.getPublicArchitecture(id);
+        if (!architecture) {
+            throw new NotFoundException('Architecture not found');
+        }
+        return this.publicRepository.delete(id);
+    }
+
+    async updatePublicArchitecture(id: number, dto: UpdatePublicDto) {
+        const architecture = await this.getPublicArchitecture(id);
+        if (!architecture) {
+            throw new NotFoundException('Architecture not found');
+        }
+        return this.publicRepository.update(id, dto);
+
+    }
 }

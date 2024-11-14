@@ -106,43 +106,6 @@ export default (flowRef: RefObject<SVGSVGElement>, dimension: Dimension) => {
                 ) {
                     updateEdgesToNearestAnchors(newPoint);
                 }
-
-                //INFO:3D에 관련되어 svg간의 위치를 조정하는 코드, 리팩토링이 필요함
-                const nodes = flowRef!.current.querySelector('#flow-nodes');
-                const otherNodes = Array.from(nodes!.children).filter(
-                    (child) => child.id !== draggingId,
-                ) as SVGGraphicsElement[];
-
-                const getNodePointFromTransform = (
-                    node: SVGGraphicsElement,
-                ) => {
-                    const transform = node.style.transform;
-                    const regex = /translate\(([-\d.]+)px,\s*([-\d.]+)px\)/;
-                    const match = transform.match(regex);
-                    if (!match) return { x: 0, y: 0 };
-                    return {
-                        x: parseFloat(match[1]),
-                        y: parseFloat(match[2]),
-                    };
-                };
-
-                otherNodes.forEach((otherNode) => {
-                    const otherNodePoint = getNodePointFromTransform(otherNode);
-                    const draggingNodePoint =
-                        getNodePointFromTransform(nodeElement);
-
-                    if (otherNodePoint.y === draggingNodePoint.y) {
-                        if (otherNodePoint.x < draggingNodePoint.x) {
-                            nodeElement.parentNode!.appendChild(nodeElement);
-                        } else {
-                            otherNode.parentNode!.appendChild(otherNode);
-                        }
-                    } else if (otherNodePoint.y < draggingNodePoint.y) {
-                        nodeElement.parentNode!.appendChild(nodeElement);
-                    } else {
-                        otherNode.parentNode!.appendChild(otherNode);
-                    }
-                });
             }
         },
         [isDragging, draggingId, dimension],

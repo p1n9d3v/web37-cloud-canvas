@@ -7,7 +7,6 @@ import { PrismaModule } from '../../prisma/prisma.module';
 @Module({
     imports: [PrismaModule],
     controllers: [PublicController],
-    providers: [PublicService, PublicRepository]
+    providers: [PublicService, PublicRepository],
 })
-export class PublicModule {
-}
+export class PublicModule {}

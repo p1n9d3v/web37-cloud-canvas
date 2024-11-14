@@ -15,18 +15,24 @@ type FlowContextProps = {
 };
 const FlowContext = createContext<FlowContextProps>({
     flowRef: { current: null },
-    dimension: '2d',
+    dimension: '3d',
     changeDimension: () => {},
 });
 
 export const FlowProvider = ({ children }: PropsWithChildren) => {
     const flowRef = useRef<SVGSVGElement>(null);
-    const [dimension, setDimension] = useState<Dimension>('2d');
+    const [dimension, setDimension] = useState<Dimension>('3d');
 
     const changeDimension = (dimension: Dimension) => setDimension(dimension);
 
     return (
-        <FlowContext.Provider value={{ flowRef, dimension, changeDimension }}>
+        <FlowContext.Provider
+            value={{
+                flowRef,
+                dimension,
+                changeDimension,
+            }}
+        >
             {children}
         </FlowContext.Provider>
     );

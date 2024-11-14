@@ -1,4 +1,3 @@
-import { createMockNodesAndEdges } from '@/mocks/instance';
 import Connector from '@cloudflow/components/Connector';
 import Edge from '@cloudflow/components/Edge';
 import Flow from '@cloudflow/components/Flow';
@@ -37,9 +36,11 @@ export const SvgFlow = () => {
 
     const {
         state: { nodes },
+        dispatch: dispatchNode,
     } = useNodeContext();
     const {
         state: { edges },
+        dispatch: dispatchEdge,
     } = useEdgeContext();
 
     const { visibleCloudNode, visibleEdges } = useVisible({
@@ -78,6 +79,60 @@ export const SvgFlow = () => {
                 isDragging || isPanning ? 'move' : 'auto';
         }
     }, [isDragging, isPanning]);
+
+    useEffect(() => {
+        const removeNode = (nodeId: string) => {
+            dispatchNode({
+                type: 'REMOVE_NODE',
+                payload: { nodeId },
+            });
+        };
+
+        const removeEdge = (edgeId: string) => {
+            const edge = edges.find((edge) => edge.id === edgeId);
+            if (!edge) return;
+            const { source, target } = edge!;
+            if (target.type === 'pointer' && source.type === 'pointer') {
+                dispatchNode({
+                    type: 'REMOVE_NODE',
+                    payload: { nodeId: source.id },
+                });
+            } else if (target.type === 'pointer') {
+                dispatchNode({
+                    type: 'REMOVE_NODE',
+                    payload: { nodeId: target.id },
+                });
+            } else if (source.type === 'pointer') {
+                dispatchNode({
+                    type: 'REMOVE_NODE',
+                    payload: { nodeId: source.id },
+                });
+            }
+
+            dispatchEdge({
+                type: 'REMOVE_EDGE',
+                payload: { edgeId },
+            });
+        };
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Backspace') {
+                if (selectedNodeId) {
+                    removeNode(selectedNodeId);
+                }
+
+                if (selectedEdgeId) {
+                    removeEdge(selectedEdgeId);
+                }
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [selectedNodeId, selectedEdgeId]);
 
     return (
         <Flow

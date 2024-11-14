@@ -3,36 +3,33 @@ import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class PublicStarRepository {
-    constructor(private readonly prisma: PrismaService) {
-    }
+    constructor(private readonly prisma: PrismaService) {}
 
     create(userId: number, architectureId: number) {
         return this.prisma.publicArchitectureStar.create({
             data: {
                 userId,
-                publicArchitectureId: architectureId
-            }
+                publicArchitectureId: architectureId,
+            },
         });
     }
 
-    remove(userId: number, architectureId: number) {
+    delete(userId: number, architectureId: number) {
         return this.prisma.publicArchitectureStar.delete({
             where: {
                 unique_star: {
                     userId,
-                    publicArchitectureId: architectureId
-                }
-            }
+                    publicArchitectureId: architectureId,
+                },
+            },
         });
     }
 
     architectureExists(architectureId: number) {
         return this.prisma.publicArchitecture
             .count({
-                where: { id: architectureId }
+                where: { id: architectureId },
             })
             .then(Boolean);
     }
 }
-
-

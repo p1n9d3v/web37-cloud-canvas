@@ -3,18 +3,19 @@ import { PublicStarService } from './public-star.service';
 
 @Controller()
 export class PublicStarController {
-    constructor(private readonly publicStarService: PublicStarService) {
-    }
+    constructor(private readonly publicStarService: PublicStarService) {}
 
     @Post()
-    createPublicArchitectureStar(@Param('architectureId', ParseIntPipe) architectureId: number) {
+    createPublicArchitectureStar(
+        @Param('architectureId', ParseIntPipe) architectureId: number,
+    ) {
         const userId = 1;
         return this.publicStarService.create(userId, architectureId);
     }
 
     @Delete()
-    remove(@Param('architectureId', ParseIntPipe) architectureId: number) {
-        return this.publicStarService.delete(architectureId);
+    delete(@Param('architectureId', ParseIntPipe) architectureId: number) {
+        const userId = 1;
+        return this.publicStarService.delete(userId, architectureId);
     }
 }
-

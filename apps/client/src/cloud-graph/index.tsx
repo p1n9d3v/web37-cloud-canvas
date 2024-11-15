@@ -3,6 +3,7 @@ import {
     GraphProvider,
     useGraphContext,
 } from '@cloud-graph/contexts/GraphContext';
+import { ViewportProvider } from '@cloud-graph/contexts/ViewportContext';
 import { nanoid } from 'nanoid';
 import { ReactNode, useEffect } from 'react';
 
@@ -13,7 +14,7 @@ export const CloudGraph = () => {
         addNode({
             id: `node-${nanoid()}`,
             type: 'server',
-            position: { x: 10, y: 10 },
+            point: { x: 10, y: 10 },
             size: { width: 100, height: 100 },
         });
     }, []);
@@ -23,8 +24,9 @@ export const CloudGraph = () => {
             {graph.nodes.map((node) => {
                 return (
                     <rect
-                        x={node.position.x}
-                        y={node.position.y}
+                        key={node.id}
+                        x={node.point.x}
+                        y={node.point.y}
                         width={node.size.width}
                         height={node.size.height}
                         fill="blue"
@@ -36,5 +38,9 @@ export const CloudGraph = () => {
 };
 
 export const CloudGraphProvider = ({ children }: { children: ReactNode }) => {
-    return <GraphProvider>{children}</GraphProvider>;
+    return (
+        <GraphProvider>
+            <ViewportProvider>{children}</ViewportProvider>
+        </GraphProvider>
+    );
 };

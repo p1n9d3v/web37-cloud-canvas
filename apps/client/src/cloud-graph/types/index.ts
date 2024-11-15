@@ -1,6 +1,6 @@
 export type Dimension = '2d' | '3d';
 
-export type Position = {
+export type Point = {
     x: number;
     y: number;
 };
@@ -10,12 +10,12 @@ export type Size = {
     height: number;
 };
 
-export interface ViewBox extends Position, Size {}
+export interface ViewBox extends Point, Size {}
 
 export interface Node {
     id: string;
     type: string;
-    position: Position;
+    point: Point;
     size: Size;
     label?: string;
     groupId?: string;
@@ -26,14 +26,14 @@ export interface Edge {
     id: string;
     source: string;
     target: string;
-    controlPoints?: Position[];
+    controlPoints?: Point[];
 }
 
 export interface Group {
     id: string;
     type: string;
     label: string;
-    position: Position;
+    point: Point;
     size: Size;
     nodes: string[];
 }

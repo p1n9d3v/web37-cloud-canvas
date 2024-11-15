@@ -4,11 +4,9 @@ import GridPatternMinor from './patterns/GridPatternMinor';
 
 export default ({
     viewBox,
-    showSubLines,
     dimension,
 }: {
     viewBox: ViewBox;
-    showSubLines: boolean;
     dimension: Dimension;
 }) => {
     const { x, y, width, height } = viewBox;
@@ -21,9 +19,7 @@ export default ({
 
     return (
         <>
-            {showSubLines && (
-                <GridPatternMinor points={points} dimension={dimension} />
-            )}
+            <GridPatternMinor points={points} dimension={dimension} />
             <GridPatternMajor points={points} dimension={dimension} />
         </>
     );

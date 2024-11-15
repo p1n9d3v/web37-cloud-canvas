@@ -9,16 +9,35 @@ import { ViewportProvider } from '@cloud-graph/contexts/ViewportContext';
 import { nanoid } from 'nanoid';
 import { ReactNode, useEffect } from 'react';
 
+const mockNodes = [
+    {
+        id: `node-${nanoid()}`,
+        type: 'server',
+        point: { x: 10, y: 10 },
+        label: 'G1',
+    },
+    {
+        id: `node-${nanoid()}`,
+        type: 'cloud-function',
+        point: { x: 10, y: 100 },
+    },
+    {
+        id: `node-${nanoid()}`,
+        type: 'object-storage',
+        point: { x: 100, y: 10 },
+    },
+    {
+        id: `node-${nanoid()}`,
+        type: 'db-mysql',
+        point: { x: 100, y: 100 },
+    },
+];
 export const CloudGraph = () => {
     const { graph, addNode } = useGraphContext();
 
     useEffect(() => {
-        addNode({
-            id: `node-${nanoid()}`,
-            type: 'server',
-            point: { x: 10, y: 10 },
-            size: { width: 100, height: 100 },
-            label: 'G3',
+        mockNodes.forEach((node) => {
+            addNode(node);
         });
     }, []);
 

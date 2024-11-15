@@ -5,18 +5,15 @@ export type Point = {
     y: number;
 };
 
-export type Size = {
+export interface ViewBox extends Point {
     width: number;
     height: number;
-};
-
-export interface ViewBox extends Point, Size {}
+}
 
 export interface Node {
     id: string;
     type: string;
     point: Point;
-    size: Size;
     label?: string;
     groupId?: string;
     properties?: Record<string, any>;
@@ -34,7 +31,6 @@ export interface Group {
     type: string;
     label: string;
     point: Point;
-    size: Size;
     nodes: string[];
 }
 

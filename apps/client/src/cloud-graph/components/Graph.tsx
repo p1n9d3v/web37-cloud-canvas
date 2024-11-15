@@ -4,9 +4,9 @@ import { useViewportContext } from '@cloud-graph/contexts/ViewportContext';
 import useKey from '@cloud-graph/hooks/useKey';
 import usePan from '@cloud-graph/hooks/usePan';
 import useZoom from '@cloud-graph/hooks/useZoom';
-import React from 'react';
+import React, { ReactNode } from 'react';
 
-const Graph = ({ children }: { children: React.ReactNode }) => {
+const Graph = ({ children }: { children: ReactNode }) => {
     const { viewportRef, viewBox } = useViewportContext();
     const { dimension } = useDimensionContext();
     const { adjustZoom } = useZoom();

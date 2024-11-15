@@ -1,4 +1,5 @@
 import Graph from '@/src/cloud-graph/components/Graph';
+import NodeRenderer from '@cloud-graph/components/NodeRenderer';
 import { DimensionProvider } from '@cloud-graph/contexts/DimensionContext';
 import {
     GraphProvider,
@@ -17,23 +18,15 @@ export const CloudGraph = () => {
             type: 'server',
             point: { x: 10, y: 10 },
             size: { width: 100, height: 100 },
+            label: 'G3',
         });
     }, []);
 
     return (
         <Graph>
-            {graph.nodes.map((node) => {
-                return (
-                    <rect
-                        key={node.id}
-                        x={node.point.x}
-                        y={node.point.y}
-                        width={node.size.width}
-                        height={node.size.height}
-                        fill="blue"
-                    />
-                );
-            })}
+            {graph.nodes.map((node) => (
+                <NodeRenderer node={node} />
+            ))}
         </Graph>
     );
 };

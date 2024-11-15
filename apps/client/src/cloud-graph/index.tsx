@@ -1,4 +1,5 @@
 import Graph from '@/src/cloud-graph/components/Graph';
+import { DimensionProvider } from '@cloud-graph/contexts/DimensionContext';
 import {
     GraphProvider,
     useGraphContext,
@@ -40,7 +41,9 @@ export const CloudGraph = () => {
 export const CloudGraphProvider = ({ children }: { children: ReactNode }) => {
     return (
         <GraphProvider>
-            <ViewportProvider>{children}</ViewportProvider>
+            <DimensionProvider>
+                <ViewportProvider>{children}</ViewportProvider>
+            </DimensionProvider>
         </GraphProvider>
     );
 };

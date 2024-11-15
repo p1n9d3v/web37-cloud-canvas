@@ -24,8 +24,8 @@ export const ViewportProvider = ({ children }: { children: ReactNode }) => {
     const [viewBox, setViewBox] = useState<ViewBox>({
         x: 0,
         y: 0,
-        width: 1000,
-        height: 800,
+        width: 0,
+        height: 0,
     });
 
     useLayoutEffect(() => {
@@ -54,10 +54,6 @@ export const ViewportProvider = ({ children }: { children: ReactNode }) => {
 
 export const useViewportContext = () => {
     const context = useContext(ViewportContext);
-    if (!context) {
-        throw new Error(
-            'useViewportContext must be used within a ViewportProvider',
-        );
-    }
+    if (!context) throw new Error('ViewportContext : context is undefined');
     return context;
 };

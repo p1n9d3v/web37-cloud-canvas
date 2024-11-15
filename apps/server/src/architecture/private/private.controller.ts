@@ -59,6 +59,6 @@ export class PrivateController {
     @Delete(':id') // #TODO: userId로 조회하려는 데이터가 해당 유저의 것인지 확인
     @UseGuards(JwtAuthGuard)
     deletePrivateArchitecture(@Param('id', ParseIntPipe) id: number) {
-        return this.deletePrivateArchitecture(id);
+        return this.privateService.deletePrivateArchitecture(id);
     }
 }

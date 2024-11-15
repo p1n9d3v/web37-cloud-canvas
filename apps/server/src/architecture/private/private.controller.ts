@@ -13,7 +13,6 @@ import { PrivateService } from './private.service';
 import { CreatePrivateDto } from './dto/create-private.dto';
 import { UpdatePrivateDto } from './dto/update-private.dto';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
-import { AuthenticatedUser } from 'src/types/authenticated-user.interface';
 import { User } from 'src/decorators/user.decorator';
 
 @Controller()
@@ -22,18 +21,18 @@ export class PrivateController {
 
     @Get()
     @UseGuards(JwtAuthGuard)
-    getPrivateArchitectures(@User() user: AuthenticatedUser) {
-        return this.privateService.getPrivateArchitectures(user.id);
+    getPrivateArchitectures(@User('id') userId: number) {
+        return this.privateService.getPrivateArchitectures(userId);
     }
 
     @Post()
     @UseGuards(JwtAuthGuard)
     createPrivateArchitecture(
-        @User() user: AuthenticatedUser,
+        @User('id') userId: number,
         @Body() createPrivateDto: CreatePrivateDto,
     ) {
         return this.privateService.createPrivateArchitecture(
-            user.id,
+            userId,
             createPrivateDto,
         );
     }

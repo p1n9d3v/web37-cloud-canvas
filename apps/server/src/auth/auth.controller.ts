@@ -2,7 +2,7 @@ import { Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { User } from 'src/decorators/user.decorator';
-import { User as UserEntity } from '@prisma/client';
+import { AuthenticatedUser } from 'src/types/authenticated-user.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -15,7 +15,7 @@ export class AuthController {
 
     @Get('check')
     @UseGuards(JwtAuthGuard)
-    check(@User() user: UserEntity) {
+    check(@User() user: AuthenticatedUser) {
         return user;
     }
 }

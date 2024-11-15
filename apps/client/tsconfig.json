@@ -9,6 +9,8 @@
         "allowSyntheticDefaultImports": true, // default import 허용
         "baseUrl": ".",
         "paths": {
+            "@svg-graph/*": ["src/svg-graph/*"],
+            "@svg-graph": ["src/svg-graph/index.ts"],
             "@cloudflow": ["src/cloudflow/index.tsx"],
             "@cloudflow/*": ["src/cloudflow/*"],
             "@components/*": ["src/components/*"],

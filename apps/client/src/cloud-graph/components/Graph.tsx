@@ -1,8 +1,9 @@
 import Background from '@cloud-graph/components/Background';
 import { useDimensionContext } from '@cloud-graph/contexts/DimensionContext';
 import { useViewportContext } from '@cloud-graph/contexts/ViewportContext';
-import { usePan } from '@cloud-graph/hooks/usePan';
-import { useZoom } from '@cloud-graph/hooks/useZoom';
+import useKey from '@cloud-graph/hooks/useKey';
+import usePan from '@cloud-graph/hooks/usePan';
+import useZoom from '@cloud-graph/hooks/useZoom';
 import React from 'react';
 
 const Graph = ({ children }: { children: React.ReactNode }) => {
@@ -10,6 +11,8 @@ const Graph = ({ children }: { children: React.ReactNode }) => {
     const { dimension } = useDimensionContext();
     const { adjustZoom } = useZoom();
     const { startPan, movePan, stopPan } = usePan();
+
+    const isActiveKey = useKey('space');
 
     const handleZoom = (event: React.WheelEvent) => {
         adjustZoom(event.deltaY, { x: event.clientX, y: event.clientY });
@@ -19,17 +22,18 @@ const Graph = ({ children }: { children: React.ReactNode }) => {
         startPan({ x: event.clientX, y: event.clientY });
 
         const handleMovePan = (moveEvent: MouseEvent) => {
+            if (!isActiveKey) return;
             movePan({ x: moveEvent.clientX, y: moveEvent.clientY });
         };
 
         const handleStopPan = () => {
             stopPan();
-            window.removeEventListener('mousemove', handleMovePan);
-            window.removeEventListener('mouseup', handleStopPan);
+            document.removeEventListener('mousemove', handleMovePan);
+            document.removeEventListener('mouseup', handleStopPan);
         };
 
-        window.addEventListener('mousemove', handleMovePan);
-        window.addEventListener('mouseup', handleStopPan);
+        document.addEventListener('mousemove', handleMovePan);
+        document.addEventListener('mouseup', handleStopPan);
     };
 
     return (

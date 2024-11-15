@@ -1,8 +1,8 @@
 import { useViewportContext } from '@cloud-graph/contexts/ViewportContext';
 import { Point } from '@cloud-graph/types';
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
-export const usePan = () => {
+export default () => {
     const { viewportRef, viewBox, setViewBox } = useViewportContext();
 
     const isPanningRef = useRef(false);
@@ -16,7 +16,6 @@ export const usePan = () => {
     const movePan = useCallback(
         (point: Point) => {
             if (!isPanningRef.current || !viewportRef.current) return;
-
             const dx =
                 (startPointRef.current.x - point.x) *
                 (viewBox.width / viewportRef.current.clientWidth);
@@ -38,6 +37,14 @@ export const usePan = () => {
     const stopPan = useCallback(() => {
         isPanningRef.current = false;
     }, []);
+
+    useEffect(() => {
+        if (isPanningRef.current) {
+            document.body.style.cursor = 'grabbing';
+        } else {
+            document.body.style.cursor = 'default';
+        }
+    }, [isPanningRef.current]);
 
     return { startPan, movePan, stopPan };
 };

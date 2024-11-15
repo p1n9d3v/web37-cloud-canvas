@@ -1,9 +1,9 @@
 import { useViewportContext } from '@cloud-graph/contexts/ViewportContext';
 import { Point } from '@cloud-graph/types';
 import { getSvgPoint } from '@cloud-graph/utils';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-export const useZoom = () => {
+export default () => {
     const { viewportRef, setViewBox } = useViewportContext();
 
     const adjustZoom = useCallback(

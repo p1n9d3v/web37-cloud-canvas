@@ -29,7 +29,7 @@ const NodeRenderer = ({ node, dimension, isSelected }: Props) => {
     return (
         <>
             {nodeFactory(node, dimension)}
-            {isSelected && dimension === '2d' && (
+            {dimension === '2d' && (
                 <svg width="90" height="90">
                     <rect
                         height="90"
@@ -38,6 +38,7 @@ const NodeRenderer = ({ node, dimension, isSelected }: Props) => {
                             strokeWidth: 4,
                             stroke: 'rgb(66, 134, 197)',
                             fill: 'none',
+                            visibility: isSelected ? 'visible' : 'hidden',
                         }}
                     ></rect>
                 </svg>

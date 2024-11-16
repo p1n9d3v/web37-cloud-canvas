@@ -54,12 +54,20 @@ const graphReducer = (state: GraphState, action: GraphAction) => {
         case 'MOVE_NODE': {
             return {
                 ...state,
-                nodes: state.nodes.map((node) => {
-                    if (node.id === action.payload.id) {
-                        return { ...node, point: action.payload.point };
-                    }
-                    return node;
-                }),
+                nodes: state.nodes
+                    .map((node) => {
+                        if (node.id === action.payload.id) {
+                            return { ...node, point: action.payload.point };
+                        }
+                        return node;
+                    })
+                    .sort((a, b) => {
+                        if (a.point.y === b.point.y) {
+                            return a.point.x - b.point.x;
+                        } else {
+                            return a.point.y - b.point.y;
+                        }
+                    }),
             };
         }
         case 'SELECT_NODE': {
@@ -80,6 +88,12 @@ const graphReducer = (state: GraphState, action: GraphAction) => {
 };
 
 const mockNodes = [
+    {
+        id: `node-${nanoid()}`,
+        type: 'server',
+        point: { x: 0, y: 0 },
+        label: 'G1',
+    },
     {
         id: `node-${nanoid()}`,
         type: 'server',

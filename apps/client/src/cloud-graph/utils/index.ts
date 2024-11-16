@@ -1,5 +1,6 @@
 import {
     GRID_2D_SIZE,
+    GRID_3D_DEPTH_SIZE,
     GRID_3D_HEIGHT_SIZE,
     GRID_3D_WIDTH_SIZE,
 } from '@cloud-graph/constants';
@@ -65,4 +66,38 @@ export const getGridAlignedPoint = (
     } else {
         throw new Error('only support 2d and 3d dimension');
     }
+};
+
+export const getNodeSizeForDimension = (dimension: Dimension) => {
+    const width = dimension === '2d' ? GRID_2D_SIZE : GRID_3D_WIDTH_SIZE;
+    const height = dimension === '2d' ? GRID_2D_SIZE : GRID_3D_HEIGHT_SIZE;
+
+    return { width, height };
+};
+
+export const calculateAnchorPoints = (
+    point: Point,
+    size: { width: number; height: number },
+    dimension: Dimension,
+) => {
+    const { width, height } = size;
+
+    return {
+        top: { x: point.x + width / 2, y: point.y },
+        right:
+            dimension === '2d'
+                ? { x: point.x + width, y: point.y + height / 2 }
+                : {
+                      x: point.x + width,
+                      y: point.y + (height - GRID_3D_DEPTH_SIZE) / 2,
+                  },
+        left:
+            dimension === '2d'
+                ? { x: point.x, y: point.y + height / 2 }
+                : {
+                      x: point.x,
+                      y: point.y + (height - GRID_3D_DEPTH_SIZE) / 2,
+                  },
+        bottom: { x: point.x + width / 2, y: point.y + height },
+    };
 };

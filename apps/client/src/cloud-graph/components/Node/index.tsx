@@ -1,5 +1,8 @@
+import Anchor from '@cloud-graph/components/Anchor';
 import NodeRenderer from '@cloud-graph/components/Node/NodeRenderer';
 import { Dimension, Node } from '@cloud-graph/types';
+import { calculateAnchorPoints } from '@cloud-graph/utils';
+import { useEffect, useRef, useState } from 'react';
 
 type Props = {
     node: Node;
@@ -19,6 +22,11 @@ export default ({
     onStopDrag,
     onSelect,
 }: Props) => {
+    const nodeRef = useRef<SVGGElement>(null);
+    const [anchors, setAnchors] = useState<{
+        [key: string]: { x: number; y: number };
+    } | null>(null);
+
     const handleStartDrag = (event: React.MouseEvent) => {
         const { clientX, clientY } = event;
         onSelect(node.id);
@@ -40,18 +48,44 @@ export default ({
         window.addEventListener('mousemove', handleMouseMove);
         window.addEventListener('mouseup', handleMouseUp);
     };
+
+    useEffect(() => {
+        if (nodeRef.current) {
+            const { width, height } = nodeRef.current.getBBox();
+            const anchorPoints = calculateAnchorPoints(
+                node.point,
+                { width, height },
+                dimension,
+            );
+            setAnchors(anchorPoints);
+        }
+    }, [node, dimension]);
+
     return (
-        <g
-            id={node.id}
-            data-type={node.type}
-            transform={`translate(${node.point.x}, ${node.point.y})`}
-            onMouseDown={handleStartDrag}
-        >
-            <NodeRenderer
-                node={node}
-                dimension={dimension}
-                isSelected={isSelected}
-            />
-        </g>
+        <>
+            <g
+                ref={nodeRef}
+                id={node.id}
+                data-type={node.type}
+                transform={`translate(${node.point.x}, ${node.point.y})`}
+                onMouseDown={handleStartDrag}
+            >
+                <NodeRenderer
+                    node={node}
+                    dimension={dimension}
+                    isSelected={isSelected}
+                />
+            </g>
+
+            {anchors &&
+                Object.entries(anchors).map(([type, point]) => (
+                    <Anchor
+                        key={`${node.id}-${type}`}
+                        cx={point.x as any}
+                        cy={point.y as any}
+                        visible={isSelected}
+                    />
+                ))}
+        </>
     );
 };

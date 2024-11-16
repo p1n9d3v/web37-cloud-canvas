@@ -6,18 +6,16 @@ type Props = {
 };
 
 const Node3D = ({ node }: Props) => {
-    const { point, label } = node;
+    const { label } = node;
 
     return (
         <>
             <svg
-                x={point.x}
-                y={point.y}
                 width="128"
                 height="111"
-                fill-rule="evenodd"
-                stroke-linejoin="round"
-                stroke-miterlimit="1.414"
+                fillRule="evenodd"
+                strokeLinejoin="round"
+                strokeMiterlimit="1.414"
             >
                 <path fill="#b8b8bb" d="M64 74v37l64-37V37L64 74Z"></path>
                 <path fill="#d2d2d4" d="M0 37v37l64 37V74L0 37Z"></path>
@@ -32,13 +30,7 @@ const Node3D = ({ node }: Props) => {
                     d="M128 37v37l-64 37L0 74V37L64 0l64 37ZM2.054 38.185v34.63L64 108.627l61.946-35.812v-34.63L64 2.373 2.054 38.185Z"
                 ></path>
             </svg>
-            <svg
-                x={point.x + 58}
-                y={point.y + 19}
-                width="54"
-                height="36"
-                overflow="visible"
-            >
+            <svg x="58" y="19" width="54" height="36" overflow="visible">
                 <rect
                     transform="matrix(0.707 0.409 -0.707 0.409 0 0)"
                     width="54"
@@ -51,10 +43,10 @@ const Node3D = ({ node }: Props) => {
                     transform="matrix(0.707 0.409 -0.707 0.409 0 0)"
                     x="50%"
                     y="80%"
-                    font-family="Noto Sans"
-                    text-anchor="middle"
-                    font-weight="normal"
-                    font-size="20pt"
+                    fontFamily="Noto Sans"
+                    textAnchor="middle"
+                    fontWeight="normal"
+                    fontSize="20pt"
                     fill="#ffffff"
                 >
                     {label}
@@ -65,10 +57,10 @@ const Node3D = ({ node }: Props) => {
 };
 
 const Node2D = ({ node }: Props) => {
-    const { point, label } = node;
+    const { label } = node;
     return (
         <>
-            <svg x={point.x} y={point.y} width="90" height="90">
+            <svg width="90" height="90">
                 <path
                     fill="#d86613"
                     d="M80.402 80.402H9.599V9.599h70.803zm-67.137-3.667h63.47v-63.47h-63.47Z"
@@ -83,20 +75,20 @@ const Node2D = ({ node }: Props) => {
                     opacity=".05"
                 ></path>
             </svg>
-            <svg x={point.x + 18} y={point.y + 27} width="54" height="36">
+            <svg x="18" y="27" width="54" height="36">
                 <text
                     x="50%"
                     y="75%"
-                    font-family="Noto Sans"
-                    text-anchor="middle"
-                    font-weight="bold"
-                    font-size="18pt"
+                    fontFamily="Noto Sans"
+                    textAnchor="middle"
+                    fontWeight="bold"
+                    fontSize="18pt"
                     fill="#d86613"
                 >
                     {label}
                 </text>
             </svg>
-            <svg x={point.x} y={point.y} width="90" height="90">
+            <svg width="90" height="90">
                 <rect
                     height="90"
                     width="90"

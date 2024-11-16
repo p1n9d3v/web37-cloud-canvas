@@ -1,7 +1,7 @@
-import CloudFunctionNode from '@cloud-graph/components/Node/CloudFunctionNode';
-import DBMySQLNode from '@cloud-graph/components/Node/DBMySQLNode';
-import ObjectStorageNode from '@cloud-graph/components/Node/ObjectStorageNode';
-import ServerNode from '@cloud-graph/components/Node/ServerNode';
+import CloudFunctionNode from '@cloud-graph/components/Node/ncloud/CloudFunctionNode';
+import DBMySQLNode from '@cloud-graph/components/Node/ncloud/DBMySQLNode';
+import ObjectStorageNode from '@cloud-graph/components/Node/ncloud/ObjectStorageNode';
+import ServerNode from '@cloud-graph/components/Node/ncloud/ServerNode';
 import { Node } from '@cloud-graph/types';
 
 type Props = {

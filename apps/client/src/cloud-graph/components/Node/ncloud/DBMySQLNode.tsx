@@ -6,11 +6,9 @@ type Props = {
 };
 
 const Node3D = ({ node }: Props) => {
-    const { point } = node;
-
     return (
         <>
-            <svg x={point.x} y={point.y} width="128" height="137.5">
+            <svg width="128" height="137.5">
                 <path
                     fill="#a4c5ec"
                     d="m.459 45.817.288 54.364 62.724 36.215-.288-54.364-15.681-27.161L16.14 36.764.459 45.817Z"
@@ -35,19 +33,19 @@ const Node3D = ({ node }: Props) => {
                     fill="none"
                     stroke="#2a75cd"
                     d="m48.006 54.996 31.182-.104-15.501 27.265-15.681-27.161ZM.459 45.817l.288 54.364 62.724 36.215-.288-54.364-15.681-27.161L16.14 36.764.459 45.817Zm78.765 9.054 31.326-18.087 15.861 9.158-.108 54.176-62.832 36.277.288-54.28 15.465-27.244Z"
-                    stroke-linejoin="round"
+                    strokeLinejoin="round"
                 ></path>
                 <path
                     fill="none"
                     stroke="#2a75cd"
                     d="M16.14 36.763 47.502 54.87l31.506.125 31.326-18.087-.18-18.211L78.791.59 47.609.694 16.284 18.781l-.144 17.982Z"
-                    stroke-linejoin="round"
+                    strokeLinejoin="round"
                 ></path>
                 <path
                     fill="none"
                     stroke="#000000"
                     d="m1.468 100.181-.324-54.343 15.825-27.036L48.294.715 79.44.632l31.362 18.107 15.717 27.14-.144 54.197-62.543 36.111-62.364-36.006Z"
-                    stroke-width="2"
+                    strokeWidth="2"
                 ></path>
                 <path
                     fill="#0078d4"
@@ -59,11 +57,9 @@ const Node3D = ({ node }: Props) => {
 };
 
 const Node2D = ({ node }: Props) => {
-    const { point } = node;
-
     return (
         <>
-            <svg x={point.x} y={point.y} width="90" height="90">
+            <svg width="90" height="90">
                 <defs>
                     <linearGradient
                         id="AzureMySQLAzureMySQL__a"

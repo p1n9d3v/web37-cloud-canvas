@@ -16,6 +16,8 @@ export default () => {
     const movePan = useCallback(
         (point: Point) => {
             if (!isPanningRef.current || !viewportRef.current) return;
+            document.body.style.cursor = 'grabbing';
+
             const dx =
                 (startPointRef.current.x - point.x) *
                 (viewBox.width / viewportRef.current.clientWidth);
@@ -36,15 +38,8 @@ export default () => {
 
     const stopPan = useCallback(() => {
         isPanningRef.current = false;
+        document.body.style.cursor = 'default';
     }, []);
-
-    useEffect(() => {
-        if (isPanningRef.current) {
-            document.body.style.cursor = 'grabbing';
-        } else {
-            document.body.style.cursor = 'default';
-        }
-    }, [isPanningRef.current]);
 
     return { startPan, movePan, stopPan };
 };

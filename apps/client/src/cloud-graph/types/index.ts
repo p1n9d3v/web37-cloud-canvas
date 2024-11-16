@@ -5,10 +5,17 @@ export type Point = {
     y: number;
 };
 
-export interface ViewBox extends Point {
+export type GridPoint = {
+    col: number;
+    row: number;
+};
+
+export type Size = {
     width: number;
     height: number;
-}
+};
+
+export interface ViewBox extends Point, Size {}
 
 export interface Node {
     id: string;

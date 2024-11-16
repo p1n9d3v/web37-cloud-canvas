@@ -3,22 +3,22 @@ import { createContext, ReactNode, useContext, useState } from 'react';
 
 type DimensionType = Dimension;
 
-interface DimensionContextType {
+type DimensionContextType = {
     dimension: DimensionType;
-    toggleDimension: () => void;
-}
+    handleToggleDimension: () => void;
+};
 
 const DimensionContext = createContext<DimensionContextType | null>(null);
 
 export const DimensionProvider = ({ children }: { children: ReactNode }) => {
     const [dimension, setDimension] = useState<DimensionType>('2d');
 
-    const toggleDimension = () => {
+    const handleToggleDimension = () => {
         setDimension((prev) => (prev === '2d' ? '3d' : '2d'));
     };
 
     return (
-        <DimensionContext.Provider value={{ dimension, toggleDimension }}>
+        <DimensionContext.Provider value={{ dimension, handleToggleDimension }}>
             {children}
         </DimensionContext.Provider>
     );

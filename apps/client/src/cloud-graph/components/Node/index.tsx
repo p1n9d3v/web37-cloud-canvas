@@ -1,26 +1,38 @@
 import NodeRenderer from '@cloud-graph/components/Node/NodeRenderer';
-import useDrag from '@cloud-graph/hooks/useDrag';
-import { Node } from '@cloud-graph/types';
+import { Dimension, Node } from '@cloud-graph/types';
 
 type Props = {
     node: Node;
+    dimension: Dimension;
+    isSelected: boolean;
+    onStartDrag: (nodeId: string, point: { x: number; y: number }) => void;
+    onDrag: (point: { x: number; y: number }) => void;
+    onStopDrag: () => void;
+    onSelect: (nodeId: string) => void;
 };
-export default ({ node }: Props) => {
-    const { startDrag, drag, stopDrag } = useDrag();
-
+export default ({
+    node,
+    dimension,
+    isSelected,
+    onStartDrag,
+    onDrag,
+    onStopDrag,
+    onSelect,
+}: Props) => {
     const handleStartDrag = (event: React.MouseEvent) => {
         const { clientX, clientY } = event;
-        startDrag(node.id, {
+        onSelect(node.id);
+        onStartDrag(node.id, {
             x: clientX,
             y: clientY,
         });
 
         const handleMouseMove = (moveEvent: MouseEvent) => {
-            drag({ x: moveEvent.clientX, y: moveEvent.clientY });
+            onDrag({ x: moveEvent.clientX, y: moveEvent.clientY });
         };
 
         const handleMouseUp = () => {
-            stopDrag();
+            onStopDrag();
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('mouseup', handleMouseUp);
         };
@@ -28,7 +40,6 @@ export default ({ node }: Props) => {
         window.addEventListener('mousemove', handleMouseMove);
         window.addEventListener('mouseup', handleMouseUp);
     };
-
     return (
         <g
             id={node.id}
@@ -36,7 +47,11 @@ export default ({ node }: Props) => {
             transform={`translate(${node.point.x}, ${node.point.y})`}
             onMouseDown={handleStartDrag}
         >
-            <NodeRenderer node={node} />
+            <NodeRenderer
+                node={node}
+                dimension={dimension}
+                isSelected={isSelected}
+            />
         </g>
     );
 };

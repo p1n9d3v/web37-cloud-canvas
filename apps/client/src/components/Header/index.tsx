@@ -37,7 +37,7 @@ const StyledIconButton = styled(IconButton)(({ theme }) => ({
 
 export default () => {
     const { mode: themeMode, setMode: setThemeMode } = useColorScheme();
-    const { dimension, toggleDimension } = useDimensionContext();
+    const { dimension, handleToggleDimension } = useDimensionContext();
 
     const handleToggleTheme = () =>
         setThemeMode(themeMode === 'dark' ? 'light' : 'dark');
@@ -55,7 +55,7 @@ export default () => {
                 <ToggleButtonGroup
                     value={dimension}
                     exclusive
-                    onChange={toggleDimension}
+                    onChange={handleToggleDimension}
                     sx={{
                         height: '38px',
                     }}

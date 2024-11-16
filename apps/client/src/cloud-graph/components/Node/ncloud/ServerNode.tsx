@@ -1,13 +1,14 @@
-import { useDimensionContext } from '@cloud-graph/contexts/DimensionContext';
-import { Node } from '@cloud-graph/types';
+import { Dimension, Node } from '@cloud-graph/types';
 
-type Props = {
-    node: Node;
+type NodeProps = {
+    label?: string;
 };
 
-const Node3D = ({ node }: Props) => {
-    const { label } = node;
+interface Props extends NodeProps {
+    dimension: Dimension;
+}
 
+const Node3D = ({ label }: NodeProps) => {
     return (
         <>
             <svg
@@ -56,8 +57,7 @@ const Node3D = ({ node }: Props) => {
     );
 };
 
-const Node2D = ({ node }: Props) => {
-    const { label } = node;
+const Node2D = ({ label }: NodeProps) => {
     return (
         <>
             <svg width="90" height="90">
@@ -88,23 +88,14 @@ const Node2D = ({ node }: Props) => {
                     {label}
                 </text>
             </svg>
-            <svg width="90" height="90">
-                <rect
-                    height="90"
-                    width="90"
-                    style={{
-                        strokeWidth: 4,
-                        stroke: 'rgb(66, 134, 197)',
-                        fill: 'none',
-                    }}
-                ></rect>
-            </svg>
         </>
     );
 };
 
-export default ({ node }: Props) => {
-    const { dimension } = useDimensionContext();
-
-    return dimension === '2d' ? <Node2D node={node} /> : <Node3D node={node} />;
+export default ({ label, dimension }: Props) => {
+    return dimension === '2d' ? (
+        <Node2D label={label} />
+    ) : (
+        <Node3D label={label} />
+    );
 };

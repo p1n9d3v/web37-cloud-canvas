@@ -1,7 +1,4 @@
-import { useDimensionContext } from '@cloud-graph/contexts/DimensionContext';
-import { useGraphContext } from '@cloud-graph/contexts/GraphContext';
-import { useViewportContext } from '@cloud-graph/contexts/ViewportContext';
-import { Point } from '@cloud-graph/types';
+import { Dimension, Point } from '@cloud-graph/types';
 import {
     getDistance,
     getGridAlignedPoint,
@@ -9,30 +6,30 @@ import {
 } from '@cloud-graph/utils';
 import { useRef } from 'react';
 
-export default () => {
-    const { viewportRef } = useViewportContext();
-    const { dimension } = useDimensionContext();
-    const { moveNode } = useGraphContext();
+type Props = {
+    svg: SVGSVGElement;
+    dimension: Dimension;
+    handleMoveNode: (nodeId: string, point: Point) => void;
+};
 
-    const dragNodeBBox = useRef<DOMRect | null>(null);
+export default ({ svg, dimension, handleMoveNode }: Props) => {
     const isDragging = useRef<boolean>(false);
+    const dragNodeBBox = useRef<DOMRect | null>(null);
     const draggingId = useRef<string | null>(null);
     const startDragPoint = useRef<Point | null>(null);
 
-    const startDrag = (nodeId: string, point: Point) => {
-        const $node = viewportRef.current!.getElementById(
-            nodeId,
-        ) as SVGGElement;
+    const handleStartDrag = (nodeId: string, point: Point) => {
+        const $node = svg.getElementById(nodeId) as SVGGElement;
 
-        startDragPoint.current = getSvgPoint(viewportRef.current!, point);
+        startDragPoint.current = getSvgPoint(svg, point);
         dragNodeBBox.current = $node.getBBox();
         draggingId.current = nodeId;
         isDragging.current = true;
     };
 
-    const drag = (point: Point) => {
-        if (!isDragging || !draggingId || !viewportRef.current) return;
-        const curPoint = getSvgPoint(viewportRef.current, point);
+    const handleDrag = (point: Point) => {
+        if (!isDragging || !draggingId) return;
+        const curPoint = getSvgPoint(svg, point);
         const { width, height } = dragNodeBBox.current!;
 
         const distance = getDistance(curPoint, startDragPoint.current!);
@@ -44,10 +41,10 @@ export default () => {
         };
         const newPoint = getGridAlignedPoint(centerPoint, dimension);
 
-        moveNode(draggingId.current!, newPoint);
+        handleMoveNode(draggingId.current!, newPoint);
     };
 
-    const stopDrag = () => {
+    const handleStopDrag = () => {
         isDragging.current = false;
         draggingId.current = null;
         dragNodeBBox.current = null;
@@ -55,8 +52,8 @@ export default () => {
     };
 
     return {
-        startDrag,
-        stopDrag,
-        drag,
+        handleStartDrag,
+        handleStopDrag,
+        handleDrag,
     };
 };

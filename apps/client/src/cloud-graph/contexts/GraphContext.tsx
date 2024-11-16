@@ -1,11 +1,19 @@
-import { GraphData, Node, Point } from '@cloud-graph/types';
+import { Dimension, Edge, Group, Node, Point } from '@cloud-graph/types';
 import { nanoid } from 'nanoid';
 import { createContext, ReactNode, useContext, useReducer } from 'react';
 
-interface GraphContextType {
-    graph: GraphData;
-    addNode: (node: Node) => void;
-    moveNode: (id: string, point: Point) => void;
+type GraphState = {
+    nodes: Node[];
+    edges: Edge[];
+    groups: Group[];
+    selectedId: string | null;
+};
+
+interface GraphContextType extends GraphState {
+    handleAddNode: (node: Node) => void;
+    handleMoveNode: (id: string, point: Point) => void;
+    handleSelect: (id: string) => void;
+    handleDeselect: (id: string) => void;
 }
 
 type GraphAction =
@@ -19,27 +27,51 @@ type GraphAction =
               id: string;
               point: Point;
           };
+      }
+    | {
+          type: 'SELECT_NODE';
+          payload: {
+              id: string;
+          };
+      }
+    | {
+          type: 'DESELECT_NODE';
+          payload: {
+              id: string;
+          };
       };
+
 const GraphContext = createContext<GraphContextType | null>(null);
 
-const graphReducer = (state: GraphData, action: GraphAction) => {
-    const { type, payload } = action;
-    switch (type) {
+const graphReducer = (state: GraphState, action: GraphAction) => {
+    switch (action.type) {
         case 'ADD_NODE': {
             return {
                 ...state,
-                nodes: [...state.nodes, payload],
+                nodes: [...state.nodes, action.payload],
             };
         }
         case 'MOVE_NODE': {
             return {
                 ...state,
                 nodes: state.nodes.map((node) => {
-                    if (node.id === payload.id) {
-                        return { ...node, point: payload.point };
+                    if (node.id === action.payload.id) {
+                        return { ...node, point: action.payload.point };
                     }
                     return node;
                 }),
+            };
+        }
+        case 'SELECT_NODE': {
+            return {
+                ...state,
+                selectedId: action.payload.id,
+            };
+        }
+        case 'DESELECT_NODE': {
+            return {
+                ...state,
+                selectedId: null,
             };
         }
         default:
@@ -71,16 +103,17 @@ const mockNodes = [
     },
 ];
 export const GraphProvider = ({ children }: { children: ReactNode }) => {
-    const [graph, dispatch] = useReducer(graphReducer, {
+    const [state, dispatch] = useReducer(graphReducer, {
         nodes: [...mockNodes],
         edges: [],
         groups: [],
+        selectedId: null,
     });
 
-    const addNode = (node: Node) =>
+    const handleAddNode = (node: Node) =>
         dispatch({ type: 'ADD_NODE', payload: node });
 
-    const moveNode = (id: string, point: Point) =>
+    const handleMoveNode = (id: string, point: Point) =>
         dispatch({
             type: 'MOVE_NODE',
             payload: {
@@ -88,9 +121,21 @@ export const GraphProvider = ({ children }: { children: ReactNode }) => {
                 point,
             },
         });
+    const handleSelect = (id: string) =>
+        dispatch({ type: 'SELECT_NODE', payload: { id } });
+    const handleDeselect = (id: string) =>
+        dispatch({ type: 'DESELECT_NODE', payload: { id } });
 
     return (
-        <GraphContext.Provider value={{ graph, addNode, moveNode }}>
+        <GraphContext.Provider
+            value={{
+                ...state,
+                handleAddNode,
+                handleMoveNode,
+                handleSelect,
+                handleDeselect,
+            }}
+        >
             {children}
         </GraphContext.Provider>
     );

@@ -2,30 +2,48 @@ import CloudFunctionNode from '@cloud-graph/components/Node/ncloud/CloudFunction
 import DBMySQLNode from '@cloud-graph/components/Node/ncloud/DBMySQLNode';
 import ObjectStorageNode from '@cloud-graph/components/Node/ncloud/ObjectStorageNode';
 import ServerNode from '@cloud-graph/components/Node/ncloud/ServerNode';
-import { Node } from '@cloud-graph/types';
+import { Dimension, Node } from '@cloud-graph/types';
 
 type Props = {
     node: Node;
+    dimension: Dimension;
+    isSelected: boolean;
 };
 
-const nodeFactory = (node: Node) => {
+const nodeFactory = (node: Node, dimension: Dimension) => {
     switch (node.type) {
         case 'server':
-            return <ServerNode node={node} />;
+            return <ServerNode label={node.label} dimension={dimension} />;
         case 'cloud-function':
-            return <CloudFunctionNode node={node} />;
+            return <CloudFunctionNode dimension={dimension} />;
         case 'object-storage':
-            return <ObjectStorageNode node={node} />;
+            return <ObjectStorageNode dimension={dimension} />;
         case 'db-mysql':
-            return <DBMySQLNode node={node} />;
-
+            return <DBMySQLNode dimension={dimension} />;
         default:
             null;
     }
 };
 
-const NodeRenderer = ({ node }: Props) => {
-    return <>{nodeFactory(node)}</>;
+const NodeRenderer = ({ node, dimension, isSelected }: Props) => {
+    return (
+        <>
+            {nodeFactory(node, dimension)}
+            {isSelected && dimension === '2d' && (
+                <svg width="90" height="90">
+                    <rect
+                        height="90"
+                        width="90"
+                        style={{
+                            strokeWidth: 4,
+                            stroke: 'rgb(66, 134, 197)',
+                            fill: 'none',
+                        }}
+                    ></rect>
+                </svg>
+            )}
+        </>
+    );
 };
 
 export default NodeRenderer;

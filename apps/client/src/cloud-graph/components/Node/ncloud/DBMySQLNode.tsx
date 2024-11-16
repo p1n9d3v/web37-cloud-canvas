@@ -1,11 +1,10 @@
-import { useDimensionContext } from '@cloud-graph/contexts/DimensionContext';
-import { Node } from '@cloud-graph/types';
+import { Dimension } from '@cloud-graph/types';
 
 type Props = {
-    node: Node;
+    dimension: Dimension;
 };
 
-const Node3D = ({ node }: Props) => {
+const Node3D = () => {
     return (
         <>
             <svg width="128" height="137.5">
@@ -56,7 +55,7 @@ const Node3D = ({ node }: Props) => {
     );
 };
 
-const Node2D = ({ node }: Props) => {
+const Node2D = () => {
     return (
         <>
             <svg width="90" height="90">
@@ -70,13 +69,13 @@ const Node2D = ({ node }: Props) => {
                         gradientTransform="translate(-2.647 -2.647) scale(5.29412)"
                         gradientUnits="userSpaceOnUse"
                     >
-                        <stop offset="0" stop-color="#005ba1"></stop>
-                        <stop offset=".07" stop-color="#0060a9"></stop>
-                        <stop offset=".36" stop-color="#0071c8"></stop>
-                        <stop offset=".52" stop-color="#0078d4"></stop>
-                        <stop offset=".64" stop-color="#0074cd"></stop>
-                        <stop offset=".82" stop-color="#006abb"></stop>
-                        <stop offset="1" stop-color="#005ba1"></stop>
+                        <stop offset="0" stopColor="#005ba1"></stop>
+                        <stop offset=".07" stopColor="#0060a9"></stop>
+                        <stop offset=".36" stopColor="#0071c8"></stop>
+                        <stop offset=".52" stopColor="#0078d4"></stop>
+                        <stop offset=".64" stopColor="#0074cd"></stop>
+                        <stop offset=".82" stopColor="#006abb"></stop>
+                        <stop offset="1" stopColor="#005ba1"></stop>
                     </linearGradient>
                 </defs>
                 <path
@@ -103,8 +102,6 @@ const Node2D = ({ node }: Props) => {
         </>
     );
 };
-export default ({ node }: Props) => {
-    const { dimension } = useDimensionContext();
-
-    return dimension === '2d' ? <Node2D node={node} /> : <Node3D node={node} />;
+export default ({ dimension }: Props) => {
+    return dimension === '2d' ? <Node2D /> : <Node3D />;
 };

@@ -1,11 +1,10 @@
-import { useDimensionContext } from '@cloud-graph/contexts/DimensionContext';
-import { Node } from '@cloud-graph/types';
+import { Dimension } from '@cloud-graph/types';
 
 type Props = {
-    node: Node;
+    dimension: Dimension;
 };
 
-const Node3D = ({ node }: Props) => {
+const Node3D = () => {
     return (
         <>
             <svg width="100.626" height="115.695">
@@ -43,14 +42,14 @@ const Node3D = ({ node }: Props) => {
                     fill="none"
                     stroke="#000000"
                     d="M50.313 1.155 1.214 29.501l24.549 70.866 24.549 14.173 24.548-14.173 24.549-70.866z"
-                    stroke-width="2"
+                    strokeWidth="2"
                 ></path>
             </svg>
         </>
     );
 };
 
-const Node2D = ({ node }: Props) => {
+const Node2D = () => {
     return (
         <>
             <svg width="90" height="90">
@@ -74,8 +73,6 @@ const Node2D = ({ node }: Props) => {
         </>
     );
 };
-export default ({ node }: Props) => {
-    const { dimension } = useDimensionContext();
-
-    return dimension === '2d' ? <Node2D node={node} /> : <Node3D node={node} />;
+export default ({ dimension }: Props) => {
+    return dimension === '2d' ? <Node2D /> : <Node3D />;
 };

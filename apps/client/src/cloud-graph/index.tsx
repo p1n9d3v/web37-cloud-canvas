@@ -1,6 +1,7 @@
 import Graph from '@/src/cloud-graph/components/Graph';
-import Edge from '@cloud-graph/components/Edge';
+import Anchors from '@cloud-graph/components/Anchors';
 import Connector from '@cloud-graph/components/Connector';
+import Edge from '@cloud-graph/components/Edge';
 import Node from '@cloud-graph/components/Node';
 import {
     DimensionProvider,
@@ -10,8 +11,8 @@ import {
     GraphProvider,
     useGraphContext,
 } from '@cloud-graph/contexts/GraphContext';
-import useDrag from '@cloud-graph/hooks/useDrag';
 import useEdgeConnector from '@cloud-graph/hooks/useConnector';
+import useDrag from '@cloud-graph/hooks/useDrag';
 import useSvgViewBox from '@cloud-graph/hooks/useSvgViewBox';
 import useZoomPan from '@cloud-graph/hooks/useZoomPan';
 import { ReactNode } from 'react';
@@ -56,21 +57,32 @@ export const CloudGraph = () => {
             onStopPan={handleStopPan}
             onMovePan={handleMovePan}
         >
-            {nodes.map((node) => (
-                <Node
-                    key={node.id}
-                    node={node}
-                    dimension={dimension}
-                    isSelected={selectedId === node.id}
-                    onStartDrag={handleStartDrag}
-                    onDrag={handleDrag}
-                    onStopDrag={handleStopDrag}
-                    onSelect={handleSelect}
-                    onStartConnect={handleStartConnect}
-                    onConnect={handleConnect}
-                    onStopConnect={handleStopConnect}
-                />
-            ))}
+            {nodes.map((node) => {
+                const isSelected = selectedId === node.id;
+
+                return (
+                    <g key={node.id}>
+                        <Node
+                            node={node}
+                            dimension={dimension}
+                            isSelected={isSelected}
+                            onStartDrag={handleStartDrag}
+                            onDrag={handleDrag}
+                            onStopDrag={handleStopDrag}
+                            onSelect={handleSelect}
+                        />
+                        <Anchors
+                            node={node}
+                            edges={edges}
+                            dimension={dimension}
+                            isSelected={isSelected}
+                            onStartConnect={handleStartConnect}
+                            onConnect={handleConnect}
+                            onStopConnect={handleStopConnect}
+                        />
+                    </g>
+                );
+            })}
 
             {edges.map((edge) => (
                 <Edge key={edge.id} edge={edge} dimension={dimension} />

@@ -22,6 +22,10 @@ import { isCloudNode, isUtilityNode } from '@cloud-graph/utils';
 import { Box } from '@mui/material';
 import { ReactNode, useEffect } from 'react';
 
+//INFO: 일단 한곳에 모아놓고 코딩을 했음 나중에 리팩토링 필요
+//기존 메모이제이션 코드는 다 삭제, 개발 과정에서 메모이제이션을 적용하니 다른 기능 구현이 까다로워 짐
+//추후 성능 문제가 있을시 메모이제이션 적용해야함
+//최소한의 최적화로 viewBox내의 노드만 렌더링하도록 함
 export const CloudGraph = () => {
     const { dimension } = useDimensionContext();
     const {

@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
-import { PublicStarController } from './public-star.controller';
-import { PublicStarService } from './public-star.service';
+import { PublicStarController } from '../public-star.controller';
+import { PublicStarService } from '../public-star.service';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { vi } from 'vitest';
 

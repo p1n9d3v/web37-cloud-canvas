@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
-import { PublicService } from './public.service';
-import { PublicRepository } from './public.repository';
+import { PublicService } from '../public.service';
+import { PublicRepository } from '../public.repository';
 import { NotFoundException } from '@nestjs/common';
 import { vi } from 'vitest';
 

@@ -55,7 +55,7 @@ const theme = createTheme({
                         border: `2px solid ${theme.palette.background.paper}`,
                     },
                 },
-                '[data-type="flow-line"],[data-type="flow-node"]': {
+                '[data-type="graph-edge"],[data-type="graph-node"]': {
                     '&:hover': {
                         cursor: 'pointer',
                     },

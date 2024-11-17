@@ -1,8 +1,8 @@
 type Props = {
-    selected: boolean;
+    isSelected: boolean;
 };
-export default ({ selected }: Props) => {
-    if (!selected) return;
+export default ({ isSelected }: Props) => {
+    if (!isSelected) return;
 
     return (
         <svg width="90" height="90">

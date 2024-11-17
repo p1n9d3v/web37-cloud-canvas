@@ -1,15 +1,20 @@
-import { Dimension, Edge } from '@cloud-graph/types';
+import { Dimension, Edge, Point } from '@cloud-graph/types';
 import { calculateAnchorPoints } from '@cloud-graph/utils';
 import { useTheme } from '@mui/material';
+import { useRef } from 'react';
 
 type Props = {
     edge: Edge;
+    isSelected: boolean;
     dimension: Dimension;
+    onSelect: (edgeId: string) => void;
+    onSplit: (edge: Edge, point: Point) => void;
 };
 
-export default ({ edge, dimension }: Props) => {
+export default ({ edge, isSelected, dimension, onSelect, onSplit }: Props) => {
     const theme = useTheme();
     const { id, type, source, target } = edge;
+    const timeoutRef = useRef<number | null>(null);
 
     const sourceAnchor = calculateAnchorPoints(source.node, dimension);
     const targetAnchor = calculateAnchorPoints(target.node, dimension);
@@ -21,8 +26,39 @@ export default ({ edge, dimension }: Props) => {
         ? targetAnchor[target.anchorType]
         : target.node.point;
 
+    const color = isSelected
+        ? theme.palette.primary.main
+        : theme.palette.text.primary;
+
+    const handleClick = () => {
+        onSelect(id);
+    };
+
+    const handleMouseDown = (event: React.MouseEvent) => {
+        timeoutRef.current = setTimeout(() => {
+            const { clientX, clientY } = event;
+            onSplit(edge, { x: clientX, y: clientY });
+        }, 500);
+
+        const handleMouseUp = () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+                timeoutRef.current = null;
+            }
+
+            document.removeEventListener('mouseup', handleMouseUp);
+        };
+
+        document.addEventListener('mouseup', handleMouseUp);
+    };
+
     return (
-        <g id={id} data-type="graph-edge">
+        <g
+            id={id}
+            data-type="graph-edge"
+            onClick={handleClick}
+            onMouseDown={handleMouseDown}
+        >
             <defs>
                 <marker
                     id="arrowhead"
@@ -32,10 +68,7 @@ export default ({ edge, dimension }: Props) => {
                     refY="2.5"
                     orient="auto"
                 >
-                    <path
-                        d="M 0 0 L 5 2.5 L 0 5 Z"
-                        fill={theme.palette.text.primary}
-                    />
+                    <path d="M 0 0 L 5 2.5 L 0 5 Z" fill={color} />
                 </marker>
             </defs>
             <line
@@ -43,7 +76,7 @@ export default ({ edge, dimension }: Props) => {
                 y1={sourcePoint.y}
                 x2={targetPoint.x}
                 y2={targetPoint.y}
-                stroke={theme.palette.text.primary}
+                stroke={color}
                 strokeWidth={2}
                 markerEnd={type === 'arrow' ? 'url(#arrowhead)' : ''}
             />

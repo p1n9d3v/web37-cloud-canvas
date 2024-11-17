@@ -155,3 +155,17 @@ export const findNearestAnchorPair = (
         targetAnchorType: nearestAnchorPair.targetAnchorType!,
     };
 };
+
+export const isUtilityNode = (node: Node) => {
+    return ['pointer'].includes(node.type);
+};
+
+export const isCloudNode = (node: Node) => {
+    return ['server', 'cloud-function', 'object-storage', 'db-mysql'].includes(
+        node.type,
+    );
+};
+
+export const isCommonNode = (node: Node) => {
+    return ['text', 'image'].includes(node.type);
+};

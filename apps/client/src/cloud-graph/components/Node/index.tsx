@@ -5,26 +5,24 @@ import { useRef } from 'react';
 type Props = {
     node: Node;
     dimension: Dimension;
-    isSelected: boolean;
+    isSelected?: boolean;
     onStartDrag: (nodeId: string, point: { x: number; y: number }) => void;
     onDrag: (point: { x: number; y: number }) => void;
     onStopDrag: () => void;
-    onSelect: (nodeId: string) => void;
+    onSelect?: (nodeId: string) => void;
 };
 export default ({
     node,
     dimension,
-    isSelected,
+    isSelected = false,
     onStartDrag,
     onDrag,
     onStopDrag,
     onSelect,
 }: Props) => {
-    const nodeRef = useRef<SVGGElement>(null);
-
-    const handleStartDrag = (event: React.MouseEvent) => {
+    const handleMouseDown = (event: React.MouseEvent) => {
         const { clientX, clientY } = event;
-        onSelect(node.id);
+        onSelect && onSelect(node.id);
         onStartDrag(node.id, {
             x: clientX,
             y: clientY,
@@ -46,11 +44,11 @@ export default ({
 
     return (
         <g
-            ref={nodeRef}
             id={node.id}
-            data-type={node.type}
+            data-type="graph-node"
+            data-service-type={node.type}
             transform={`translate(${node.point.x}, ${node.point.y})`}
-            onMouseDown={handleStartDrag}
+            onMouseDown={handleMouseDown}
         >
             <NodeRenderer
                 node={node}

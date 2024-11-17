@@ -3,6 +3,7 @@ import { Dimension, Edge, Group, Node, Point } from '@cloud-graph/types';
 import {
     calculateAnchorPoints,
     findNearestAnchorPair,
+    isUtilityNode,
 } from '@cloud-graph/utils';
 import { nanoid } from 'nanoid';
 import { createContext, ReactNode, useContext, useReducer } from 'react';
@@ -20,6 +21,7 @@ interface GraphContextType extends GraphState {
     handleSelect: (id: string) => void;
     handleDeselect: (id: string) => void;
     handleAddEdge: (edge: Edge) => void;
+    handleSplitEdge: (edge: Edge, pointer: Node) => void;
 }
 
 type GraphAction =
@@ -50,6 +52,15 @@ type GraphAction =
     | {
           type: 'ADD_EDGE';
           payload: Edge;
+      }
+    | {
+          type: 'SPLIT_EDGE';
+          payload: {
+              pointer: Node;
+              edge: Edge;
+              sourceToPointer: Edge;
+              pointerToTarget: Edge;
+          };
       };
 
 const GraphContext = createContext<GraphContextType | null>(null);
@@ -103,11 +114,15 @@ const graphReducer = (state: GraphState, action: GraphAction) => {
                                     ...edge.source.node,
                                     point: action.payload.point,
                                 },
-                                anchorType: nearestAnchorPair.sourceAnchorType,
+                                anchorType: !isUtilityNode(edge.source.node)
+                                    ? nearestAnchorPair.sourceAnchorType
+                                    : undefined,
                             },
                             target: {
                                 ...edge.target,
-                                anchorType: nearestAnchorPair.targetAnchorType,
+                                anchorType: !isUtilityNode(edge.target.node)
+                                    ? nearestAnchorPair.targetAnchorType
+                                    : undefined,
                             },
                         };
                     }
@@ -116,7 +131,9 @@ const graphReducer = (state: GraphState, action: GraphAction) => {
                             ...edge,
                             source: {
                                 ...edge.source,
-                                anchorType: nearestAnchorPair.sourceAnchorType,
+                                anchorType: !isUtilityNode(edge.source.node)
+                                    ? nearestAnchorPair.sourceAnchorType
+                                    : undefined,
                             },
                             target: {
                                 ...edge.target,
@@ -124,7 +141,9 @@ const graphReducer = (state: GraphState, action: GraphAction) => {
                                     ...edge.target.node,
                                     point: action.payload.point,
                                 },
-                                anchorType: nearestAnchorPair.targetAnchorType,
+                                anchorType: !isUtilityNode(edge.target.node)
+                                    ? nearestAnchorPair.targetAnchorType
+                                    : undefined,
                             },
                         };
                     }
@@ -149,6 +168,18 @@ const graphReducer = (state: GraphState, action: GraphAction) => {
             return {
                 ...state,
                 edges: [...state.edges, action.payload],
+            };
+        }
+        case 'SPLIT_EDGE': {
+            return {
+                ...state,
+                nodes: [...state.nodes, action.payload.pointer],
+                edges: state.edges
+                    .filter((edge) => edge.id !== action.payload.edge.id)
+                    .concat([
+                        action.payload.sourceToPointer,
+                        action.payload.pointerToTarget,
+                    ]),
             };
         }
         default:
@@ -233,6 +264,37 @@ export const GraphProvider = ({ children }: { children: ReactNode }) => {
         dispatch({ type: 'DESELECT_NODE', payload: { id } });
     const handleAddEdge = (edge: Edge) =>
         dispatch({ type: 'ADD_EDGE', payload: edge });
+    const handleSplitEdge = (edge: Edge, pointer: Node) => {
+        const sourceToPointer = {
+            id: nanoid(),
+            type: 'line',
+            source: {
+                ...edge.source,
+            },
+            target: {
+                node: pointer,
+            },
+        };
+        const pointerToTarget = {
+            id: nanoid(),
+            type: edge.target.node.type === 'pointer' ? 'line' : 'arrow',
+            source: {
+                node: pointer,
+            },
+            target: {
+                ...edge.target,
+            },
+        };
+        dispatch({
+            type: 'SPLIT_EDGE',
+            payload: {
+                pointer,
+                edge,
+                sourceToPointer,
+                pointerToTarget,
+            },
+        });
+    };
 
     return (
         <GraphContext.Provider
@@ -243,6 +305,7 @@ export const GraphProvider = ({ children }: { children: ReactNode }) => {
                 handleSelect,
                 handleDeselect,
                 handleAddEdge,
+                handleSplitEdge,
             }}
         >
             {children}

@@ -41,7 +41,6 @@ export type Edge = {
         node: Node;
         anchorType?: AnchorType;
     };
-    controlPoints?: Point[];
 };
 
 export type Group = {

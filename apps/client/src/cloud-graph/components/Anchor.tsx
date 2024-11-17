@@ -1,5 +1,5 @@
 import { Point } from '@cloud-graph/types';
-import { ANCHOR_RADIUS } from '@cloudflow/constants';
+import { ANCHOR_RADIUS } from '@cloud-graph/constants';
 
 type Props = {
     visible: boolean;
@@ -18,7 +18,7 @@ export default ({
     onConnect,
     onStopConnect,
 }: Props) => {
-    const handleMouseDown = (e: React.MouseEvent) => {
+    const handleMouseDown = () => {
         onStartConnect();
 
         const handleMouseMove = (moveEvent: MouseEvent) => {

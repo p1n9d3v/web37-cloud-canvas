@@ -1,7 +1,6 @@
 import Header from '@components/Header';
 import Sidebar from '@components/Sidebar';
 import Box from '@mui/material/Box';
-
 import { CloudGraph } from '@cloud-graph/index';
 
 function App() {

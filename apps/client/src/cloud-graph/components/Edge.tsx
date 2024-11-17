@@ -7,11 +7,19 @@ type Props = {
     edge: Edge;
     isSelected: boolean;
     dimension: Dimension;
-    onSelect: (edgeId: string) => void;
+    onSelect: (id: string) => void;
     onSplit: (edge: Edge, point: Point) => void;
+    onSelectEntireEdge: (edge: Edge) => void;
 };
 
-export default ({ edge, isSelected, dimension, onSelect, onSplit }: Props) => {
+export default ({
+    edge,
+    isSelected,
+    dimension,
+    onSelect,
+    onSplit,
+    onSelectEntireEdge,
+}: Props) => {
     const theme = useTheme();
     const { id, type, source, target } = edge;
     const timeoutRef = useRef<number | null>(null);
@@ -32,6 +40,9 @@ export default ({ edge, isSelected, dimension, onSelect, onSplit }: Props) => {
 
     const handleClick = () => {
         onSelect(id);
+    };
+    const handleDoubleClick = () => {
+        onSelectEntireEdge(edge);
     };
 
     const handleMouseDown = (event: React.MouseEvent) => {
@@ -57,6 +68,7 @@ export default ({ edge, isSelected, dimension, onSelect, onSplit }: Props) => {
             id={id}
             data-type="graph-edge"
             onClick={handleClick}
+            onDoubleClick={handleDoubleClick}
             onMouseDown={handleMouseDown}
         >
             <defs>

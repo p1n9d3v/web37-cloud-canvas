@@ -12,13 +12,14 @@ type GraphState = {
     nodes: Node[];
     edges: Edge[];
     groups: Group[];
-    selectedIds: string[];
+    selectedIds: string[]; //INFO: Set으로 변경할까 고민
 };
 
 interface GraphContextType extends GraphState {
     handleAddNode: (node: Node) => void;
     handleMoveNode: (id: string, point: Point) => void;
     handleSelect: (id: string) => void;
+    handleSelectEntireEdge: (edge: Edge) => void;
     handleDeselect: (id: string) => void;
     handleDeselectAll: () => void;
     handleAddEdge: (edge: Edge) => void;
@@ -49,6 +50,12 @@ type GraphAction =
           type: 'SELECT';
           payload: {
               id: string;
+          };
+      }
+    | {
+          type: 'MULTIPLE_SELECT';
+          payload: {
+              ids: string[];
           };
       }
     | {
@@ -174,6 +181,17 @@ const graphReducer = (state: GraphState, action: GraphAction) => {
                 selectedIds: [action.payload.id],
             };
         }
+        case 'MULTIPLE_SELECT': {
+            return {
+                ...state,
+                selectedIds: [
+                    ...state.selectedIds,
+                    ...action.payload.ids.filter(
+                        (id) => !state.selectedIds.includes(id),
+                    ),
+                ],
+            };
+        }
         case 'DESELECT': {
             return {
                 ...state,
@@ -260,6 +278,7 @@ const graphReducer = (state: GraphState, action: GraphAction) => {
                 ),
             };
         }
+        //TODO: Refactoring
         case 'REMOVE_EDGE': {
             const selectedEdge = state.edges.find(
                 (edge) => edge.id === action.payload.id,
@@ -455,6 +474,34 @@ export const GraphProvider = ({ children }: { children: ReactNode }) => {
         });
     };
 
+    const handleSelectEntireEdge = (edge: Edge) => {
+        const { source, target } = edge;
+        let sourceNode = source.node;
+        let targetNode = target.node;
+        const ids = [edge.id];
+        while (sourceNode.type === 'pointer') {
+            const sourceEdge = state.edges.find(
+                (edge) => edge.target.node.id === sourceNode.id,
+            );
+            sourceNode = sourceEdge!.source.node;
+            ids.push(sourceEdge!.id);
+        }
+        while (targetNode.type === 'pointer') {
+            const targetEdge = state.edges.find(
+                (edge) => edge.source.node.id === targetNode.id,
+            );
+            targetNode = targetEdge!.target.node;
+            ids.push(targetEdge!.id);
+        }
+
+        dispatch({
+            type: 'MULTIPLE_SELECT',
+            payload: {
+                ids,
+            },
+        });
+    };
+
     return (
         <GraphContext.Provider
             value={{
@@ -467,6 +514,7 @@ export const GraphProvider = ({ children }: { children: ReactNode }) => {
                 handleAddEdge,
                 handleSplitEdge,
                 handleRemoveSelected,
+                handleSelectEntireEdge,
             }}
         >
             {children}

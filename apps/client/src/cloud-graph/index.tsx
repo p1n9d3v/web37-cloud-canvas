@@ -33,6 +33,7 @@ export const CloudGraph = () => {
         handleAddEdge,
         handleSplitEdge,
         handleRemoveSelected,
+        handleSelectEntireEdge,
     } = useGraphContext();
     const { svgRef, viewBox, setViewBox } = useSvgViewBox();
     const { handleStartDrag, handleStopDrag, handleDrag } = useDrag({
@@ -93,6 +94,7 @@ export const CloudGraph = () => {
                         isSelected={selectedIds.includes(edge.id)}
                         onSelect={handleSelect}
                         onSplit={handleSplit}
+                        onSelectEntireEdge={handleSelectEntireEdge}
                     />
                 ))}
                 {nodes.filter(isCloudNode).map((node) => {

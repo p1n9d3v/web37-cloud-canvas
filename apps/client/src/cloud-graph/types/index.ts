@@ -35,11 +35,11 @@ export type Edge = {
     type: string;
     source: {
         node: Node;
-        anchorType?: string;
+        anchorType?: AnchorType;
     };
     target: {
         node: Node;
-        anchorType?: string;
+        anchorType?: AnchorType;
     };
     controlPoints?: Point[];
 };
@@ -51,3 +51,6 @@ export type Group = {
     point: Point;
     nodes: string[];
 };
+
+export type AnchorType = 'top' | 'right' | 'bottom' | 'left';
+export type Anchors = Record<AnchorType, Point>;

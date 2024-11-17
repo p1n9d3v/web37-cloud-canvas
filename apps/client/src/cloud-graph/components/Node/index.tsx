@@ -1,6 +1,12 @@
 import Anchor from '@cloud-graph/components/Anchor';
 import NodeRenderer from '@cloud-graph/components/Node/NodeRenderer';
-import { Dimension, Node, Point } from '@cloud-graph/types';
+import {
+    Anchors,
+    AnchorType,
+    Dimension,
+    Node,
+    Point,
+} from '@cloud-graph/types';
 import { calculateAnchorPoints } from '@cloud-graph/utils';
 import { useEffect, useRef, useState } from 'react';
 
@@ -12,7 +18,7 @@ type Props = {
     onDrag: (point: { x: number; y: number }) => void;
     onStopDrag: () => void;
     onSelect: (nodeId: string) => void;
-    onStartConnect: (node: Node, anchorType: string) => void;
+    onStartConnect: (node: Node, anchorType: AnchorType) => void;
     onConnect: (point: Point) => void;
     onStopConnect: () => void;
 };
@@ -29,9 +35,7 @@ export default ({
     onStopConnect,
 }: Props) => {
     const nodeRef = useRef<SVGGElement>(null);
-    const [anchors, setAnchors] = useState<{
-        [key: string]: { x: number; y: number };
-    } | null>(null);
+    const [anchors, setAnchors] = useState<Anchors | null>(null);
 
     const handleStartDrag = (event: React.MouseEvent) => {
         const { clientX, clientY } = event;
@@ -85,7 +89,9 @@ export default ({
                         cx={point.x as any}
                         cy={point.y as any}
                         visible={isSelected}
-                        onStartConnect={() => onStartConnect(node, type)}
+                        onStartConnect={() =>
+                            onStartConnect(node, type as AnchorType)
+                        }
                         onConnect={onConnect}
                         onStopConnect={onStopConnect}
                     />

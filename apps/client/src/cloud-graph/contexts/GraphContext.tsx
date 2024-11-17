@@ -1,4 +1,9 @@
-import { Edge, Group, Node, Point } from '@cloud-graph/types';
+import { useDimensionContext } from '@cloud-graph/contexts/DimensionContext';
+import { Dimension, Edge, Group, Node, Point } from '@cloud-graph/types';
+import {
+    calculateAnchorPoints,
+    findNearestAnchorPair,
+} from '@cloud-graph/utils';
 import { nanoid } from 'nanoid';
 import { createContext, ReactNode, useContext, useReducer } from 'react';
 
@@ -27,6 +32,7 @@ type GraphAction =
           payload: {
               id: string;
               point: Point;
+              dimension: Dimension;
           };
       }
     | {
@@ -73,6 +79,58 @@ const graphReducer = (state: GraphState, action: GraphAction) => {
                             return a.point.y - b.point.y;
                         }
                     }),
+                edges: state.edges.map((edge) => {
+                    const sourceAnchors = calculateAnchorPoints(
+                        edge.source.node,
+                        action.payload.dimension,
+                    );
+                    const targetAnchors = calculateAnchorPoints(
+                        edge.target.node,
+                        action.payload.dimension,
+                    );
+
+                    const nearestAnchorPair = findNearestAnchorPair(
+                        sourceAnchors,
+                        targetAnchors,
+                    );
+
+                    if (edge.source.node.id === action.payload.id) {
+                        return {
+                            ...edge,
+                            source: {
+                                ...edge.source,
+                                node: {
+                                    ...edge.source.node,
+                                    point: action.payload.point,
+                                },
+                                anchorType: nearestAnchorPair.sourceAnchorType,
+                            },
+                            target: {
+                                ...edge.target,
+                                anchorType: nearestAnchorPair.targetAnchorType,
+                            },
+                        };
+                    }
+                    if (edge.target.node.id === action.payload.id) {
+                        return {
+                            ...edge,
+                            source: {
+                                ...edge.source,
+                                anchorType: nearestAnchorPair.sourceAnchorType,
+                            },
+                            target: {
+                                ...edge.target,
+                                node: {
+                                    ...edge.target.node,
+                                    point: action.payload.point,
+                                },
+                                anchorType: nearestAnchorPair.targetAnchorType,
+                            },
+                        };
+                    }
+
+                    return edge;
+                }),
             };
         }
         case 'SELECT_NODE': {
@@ -148,6 +206,7 @@ const mockNodes = [
     },
 ];
 export const GraphProvider = ({ children }: { children: ReactNode }) => {
+    const { dimension } = useDimensionContext();
     const [state, dispatch] = useReducer(graphReducer, {
         nodes: [...mockNodes],
         edges: [],
@@ -158,14 +217,16 @@ export const GraphProvider = ({ children }: { children: ReactNode }) => {
     const handleAddNode = (node: Node) =>
         dispatch({ type: 'ADD_NODE', payload: node });
 
-    const handleMoveNode = (id: string, point: Point) =>
+    const handleMoveNode = (id: string, point: Point) => {
         dispatch({
             type: 'MOVE_NODE',
             payload: {
                 id,
                 point,
+                dimension,
             },
         });
+    };
     const handleSelect = (id: string) =>
         dispatch({ type: 'SELECT_NODE', payload: { id } });
     const handleDeselect = (id: string) =>

@@ -1,5 +1,12 @@
 import { useGraphContext } from '@cloud-graph/contexts/GraphContext';
-import { Dimension, Edge, Node, Point } from '@cloud-graph/types';
+import {
+    Anchors,
+    AnchorType,
+    Dimension,
+    Edge,
+    Node,
+    Point,
+} from '@cloud-graph/types';
 import {
     calculateAnchorPoints,
     getDistance,
@@ -23,7 +30,7 @@ export default ({ svg, nodes, dimension, updateEdge }: Props) => {
     const source = useRef<Edge['source'] | null>(null);
     const target = useRef<Edge['target'] | null>(null);
 
-    const handleStartConnect = (node: Node, anchorType: string) => {
+    const handleStartConnect = (node: Node, anchorType: AnchorType) => {
         const anchors = calculateAnchorPoints(node, dimension);
 
         const anchorPoint = anchors[anchorType];
@@ -52,7 +59,7 @@ export default ({ svg, nodes, dimension, updateEdge }: Props) => {
                 if (distance < snappedThreshold && distance < minDistance) {
                     target.current = {
                         node,
-                        anchorType: type,
+                        anchorType: type as AnchorType,
                     };
                     newPoint = point;
                     minDistance = distance;

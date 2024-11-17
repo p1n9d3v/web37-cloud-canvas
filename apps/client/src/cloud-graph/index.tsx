@@ -85,8 +85,8 @@ export const CloudGraph = () => {
 
 export const CloudGraphProvider = ({ children }: { children: ReactNode }) => {
     return (
-        <GraphProvider>
-            <DimensionProvider>{children}</DimensionProvider>
-        </GraphProvider>
+        <DimensionProvider>
+            <GraphProvider>{children}</GraphProvider>
+        </DimensionProvider>
     );
 };

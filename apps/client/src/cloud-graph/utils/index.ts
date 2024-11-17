@@ -4,7 +4,15 @@ import {
     GRID_3D_HEIGHT_SIZE,
     GRID_3D_WIDTH_SIZE,
 } from '@cloud-graph/constants';
-import { Dimension, GridPoint, Node, Point, Size } from '@cloud-graph/types';
+import {
+    Anchors,
+    AnchorType,
+    Dimension,
+    GridPoint,
+    Node,
+    Point,
+    Size,
+} from '@cloud-graph/types';
 
 export const getDistance = (point1: Point, point2: Point) => {
     return Math.sqrt((point1.x - point2.x) ** 2 + (point1.y - point2.y) ** 2);
@@ -78,9 +86,7 @@ export const getNodeSizeForDimension = (dimension: Dimension) => {
 export const calculateAnchorPoints = (
     node: Node,
     dimension: Dimension,
-): {
-    [key: string]: Point;
-} => {
+): Anchors => {
     const point = node.point;
     const { width, height } = dimension === '2d' ? node.size.d2 : node.size.d3;
 
@@ -101,5 +107,51 @@ export const calculateAnchorPoints = (
                       y: point.y + (height - GRID_3D_DEPTH_SIZE) / 2,
                   },
         bottom: { x: point.x + width / 2, y: point.y + height },
+    };
+};
+
+export const findNearestAnchorPair = (
+    sourceAnchors: Anchors,
+    targetAnchros: Anchors,
+): {
+    sourceAnchorType: AnchorType;
+    targetAnchorType: AnchorType;
+} => {
+    let nearestAnchorPair: {
+        sourceAnchorType: AnchorType | null;
+        targetAnchorType: AnchorType | null;
+        distance: number;
+    } = {
+        sourceAnchorType: null,
+        targetAnchorType: null,
+        distance: Infinity,
+    };
+
+    Object.entries(sourceAnchors).forEach(
+        ([sourceAnchorType, sourceAnchorPoint]) => {
+            Object.entries(targetAnchros).forEach(
+                ([targetAnchorType, targetAnchorPoint]) => {
+                    if (sourceAnchorType === targetAnchorType) return;
+
+                    const distance = getDistance(
+                        sourceAnchorPoint,
+                        targetAnchorPoint,
+                    );
+
+                    if (distance < nearestAnchorPair.distance) {
+                        nearestAnchorPair = {
+                            sourceAnchorType: sourceAnchorType as AnchorType,
+                            targetAnchorType: targetAnchorType as AnchorType,
+                            distance,
+                        };
+                    }
+                },
+            );
+        },
+    );
+
+    return {
+        sourceAnchorType: nearestAnchorPair.sourceAnchorType!,
+        targetAnchorType: nearestAnchorPair.targetAnchorType!,
     };
 };

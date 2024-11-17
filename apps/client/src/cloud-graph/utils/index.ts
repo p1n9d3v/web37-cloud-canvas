@@ -4,7 +4,7 @@ import {
     GRID_3D_HEIGHT_SIZE,
     GRID_3D_WIDTH_SIZE,
 } from '@cloud-graph/constants';
-import { Dimension, GridPoint, Point, Size } from '@cloud-graph/types';
+import { Dimension, GridPoint, Node, Point, Size } from '@cloud-graph/types';
 
 export const getDistance = (point1: Point, point2: Point) => {
     return Math.sqrt((point1.x - point2.x) ** 2 + (point1.y - point2.y) ** 2);
@@ -76,11 +76,13 @@ export const getNodeSizeForDimension = (dimension: Dimension) => {
 };
 
 export const calculateAnchorPoints = (
-    point: Point,
-    size: { width: number; height: number },
+    node: Node,
     dimension: Dimension,
-) => {
-    const { width, height } = size;
+): {
+    [key: string]: Point;
+} => {
+    const point = node.point;
+    const { width, height } = dimension === '2d' ? node.size.d2 : node.size.d3;
 
     return {
         top: { x: point.x + width / 2, y: point.y },

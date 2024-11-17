@@ -61,7 +61,7 @@ const Node2D = () => {
             <svg width="90" height="90">
                 <defs>
                     <linearGradient
-                        id="AzureMySQLAzureMySQL__a"
+                        id="sql"
                         x1="2.59"
                         x2="15.41"
                         y1="10.16"
@@ -79,7 +79,7 @@ const Node2D = () => {
                     </linearGradient>
                 </defs>
                 <path
-                    fill="url(#AzureMySQLAzureMySQL__a)"
+                    fill="url(#sql)"
                     d="M45 24.565c-18.741 0-33.935-5.294-33.935-12.283v65.436c0 6.723 14.929 12.176 33.458 12.282H45c18.741 0 33.935-5.294 33.935-12.282V12.282c0 6.83-15.194 12.283-33.935 12.283z"
                 ></path>
                 <path

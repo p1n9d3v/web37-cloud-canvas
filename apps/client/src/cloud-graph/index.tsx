@@ -1,4 +1,5 @@
 import Graph from '@/src/cloud-graph/components/Graph';
+import EdgeConnector from '@cloud-graph/components/EdgeConnector';
 import Node from '@cloud-graph/components/Node';
 import {
     DimensionProvider,
@@ -9,6 +10,7 @@ import {
     useGraphContext,
 } from '@cloud-graph/contexts/GraphContext';
 import useDrag from '@cloud-graph/hooks/useDrag';
+import useEdgeConnector from '@cloud-graph/hooks/useEdgeConnector';
 import useSvgViewBox from '@cloud-graph/hooks/useSvgViewBox';
 import useZoomPan from '@cloud-graph/hooks/useZoomPan';
 import { ReactNode } from 'react';
@@ -28,6 +30,12 @@ export const CloudGraph = () => {
             svg: svgRef.current!,
             viewBox,
             setViewBox,
+        });
+    const { connection, handleStartConnect, handleConnect, handleStopConnect } =
+        useEdgeConnector({
+            svg: svgRef.current!,
+            dimension,
+            nodes,
         });
 
     return (
@@ -50,8 +58,15 @@ export const CloudGraph = () => {
                     onDrag={handleDrag}
                     onStopDrag={handleStopDrag}
                     onSelect={handleSelect}
+                    onStartConnect={handleStartConnect}
+                    onConnect={handleConnect}
+                    onStopConnect={handleStopConnect}
                 />
             ))}
+
+            {connection && (
+                <EdgeConnector from={connection.from} to={connection.to} />
+            )}
         </Graph>
     );
 };

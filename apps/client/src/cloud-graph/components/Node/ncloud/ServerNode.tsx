@@ -49,6 +49,7 @@ const Node3D = ({ label }: NodeProps) => {
                     fontWeight="normal"
                     fontSize="20pt"
                     fill="#ffffff"
+                    style={{ userSelect: 'none' }}
                 >
                     {label}
                 </text>
@@ -84,6 +85,7 @@ const Node2D = ({ label }: NodeProps) => {
                     fontWeight="bold"
                     fontSize="18pt"
                     fill="#d86613"
+                    style={{ userSelect: 'none' }}
                 >
                     {label}
                 </text>

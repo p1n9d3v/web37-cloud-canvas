@@ -18,12 +18,12 @@ describe('PublicController', () => {
         createdAt: new Date(),
         author: {
             id: 1,
-            name: 'Test User'
+            name: 'Test User',
         },
         _count: {
             stars: 0,
-            imports: 0
-        }
+            imports: 0,
+        },
     };
 
     beforeEach(async () => {
@@ -32,7 +32,7 @@ describe('PublicController', () => {
             getPublicArchitecture: vi.fn(),
             createPublicArchitecture: vi.fn(),
             updatePublicArchitecture: vi.fn(),
-            deletePublicArchitecture: vi.fn()
+            deletePublicArchitecture: vi.fn(),
         };
 
         const module = await Test.createTestingModule({
@@ -40,8 +40,8 @@ describe('PublicController', () => {
             providers: [
                 {
                     provide: PublicService,
-                    useValue: serviceMock
-                }
+                    useValue: serviceMock,
+                },
             ],
         }).compile();
 
@@ -71,9 +71,13 @@ describe('PublicController', () => {
         });
 
         it('should throw NotFoundException when not found', async () => {
-            service.getPublicArchitecture.mockRejectedValue(new NotFoundException());
+            service.getPublicArchitecture.mockRejectedValue(
+                new NotFoundException(),
+            );
 
-            await expect(controller.getPublicArchitecture(1)).rejects.toThrow(NotFoundException);
+            await expect(controller.getPublicArchitecture(1)).rejects.toThrow(
+                NotFoundException,
+            );
         });
     });
 
@@ -82,7 +86,7 @@ describe('PublicController', () => {
             title: 'Test',
             architecture: {},
             cost: 100,
-            tag: ['test']
+            tag: ['test'],
         };
 
         it('should create an architecture', async () => {
@@ -91,7 +95,10 @@ describe('PublicController', () => {
             const result = await controller.createPublicArchitecture(createDto);
 
             expect(result).toEqual(mockArchitecture);
-            expect(service.createPublicArchitecture).toHaveBeenCalledWith(1, createDto);
+            expect(service.createPublicArchitecture).toHaveBeenCalledWith(
+                1,
+                createDto,
+            );
         });
     });
 
@@ -99,12 +106,21 @@ describe('PublicController', () => {
         const updateDto = { title: 'Updated' };
 
         it('should update an architecture', async () => {
-            service.updatePublicArchitecture.mockReturnValue({ ...mockArchitecture, ...updateDto });
+            service.updatePublicArchitecture.mockReturnValue({
+                ...mockArchitecture,
+                ...updateDto,
+            });
 
-            const result = await controller.updatePublicArchitecture(1, updateDto);
+            const result = await controller.updatePublicArchitecture(
+                1,
+                updateDto,
+            );
 
             expect(result.title).toBe('Updated');
-            expect(service.updatePublicArchitecture).toHaveBeenCalledWith(1, updateDto);
+            expect(service.updatePublicArchitecture).toHaveBeenCalledWith(
+                1,
+                updateDto,
+            );
         });
     });
 
@@ -119,4 +135,3 @@ describe('PublicController', () => {
         });
     });
 });
-

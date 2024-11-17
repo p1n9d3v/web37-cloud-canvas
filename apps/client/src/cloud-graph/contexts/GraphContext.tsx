@@ -12,7 +12,7 @@ type GraphState = {
     nodes: Node[];
     edges: Edge[];
     groups: Group[];
-    selectedId: string | null;
+    selectedIds: string[];
 };
 
 interface GraphContextType extends GraphState {
@@ -20,8 +20,10 @@ interface GraphContextType extends GraphState {
     handleMoveNode: (id: string, point: Point) => void;
     handleSelect: (id: string) => void;
     handleDeselect: (id: string) => void;
+    handleDeselectAll: () => void;
     handleAddEdge: (edge: Edge) => void;
     handleSplitEdge: (edge: Edge, pointer: Node) => void;
+    handleRemoveSelected: () => void;
 }
 
 type GraphAction =
@@ -38,16 +40,25 @@ type GraphAction =
           };
       }
     | {
-          type: 'SELECT_NODE';
+          type: 'REMOVE_NODE';
           payload: {
               id: string;
           };
       }
     | {
-          type: 'DESELECT_NODE';
+          type: 'SELECT';
           payload: {
               id: string;
           };
+      }
+    | {
+          type: 'DESELECT';
+          payload: {
+              id: string;
+          };
+      }
+    | {
+          type: 'DESELECT_ALL';
       }
     | {
           type: 'ADD_EDGE';
@@ -61,8 +72,13 @@ type GraphAction =
               sourceToPointer: Edge;
               pointerToTarget: Edge;
           };
+      }
+    | {
+          type: 'REMOVE_EDGE';
+          payload: {
+              id: string;
+          };
       };
-
 const GraphContext = createContext<GraphContextType | null>(null);
 
 const graphReducer = (state: GraphState, action: GraphAction) => {
@@ -152,16 +168,24 @@ const graphReducer = (state: GraphState, action: GraphAction) => {
                 }),
             };
         }
-        case 'SELECT_NODE': {
+        case 'SELECT': {
             return {
                 ...state,
-                selectedId: action.payload.id,
+                selectedIds: [action.payload.id],
             };
         }
-        case 'DESELECT_NODE': {
+        case 'DESELECT': {
             return {
                 ...state,
-                selectedId: null,
+                selectedIds: state.selectedIds.filter(
+                    (selectedId) => selectedId !== action.payload.id,
+                ),
+            };
+        }
+        case 'DESELECT_ALL': {
+            return {
+                ...state,
+                selectedIds: [],
             };
         }
         case 'ADD_EDGE': {
@@ -180,6 +204,115 @@ const graphReducer = (state: GraphState, action: GraphAction) => {
                         action.payload.sourceToPointer,
                         action.payload.pointerToTarget,
                     ]),
+            };
+        }
+        //TODO: Refactoring
+        case 'REMOVE_NODE': {
+            const connectedEdges = state.edges.filter(
+                (edge) =>
+                    edge.source.node.id === action.payload.id ||
+                    edge.target.node.id === action.payload.id,
+            );
+            const edgesToRemove: string[] = [];
+            const pointersToRemove: string[] = [];
+            connectedEdges.forEach((edge) => {
+                edgesToRemove.push(edge.id);
+                let nextEdge: Edge | undefined;
+                let nextNode: Node | undefined;
+                if (edge.source.node.id === action.payload.id) {
+                    nextNode = edge.target.node;
+                    while (nextNode.type === 'pointer') {
+                        pointersToRemove.push(edge.target.node.id);
+                        nextEdge = state.edges.find(
+                            (edge) => edge.source.node.id === nextNode!.id,
+                        );
+                        edgesToRemove.push(nextEdge!.id);
+                        nextNode = nextEdge!.target.node;
+                    }
+                    if (nextEdge?.source.node.type === 'pointer') {
+                        pointersToRemove.push(nextEdge.source.node.id);
+                    }
+                } else {
+                    nextNode = edge.source.node;
+                    while (nextNode.type === 'pointer') {
+                        pointersToRemove.push(edge.source.node.id);
+                        nextEdge = state.edges.find(
+                            (edge) => edge.target.node.id === nextNode!.id,
+                        );
+                        edgesToRemove.push(nextEdge!.id);
+                        nextNode = nextEdge!.source.node;
+                    }
+                    if (nextEdge?.target.node.type === 'pointer') {
+                        pointersToRemove.push(nextEdge.target.node.id);
+                    }
+                }
+            });
+
+            return {
+                ...state,
+                nodes: state.nodes.filter(
+                    (node) =>
+                        node.id !== action.payload.id &&
+                        !pointersToRemove.includes(node.id),
+                ),
+                edges: state.edges.filter(
+                    (edge) => !edgesToRemove.includes(edge.id),
+                ),
+            };
+        }
+        case 'REMOVE_EDGE': {
+            const selectedEdge = state.edges.find(
+                (edge) => edge.id === action.payload.id,
+            );
+            if (!selectedEdge) return state;
+
+            const { source, target } = selectedEdge;
+            let filteredEdges = state.edges.filter(
+                (edge) => edge.id !== action.payload.id,
+            );
+
+            let pointerIdToRemove = null;
+            //INFO: source.type === 'pointer' && target.type ==='pointer'조건도 target pointer로 위치를 변경하여
+            //source.type ==='pointer'와 조건이 동일
+            if (source.node.type === 'pointer') {
+                const sourceEdge = state.edges.find(
+                    (edge) => edge.target.node.id === source.node.id,
+                );
+                pointerIdToRemove = source.node.id;
+                filteredEdges = filteredEdges.map((edge) => {
+                    if (sourceEdge && edge.id === sourceEdge.id) {
+                        return {
+                            ...edge,
+                            target: selectedEdge.target,
+                            type:
+                                selectedEdge.target.node.type === 'pointer'
+                                    ? 'line'
+                                    : 'arrow',
+                        };
+                    }
+                    return edge;
+                });
+            } else if (target.node.type === 'pointer') {
+                const targetEdge = state.edges.find(
+                    (edge) => edge.source.node.id === target.node.id,
+                );
+                pointerIdToRemove = target.node.id;
+                filteredEdges = filteredEdges.map((edge) => {
+                    if (targetEdge && edge.id === targetEdge.id) {
+                        return {
+                            ...edge,
+                            source: selectedEdge.source,
+                        };
+                    }
+                    return edge;
+                });
+            }
+            return {
+                ...state,
+                nodes: state.nodes.filter(
+                    (node) => node.id !== pointerIdToRemove,
+                ),
+                edges: filteredEdges,
             };
         }
         default:
@@ -242,7 +375,7 @@ export const GraphProvider = ({ children }: { children: ReactNode }) => {
         nodes: [...mockNodes],
         edges: [],
         groups: [],
-        selectedId: null,
+        selectedIds: [],
     });
 
     const handleAddNode = (node: Node) =>
@@ -259,9 +392,10 @@ export const GraphProvider = ({ children }: { children: ReactNode }) => {
         });
     };
     const handleSelect = (id: string) =>
-        dispatch({ type: 'SELECT_NODE', payload: { id } });
+        dispatch({ type: 'SELECT', payload: { id } });
     const handleDeselect = (id: string) =>
-        dispatch({ type: 'DESELECT_NODE', payload: { id } });
+        dispatch({ type: 'DESELECT', payload: { id } });
+    const handleDeselectAll = () => dispatch({ type: 'DESELECT_ALL' });
     const handleAddEdge = (edge: Edge) =>
         dispatch({ type: 'ADD_EDGE', payload: edge });
     const handleSplitEdge = (edge: Edge, pointer: Node) => {
@@ -295,6 +429,31 @@ export const GraphProvider = ({ children }: { children: ReactNode }) => {
             },
         });
     };
+    //TODO: 분리할지 고민
+    const handleRemoveSelected = () => {
+        const selectedNodes = state.nodes.filter((node) =>
+            state.selectedIds.includes(node.id),
+        );
+        selectedNodes.forEach((node) => {
+            dispatch({
+                type: 'REMOVE_NODE',
+                payload: {
+                    id: node.id,
+                },
+            });
+        });
+        const selectedEdges = state.edges.filter((edge) =>
+            state.selectedIds.includes(edge.id),
+        );
+        selectedEdges.forEach((edge) => {
+            dispatch({
+                type: 'REMOVE_EDGE',
+                payload: {
+                    id: edge.id,
+                },
+            });
+        });
+    };
 
     return (
         <GraphContext.Provider
@@ -304,8 +463,10 @@ export const GraphProvider = ({ children }: { children: ReactNode }) => {
                 handleMoveNode,
                 handleSelect,
                 handleDeselect,
+                handleDeselectAll,
                 handleAddEdge,
                 handleSplitEdge,
+                handleRemoveSelected,
             }}
         >
             {children}

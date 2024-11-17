@@ -1,6 +1,5 @@
 import NodeRenderer from '@cloud-graph/components/Node/NodeRenderer';
 import { Dimension, Node } from '@cloud-graph/types';
-import { useRef } from 'react';
 
 type Props = {
     node: Node;

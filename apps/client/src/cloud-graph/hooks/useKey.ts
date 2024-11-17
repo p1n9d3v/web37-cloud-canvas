@@ -4,6 +4,7 @@ const keyMap = {
     space: ' ',
     enter: 'Enter',
     esc: 'Escape',
+    backspace: 'Backspace',
 };
 export default (key: keyof typeof keyMap) => {
     const [activeKey, setActiveKey] = useState(false);

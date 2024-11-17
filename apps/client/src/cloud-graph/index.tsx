@@ -13,23 +13,26 @@ import {
 } from '@cloud-graph/contexts/GraphContext';
 import useEdgeConnector from '@cloud-graph/hooks/useConnector';
 import useDrag from '@cloud-graph/hooks/useDrag';
+import useKey from '@cloud-graph/hooks/useKey';
 import useSplitEdge from '@cloud-graph/hooks/useSplitEdge';
 import useSvgViewBox from '@cloud-graph/hooks/useSvgViewBox';
 import useZoomPan from '@cloud-graph/hooks/useZoomPan';
 import { isCloudNode, isUtilityNode } from '@cloud-graph/utils';
 import { Box } from '@mui/material';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 
 export const CloudGraph = () => {
     const { dimension } = useDimensionContext();
     const {
         nodes,
         edges,
-        selectedId,
+        selectedIds,
         handleMoveNode,
         handleSelect,
+        handleDeselectAll,
         handleAddEdge,
         handleSplitEdge,
+        handleRemoveSelected,
     } = useGraphContext();
     const { svgRef, viewBox, setViewBox } = useSvgViewBox();
     const { handleStartDrag, handleStopDrag, handleDrag } = useDrag({
@@ -55,6 +58,22 @@ export const CloudGraph = () => {
         updateEdge: handleSplitEdge,
     });
 
+    const activeKey = useKey('backspace');
+
+    useEffect(() => {
+        const handleMouseDown = () => handleDeselectAll();
+        svgRef.current?.addEventListener('mousedown', handleMouseDown);
+
+        return () => {
+            svgRef.current?.removeEventListener('mousedown', handleMouseDown);
+        };
+    }, [svgRef.current]);
+
+    useEffect(() => {
+        if (activeKey) {
+            handleRemoveSelected();
+        }
+    }, [activeKey]);
     return (
         <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
             <Graph
@@ -71,14 +90,13 @@ export const CloudGraph = () => {
                         key={edge.id}
                         edge={edge}
                         dimension={dimension}
-                        isSelected={edge.id === selectedId}
+                        isSelected={selectedIds.includes(edge.id)}
                         onSelect={handleSelect}
                         onSplit={handleSplit}
                     />
                 ))}
                 {nodes.filter(isCloudNode).map((node) => {
-                    const isSelected =
-                        selectedId === node.id && node.type !== 'pointer';
+                    const isSelected = selectedIds.includes(node.id);
 
                     return (
                         <g key={node.id}>

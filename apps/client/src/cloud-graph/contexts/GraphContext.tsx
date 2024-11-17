@@ -14,6 +14,7 @@ interface GraphContextType extends GraphState {
     handleMoveNode: (id: string, point: Point) => void;
     handleSelect: (id: string) => void;
     handleDeselect: (id: string) => void;
+    handleAddEdge: (edge: Edge) => void;
 }
 
 type GraphAction =
@@ -39,6 +40,10 @@ type GraphAction =
           payload: {
               id: string;
           };
+      }
+    | {
+          type: 'ADD_EDGE';
+          payload: Edge;
       };
 
 const GraphContext = createContext<GraphContextType | null>(null);
@@ -80,6 +85,12 @@ const graphReducer = (state: GraphState, action: GraphAction) => {
             return {
                 ...state,
                 selectedId: null,
+            };
+        }
+        case 'ADD_EDGE': {
+            return {
+                ...state,
+                edges: [...state.edges, action.payload],
             };
         }
         default:
@@ -159,6 +170,8 @@ export const GraphProvider = ({ children }: { children: ReactNode }) => {
         dispatch({ type: 'SELECT_NODE', payload: { id } });
     const handleDeselect = (id: string) =>
         dispatch({ type: 'DESELECT_NODE', payload: { id } });
+    const handleAddEdge = (edge: Edge) =>
+        dispatch({ type: 'ADD_EDGE', payload: edge });
 
     return (
         <GraphContext.Provider
@@ -168,6 +181,7 @@ export const GraphProvider = ({ children }: { children: ReactNode }) => {
                 handleMoveNode,
                 handleSelect,
                 handleDeselect,
+                handleAddEdge,
             }}
         >
             {children}

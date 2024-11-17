@@ -9,10 +9,10 @@ import { useRef } from 'react';
 type Props = {
     svg: SVGSVGElement;
     dimension: Dimension;
-    handleMoveNode: (nodeId: string, point: Point) => void;
+    updatePoint: (nodeId: string, point: Point) => void;
 };
 
-export default ({ svg, dimension, handleMoveNode }: Props) => {
+export default ({ svg, dimension, updatePoint }: Props) => {
     const isDragging = useRef<boolean>(false);
     const dragNodeBBox = useRef<DOMRect | null>(null);
     const draggingId = useRef<string | null>(null);
@@ -41,7 +41,7 @@ export default ({ svg, dimension, handleMoveNode }: Props) => {
         };
         const newPoint = getGridAlignedPoint(centerPoint, dimension);
 
-        handleMoveNode(draggingId.current!, newPoint);
+        updatePoint(draggingId.current!, newPoint);
     };
 
     const handleStopDrag = () => {

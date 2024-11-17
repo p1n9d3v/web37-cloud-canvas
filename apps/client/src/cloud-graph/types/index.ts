@@ -34,12 +34,12 @@ export type Edge = {
     id: string;
     type: string;
     source: {
-        id: string;
-        anchorType: string;
+        node: Node;
+        anchorType?: string;
     };
     target: {
-        id: string;
-        anchorType: string;
+        node: Node;
+        anchorType?: string;
     };
     controlPoints?: Point[];
 };

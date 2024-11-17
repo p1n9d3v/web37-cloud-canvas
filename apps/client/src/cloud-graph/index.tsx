@@ -1,5 +1,6 @@
 import Graph from '@/src/cloud-graph/components/Graph';
-import EdgeConnector from '@cloud-graph/components/EdgeConnector';
+import Edge from '@cloud-graph/components/Edge';
+import Connector from '@cloud-graph/components/Connector';
 import Node from '@cloud-graph/components/Node';
 import {
     DimensionProvider,
@@ -10,20 +11,26 @@ import {
     useGraphContext,
 } from '@cloud-graph/contexts/GraphContext';
 import useDrag from '@cloud-graph/hooks/useDrag';
-import useEdgeConnector from '@cloud-graph/hooks/useEdgeConnector';
+import useEdgeConnector from '@cloud-graph/hooks/useConnector';
 import useSvgViewBox from '@cloud-graph/hooks/useSvgViewBox';
 import useZoomPan from '@cloud-graph/hooks/useZoomPan';
 import { ReactNode } from 'react';
 
 export const CloudGraph = () => {
     const { dimension } = useDimensionContext();
-    const { nodes, selectedId, handleMoveNode, handleSelect } =
-        useGraphContext();
+    const {
+        nodes,
+        edges,
+        selectedId,
+        handleMoveNode,
+        handleSelect,
+        handleAddEdge,
+    } = useGraphContext();
     const { svgRef, viewBox, setViewBox } = useSvgViewBox();
     const { handleStartDrag, handleStopDrag, handleDrag } = useDrag({
         svg: svgRef.current!,
         dimension,
-        handleMoveNode,
+        updatePoint: handleMoveNode,
     });
     const { handleZoom, handleStartPan, handleMovePan, handleStopPan } =
         useZoomPan({
@@ -36,6 +43,7 @@ export const CloudGraph = () => {
             svg: svgRef.current!,
             dimension,
             nodes,
+            updateEdge: handleAddEdge,
         });
 
     return (
@@ -64,8 +72,12 @@ export const CloudGraph = () => {
                 />
             ))}
 
+            {edges.map((edge) => (
+                <Edge key={edge.id} edge={edge} dimension={dimension} />
+            ))}
+
             {connection && (
-                <EdgeConnector from={connection.from} to={connection.to} />
+                <Connector from={connection.from} to={connection.to} />
             )}
         </Graph>
     );

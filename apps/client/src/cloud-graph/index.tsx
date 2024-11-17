@@ -16,6 +16,7 @@ import useDrag from '@cloud-graph/hooks/useDrag';
 import useKey from '@cloud-graph/hooks/useKey';
 import useSplitEdge from '@cloud-graph/hooks/useSplitEdge';
 import useSvgViewBox from '@cloud-graph/hooks/useSvgViewBox';
+import useVisible from '@cloud-graph/hooks/useVisible';
 import useZoomPan from '@cloud-graph/hooks/useZoomPan';
 import { isCloudNode, isUtilityNode } from '@cloud-graph/utils';
 import { Box } from '@mui/material';
@@ -59,6 +60,13 @@ export const CloudGraph = () => {
         updateEdge: handleSplitEdge,
     });
 
+    const { visibleEdges, visibleNodes } = useVisible({
+        nodes,
+        edges,
+        viewBox,
+        dimension,
+    });
+
     const activeKey = useKey('backspace');
 
     useEffect(() => {
@@ -86,7 +94,7 @@ export const CloudGraph = () => {
                 onStopPan={handleStopPan}
                 onMovePan={handleMovePan}
             >
-                {edges.map((edge) => (
+                {visibleEdges.map((edge) => (
                     <Edge
                         key={edge.id}
                         edge={edge}
@@ -97,7 +105,7 @@ export const CloudGraph = () => {
                         onSelectEntireEdge={handleSelectEntireEdge}
                     />
                 ))}
-                {nodes.filter(isCloudNode).map((node) => {
+                {visibleNodes.filter(isCloudNode).map((node) => {
                     const isSelected = selectedIds.includes(node.id);
 
                     return (
@@ -124,7 +132,7 @@ export const CloudGraph = () => {
                     );
                 })}
 
-                {nodes.filter(isUtilityNode).map((node) => (
+                {visibleNodes.filter(isUtilityNode).map((node) => (
                     <Node
                         key={node.id}
                         node={node}

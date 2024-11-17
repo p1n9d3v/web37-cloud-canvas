@@ -20,6 +20,10 @@ export interface ViewBox extends Point, Size {}
 export type Node = {
     id: string;
     type: string;
+    size: {
+        d2: Size;
+        d3: Size;
+    };
     point: Point;
     label?: string;
     groupId?: string;
@@ -28,8 +32,15 @@ export type Node = {
 
 export type Edge = {
     id: string;
-    source: string;
-    target: string;
+    type: string;
+    source: {
+        id: string;
+        anchorType: string;
+    };
+    target: {
+        id: string;
+        anchorType: string;
+    };
     controlPoints?: Point[];
 };
 

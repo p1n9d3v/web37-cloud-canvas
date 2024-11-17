@@ -1,17 +1,38 @@
+import { Point } from '@cloud-graph/types';
 import { ANCHOR_RADIUS } from '@cloudflow/constants';
-import { MouseEvent } from 'react';
 
 type Props = {
     visible: boolean;
     cx?: number;
     cy?: number;
-    onStartConnect?: () => void;
+    onStartConnect: () => void;
+    onConnect: (point: Point) => void;
+    onStopConnect: () => void;
 };
 
-export default ({ cx, cy, visible, onStartConnect }: Props) => {
-    const handleMouseDown = (e: MouseEvent) => {
-        e.stopPropagation();
-        onStartConnect && onStartConnect();
+export default ({
+    cx,
+    cy,
+    visible,
+    onStartConnect,
+    onConnect,
+    onStopConnect,
+}: Props) => {
+    const handleMouseDown = (e: React.MouseEvent) => {
+        onStartConnect();
+
+        const handleMouseMove = (moveEvent: MouseEvent) => {
+            onConnect({ x: moveEvent.clientX, y: moveEvent.clientY });
+        };
+
+        const handleMouseUp = () => {
+            onStopConnect();
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        };
+
+        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mouseup', handleMouseUp);
     };
 
     return (

@@ -1,4 +1,4 @@
-import { Dimension, Edge, Group, Node, Point } from '@cloud-graph/types';
+import { Edge, Group, Node, Point } from '@cloud-graph/types';
 import { nanoid } from 'nanoid';
 import { createContext, ReactNode, useContext, useReducer } from 'react';
 
@@ -92,27 +92,47 @@ const mockNodes = [
         id: `node-${nanoid()}`,
         type: 'server',
         point: { x: 0, y: 0 },
+        size: {
+            d2: { width: 90, height: 90 },
+            d3: { width: 128, height: 111 },
+        },
         label: 'G1',
     },
     {
         id: `node-${nanoid()}`,
         type: 'server',
         point: { x: 0, y: 0 },
+        size: {
+            d2: { width: 90, height: 90 },
+            d3: { width: 128, height: 111 },
+        },
         label: 'G1',
     },
     {
         id: `node-${nanoid()}`,
         type: 'cloud-function',
         point: { x: 10, y: 100 },
+        size: {
+            d2: { width: 90, height: 90 },
+            d3: { width: 96, height: 113.438 },
+        },
     },
     {
         id: `node-${nanoid()}`,
         type: 'object-storage',
+        size: {
+            d2: { width: 90, height: 90 },
+            d3: { width: 100.626, height: 115.695 },
+        },
         point: { x: 100, y: 10 },
     },
     {
         id: `node-${nanoid()}`,
         type: 'db-mysql',
+        size: {
+            d2: { width: 90, height: 90 },
+            d3: { width: 128, height: 137.5 },
+        },
         point: { x: 100, y: 100 },
     },
 ];

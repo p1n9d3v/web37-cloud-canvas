@@ -15,7 +15,7 @@ export class PublicStarRepository {
         });
     }
 
-    remove(userId: number, architectureId: number) {
+    delete(userId: number, architectureId: number) {
         return this.prisma.publicArchitectureStar.delete({
             where: {
                 unique_star: {

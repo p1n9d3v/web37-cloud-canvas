@@ -13,8 +13,7 @@ export class PublicStarController {
     }
 
     @Delete()
-    remove(@Param('architectureId', ParseIntPipe) architectureId: number) {
+    delete(@Param('architectureId', ParseIntPipe) architectureId: number) {
         return this.publicStarService.delete(architectureId);
     }
 }
-

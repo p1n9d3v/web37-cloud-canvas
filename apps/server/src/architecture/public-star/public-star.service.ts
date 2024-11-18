@@ -26,7 +26,7 @@ export class PublicStarService {
 
     async delete(architectureId: number) {
         try {
-            return await this.publicStarRepository.remove(1, architectureId);
+            return await this.publicStarRepository.delete(1, architectureId);
         } catch (error) {
             if (error.code === 'P2025') {
                 throw new NotFoundException('Star not found');

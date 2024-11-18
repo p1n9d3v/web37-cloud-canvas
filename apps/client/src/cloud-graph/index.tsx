@@ -32,7 +32,6 @@ export const CloudGraph = () => {
         nodes,
         edges,
         selectedIds,
-        handleMoveNode,
         handleSelect,
         handleDeselectAll,
         handleAddEdge,
@@ -44,7 +43,6 @@ export const CloudGraph = () => {
     const { handleStartDrag, handleStopDrag, handleDrag } = useDrag({
         svg: svgRef.current!,
         dimension,
-        updatePoint: handleMoveNode,
     });
     const { handleZoom, handleStartPan, handleMovePan, handleStopPan } =
         useZoomPan({

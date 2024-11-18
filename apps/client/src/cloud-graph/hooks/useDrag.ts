@@ -1,18 +1,23 @@
+import { useGraphContext } from '@cloud-graph/contexts/GraphContext';
 import { Dimension, Point } from '@cloud-graph/types';
 import {
     getDistance,
     getGridAlignedPoint,
     getSvgPoint,
+    calculateAnchorPoints,
+    findNearestAnchorPair,
+    isUtilityNode,
 } from '@cloud-graph/utils';
 import { useRef } from 'react';
 
 type Props = {
     svg: SVGSVGElement;
     dimension: Dimension;
-    updatePoint: (nodeId: string, point: Point) => void;
 };
 
-export default ({ svg, dimension, updatePoint }: Props) => {
+export default function useDrag({ svg, dimension }: Props) {
+    const { nodes, edges, dispatch } = useGraphContext();
+
     const isDragging = useRef<boolean>(false);
     const dragNodeBBox = useRef<DOMRect | null>(null);
     const draggingId = useRef<string | null>(null);
@@ -21,14 +26,95 @@ export default ({ svg, dimension, updatePoint }: Props) => {
     const handleStartDrag = (nodeId: string, point: Point) => {
         const $node = svg.getElementById(nodeId) as SVGGElement;
 
+        if (!$node) return;
+
         startDragPoint.current = getSvgPoint(svg, point);
         dragNodeBBox.current = $node.getBBox();
         draggingId.current = nodeId;
         isDragging.current = true;
     };
 
+    const calculateUpdatedNodes = (newPoint: Point) => {
+        return nodes
+            .map((node) =>
+                node.id === draggingId.current
+                    ? { ...node, point: newPoint }
+                    : node,
+            )
+            .sort((a, b) => {
+                if (a.point.y === b.point.y) {
+                    return a.point.x - b.point.x;
+                }
+                return a.point.y - b.point.y;
+            });
+    };
+
+    const calculateUpdatedEdges = (newPoint: Point) => {
+        return edges.map((edge) => {
+            const sourceAnchors = calculateAnchorPoints(
+                edge.source.node,
+                dimension,
+            );
+            const targetAnchors = calculateAnchorPoints(
+                edge.target.node,
+                dimension,
+            );
+
+            const nearestAnchorPair = findNearestAnchorPair(
+                sourceAnchors,
+                targetAnchors,
+            );
+
+            if (edge.source.node.id === draggingId.current) {
+                return {
+                    ...edge,
+                    source: {
+                        ...edge.source,
+                        node: {
+                            ...edge.source.node,
+                            point: newPoint,
+                        },
+                        anchorType: !isUtilityNode(edge.source.node)
+                            ? nearestAnchorPair.sourceAnchorType
+                            : undefined,
+                    },
+                    target: {
+                        ...edge.target,
+                        anchorType: !isUtilityNode(edge.target.node)
+                            ? nearestAnchorPair.targetAnchorType
+                            : undefined,
+                    },
+                };
+            }
+            if (edge.target.node.id === draggingId.current) {
+                return {
+                    ...edge,
+                    source: {
+                        ...edge.source,
+                        anchorType: !isUtilityNode(edge.source.node)
+                            ? nearestAnchorPair.sourceAnchorType
+                            : undefined,
+                    },
+                    target: {
+                        ...edge.target,
+                        node: {
+                            ...edge.target.node,
+                            point: newPoint,
+                        },
+                        anchorType: !isUtilityNode(edge.target.node)
+                            ? nearestAnchorPair.targetAnchorType
+                            : undefined,
+                    },
+                };
+            }
+
+            return edge;
+        });
+    };
+
     const handleDrag = (point: Point) => {
-        if (!isDragging || !draggingId) return;
+        if (!isDragging.current || !draggingId.current) return;
+
         const curPoint = getSvgPoint(svg, point);
         const { width, height } = dragNodeBBox.current!;
 
@@ -41,9 +127,19 @@ export default ({ svg, dimension, updatePoint }: Props) => {
         };
         const newPoint = getGridAlignedPoint(centerPoint, dimension);
 
-        updatePoint(draggingId.current!, newPoint);
+        const updatedNodes = calculateUpdatedNodes(newPoint);
+        const updatedEdges = calculateUpdatedEdges(newPoint);
+
+        dispatch({
+            type: 'MOVE_NODE',
+            payload: {
+                nodes: updatedNodes,
+                edges: updatedEdges,
+            },
+        });
     };
 
+    // Handle drag stop
     const handleStopDrag = () => {
         isDragging.current = false;
         draggingId.current = null;
@@ -53,7 +149,7 @@ export default ({ svg, dimension, updatePoint }: Props) => {
 
     return {
         handleStartDrag,
-        handleStopDrag,
         handleDrag,
+        handleStopDrag,
     };
-};
+}

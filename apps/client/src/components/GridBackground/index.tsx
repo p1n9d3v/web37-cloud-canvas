@@ -1,10 +1,11 @@
-import { useCloudGraphContext } from '@contexts/CloudGraph';
-import { Dimension } from '@types';
+import { useGraphCanvasContext } from '@contexts/GraphCanvas';
+import { useGraphDimensionContext } from '@contexts/GraphDimensionContext';
 import GridPatternMajor from './patterns/GridPatternMajor';
 import GridPatternMinor from './patterns/GridPatternMinor';
 
-export default ({ dimension }: { dimension: Dimension }) => {
-    const { viewBox } = useCloudGraphContext();
+export default () => {
+    const { dimension } = useGraphDimensionContext();
+    const { viewBox } = useGraphCanvasContext();
     const { x, y, width, height } = viewBox;
 
     const points = [

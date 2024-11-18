@@ -1,3 +1,4 @@
+import { useGraphDimensionContext } from '@contexts/GraphDimensionContext';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LightModeIcon from '@mui/icons-material/LightMode';
@@ -36,7 +37,7 @@ const StyledIconButton = styled(IconButton)(({ theme }) => ({
 
 export default () => {
     const { mode: themeMode, setMode: setThemeMode } = useColorScheme();
-    // const { dimension, handleToggleDimension } = useDimensionContext();
+    const { dimension, toggleDimension } = useGraphDimensionContext();
 
     const handleToggleTheme = () =>
         setThemeMode(themeMode === 'dark' ? 'light' : 'dark');
@@ -52,9 +53,9 @@ export default () => {
             </Stack>
             <Stack direction="row" spacing={1} alignItems="center">
                 <ToggleButtonGroup
-                    // value={dimension}
+                    value={dimension}
                     exclusive
-                    // onChange={handleToggleDimension}
+                    onChange={toggleDimension}
                     sx={{
                         height: '38px',
                     }}

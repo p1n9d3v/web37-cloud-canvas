@@ -12,9 +12,9 @@ resource "ncloud_vpc" "vpc" {
     ipv4_cidr_block = var.ipv4_cidr_block
 }
 
-resource "ncloud_subnet" "public" {
+resource "ncloud_subnet" "public_subnets" {
   vpc_no = ncloud_vpc.vpc.id
-  for_each = {for idx, val in var.public_subnet : idx => val}
+  for_each = {for s in var.subnets : s.name => s if upper(s.subnet_type) == "PUBLIC"}
   name = "public-${ncloud_vpc.vpc.id}-${each.key}"
   subnet = each.value.subnet
   zone = each.value.zone
@@ -22,9 +22,9 @@ resource "ncloud_subnet" "public" {
   network_acl_no = ncloud_vpc.vpc.default_network_acl_no
 }
 
-resource "ncloud_subnet" "private" {
+resource "ncloud_subnet" "private_subnets" {
   vpc_no = ncloud_vpc.vpc.id
-  for_each = {for idx, val in var.private_subnet : idx => val}
+  for_each = {for s in var.subnets : s.name => s if upper(s.subnet_type) == "PRIVATE"}
   name = "private-${ncloud_vpc.vpc.id}-${each.key}"
   subnet = each.value.subnet
   zone = each.value.zone

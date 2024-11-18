@@ -9,23 +9,14 @@ variable "ipv4_cidr_block" {
     type = string
 }
 
-variable "public_subnet" {
-  type = map(object({
+variable "subnets" {
+  type = list(object({
     subnet = string
     zone = string
     name = string
-    usage_type = string
-  }))
-  default = {}
-}
-
-variable "private_subnet" {
-  type = map(object({
-    subnet = string
-    zone = string
-    name = string
+    subnet_type = string
     usage_type = string
   }))
 
-  default = {}
+  default = []
 }

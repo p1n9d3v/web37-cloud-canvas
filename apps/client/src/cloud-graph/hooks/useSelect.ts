@@ -45,12 +45,10 @@ export default () => {
     };
 
     const handleSelectEntireEdge = (edge: Edge) => {
-        console.log(selectedIds);
         if (selectedIds.has(edge.id)) {
             handleDeselectAll();
             return;
         }
-        console.log(111);
         const { source, target } = edge;
         const ids = [edge.id];
         let sourceNode = source.node;

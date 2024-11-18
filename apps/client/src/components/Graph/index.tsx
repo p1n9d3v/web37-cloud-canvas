@@ -1,11 +1,11 @@
-import { useCloudGraphContext } from '@contexts/CloudGraph';
+import { useGraphCanvasContext } from '@contexts/GraphCanvas';
 import { ReactNode } from 'react';
 
 type Props = {
     children: ReactNode;
 };
 export default ({ children }: Props) => {
-    const { svgRef, viewBox } = useCloudGraphContext();
+    const { svgRef, viewBox } = useGraphCanvasContext();
     return (
         <svg
             ref={svgRef}

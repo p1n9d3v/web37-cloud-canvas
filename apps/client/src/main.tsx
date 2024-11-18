@@ -1,17 +1,20 @@
-import { CloudGraphPropvider } from '@contexts/CloudGraph.tsx';
+import { GraphCanvasProvider } from '@contexts/GraphCanvas.tsx';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import theme from '@theme';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
+import { GraphDimensionProvider } from '@contexts/GraphDimensionContext.tsx';
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <ThemeProvider theme={theme} defaultMode="light">
             <CssBaseline />
-            <CloudGraphPropvider>
-                <App />
-            </CloudGraphPropvider>
+            <GraphDimensionProvider>
+                <GraphCanvasProvider>
+                    <App />
+                </GraphCanvasProvider>
+            </GraphDimensionProvider>
         </ThemeProvider>
     </StrictMode>,
 );

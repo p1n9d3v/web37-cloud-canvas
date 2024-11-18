@@ -1,28 +1,21 @@
-import { useGraphContext } from '@cloud-graph/contexts/GraphContext';
-import {
-    Anchors,
-    AnchorType,
-    Dimension,
-    Edge,
-    Node,
-    Point,
-} from '@cloud-graph/types';
+import useEdge from '@cloud-graph/hooks/useEdge';
+import { AnchorType, Dimension, Edge, Node, Point } from '@cloud-graph/types';
 import {
     calculateAnchorPoints,
     getDistance,
     getSvgPoint,
 } from '@cloud-graph/utils';
-import { nanoid } from 'nanoid';
 import { useRef, useState } from 'react';
 
 type Props = {
     svg: SVGSVGElement;
     nodes: Node[];
     dimension: Dimension;
-    updateEdge: (edge: Edge) => void;
 };
 
-export default ({ svg, nodes, dimension, updateEdge }: Props) => {
+export default ({ svg, nodes, dimension }: Props) => {
+    const { handleAdd: handleAddEdge } = useEdge({ svg });
+
     const [connection, setConnection] = useState<{
         from: Point;
         to: Point;
@@ -82,8 +75,7 @@ export default ({ svg, nodes, dimension, updateEdge }: Props) => {
             target.current &&
             source.current.node.id !== target.current.node.id
         ) {
-            updateEdge({
-                id: nanoid(),
+            handleAddEdge({
                 type: 'arrow',
                 source: source.current,
                 target: target.current,

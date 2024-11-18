@@ -13,9 +13,9 @@ import {
 } from '@cloud-graph/contexts/GraphContext';
 import useEdgeConnector from '@cloud-graph/hooks/useConnector';
 import useDrag from '@cloud-graph/hooks/useDrag';
+import useEdge from '@cloud-graph/hooks/useEdge';
 import useKey from '@cloud-graph/hooks/useKey';
 import useNode from '@cloud-graph/hooks/useNode';
-import useSplitEdge from '@cloud-graph/hooks/useSplitEdge';
 import useSvgViewBox from '@cloud-graph/hooks/useSvgViewBox';
 import useVisible from '@cloud-graph/hooks/useVisible';
 import useZoomPan from '@cloud-graph/hooks/useZoomPan';
@@ -35,12 +35,14 @@ export const CloudGraph = () => {
         selectedIds,
         handleSelect,
         handleDeselectAll,
-        handleAddEdge,
-        handleSplitEdge,
         handleSelectEntireEdge,
     } = useGraphContext();
     const { svgRef, viewBox, setViewBox } = useSvgViewBox();
     const { handleRemove: handleRemoveNode } = useNode();
+    const { handleRemove: handleRemoveEdge, handleSplit: handleSplitEdge } =
+        useEdge({
+            svg: svgRef.current!,
+        });
     const { handleStartDrag, handleStopDrag, handleDrag } = useDrag({
         svg: svgRef.current!,
         dimension,
@@ -56,12 +58,7 @@ export const CloudGraph = () => {
             svg: svgRef.current!,
             dimension,
             nodes,
-            updateEdge: handleAddEdge,
         });
-    const { handleSplit } = useSplitEdge({
-        svg: svgRef.current!,
-        updateEdge: handleSplitEdge,
-    });
 
     const { visibleEdges, visibleNodes } = useVisible({
         nodes,
@@ -83,7 +80,8 @@ export const CloudGraph = () => {
 
     useEffect(() => {
         if (activeKey) {
-            handleRemoveNode(selectedIds.at(0)!);
+            // handleRemoveNode(selectedIds.at(0)!);
+            handleRemoveEdge(selectedIds.at(0)!);
             // handleRemoveSelected();
         }
     }, [activeKey]);
@@ -105,7 +103,7 @@ export const CloudGraph = () => {
                         dimension={dimension}
                         isSelected={selectedIds.includes(edge.id)}
                         onSelect={handleSelect}
-                        onSplit={handleSplit}
+                        onSplit={handleSplitEdge}
                         onSelectEntireEdge={handleSelectEntireEdge}
                     />
                 ))}

@@ -1,10 +1,4 @@
-import { useDimensionContext } from '@cloud-graph/contexts/DimensionContext';
-import { Dimension, Edge, Group, Node, Point } from '@cloud-graph/types';
-import {
-    calculateAnchorPoints,
-    findNearestAnchorPair,
-    isUtilityNode,
-} from '@cloud-graph/utils';
+import { Edge, Group, Node } from '@cloud-graph/types';
 import { nanoid } from 'nanoid';
 import {
     createContext,
@@ -22,7 +16,6 @@ type GraphState = {
 };
 
 interface GraphContextType extends GraphState {
-    handleAddNode: (node: Node) => void;
     handleSelect: (id: string) => void;
     handleSelectEntireEdge: (edge: Edge) => void;
     handleDeselect: (id: string) => void;
@@ -48,7 +41,8 @@ type GraphAction =
     | {
           type: 'REMOVE_NODE';
           payload: {
-              id: string;
+              nodeIds: string[];
+              edgeIds: string[];
           };
       }
     | {
@@ -157,57 +151,14 @@ const graphReducer = (state: GraphState, action: GraphAction) => {
                     ]),
             };
         }
-        //TODO: Refactoring
         case 'REMOVE_NODE': {
-            const connectedEdges = state.edges.filter(
-                (edge) =>
-                    edge.source.node.id === action.payload.id ||
-                    edge.target.node.id === action.payload.id,
-            );
-            const edgesToRemove: string[] = [];
-            const pointersToRemove: string[] = [];
-            connectedEdges.forEach((edge) => {
-                edgesToRemove.push(edge.id);
-                let nextEdge: Edge | undefined;
-                let nextNode: Node | undefined;
-                if (edge.source.node.id === action.payload.id) {
-                    nextNode = edge.target.node;
-                    while (nextNode.type === 'pointer') {
-                        pointersToRemove.push(edge.target.node.id);
-                        nextEdge = state.edges.find(
-                            (edge) => edge.source.node.id === nextNode!.id,
-                        );
-                        edgesToRemove.push(nextEdge!.id);
-                        nextNode = nextEdge!.target.node;
-                    }
-                    if (nextEdge?.source.node.type === 'pointer') {
-                        pointersToRemove.push(nextEdge.source.node.id);
-                    }
-                } else {
-                    nextNode = edge.source.node;
-                    while (nextNode.type === 'pointer') {
-                        pointersToRemove.push(edge.source.node.id);
-                        nextEdge = state.edges.find(
-                            (edge) => edge.target.node.id === nextNode!.id,
-                        );
-                        edgesToRemove.push(nextEdge!.id);
-                        nextNode = nextEdge!.source.node;
-                    }
-                    if (nextEdge?.target.node.type === 'pointer') {
-                        pointersToRemove.push(nextEdge.target.node.id);
-                    }
-                }
-            });
-
             return {
                 ...state,
                 nodes: state.nodes.filter(
-                    (node) =>
-                        node.id !== action.payload.id &&
-                        !pointersToRemove.includes(node.id),
+                    (node) => !action.payload.nodeIds.includes(node.id),
                 ),
                 edges: state.edges.filter(
-                    (edge) => !edgesToRemove.includes(edge.id),
+                    (edge) => !action.payload.edgeIds.includes(edge.id),
                 ),
             };
         }
@@ -329,9 +280,6 @@ export const GraphProvider = ({ children }: { children: ReactNode }) => {
         selectedIds: [],
     });
 
-    const handleAddNode = (node: Node) =>
-        dispatch({ type: 'ADD_NODE', payload: node });
-
     const handleSelect = (id: string) =>
         dispatch({ type: 'SELECT', payload: { id } });
     const handleDeselect = (id: string) =>
@@ -376,12 +324,12 @@ export const GraphProvider = ({ children }: { children: ReactNode }) => {
             state.selectedIds.includes(node.id),
         );
         selectedNodes.forEach((node) => {
-            dispatch({
-                type: 'REMOVE_NODE',
-                payload: {
-                    id: node.id,
-                },
-            });
+            // dispatch({
+            //     type: 'REMOVE_NODE',
+            //     payload: {
+            //         id: node.id,
+            //     },
+            // });
         });
         const selectedEdges = state.edges.filter((edge) =>
             state.selectedIds.includes(edge.id),
@@ -429,7 +377,6 @@ export const GraphProvider = ({ children }: { children: ReactNode }) => {
             value={{
                 ...state,
                 dispatch,
-                handleAddNode,
                 handleSelect,
                 handleDeselect,
                 handleDeselectAll,

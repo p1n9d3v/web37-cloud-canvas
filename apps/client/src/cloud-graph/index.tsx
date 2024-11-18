@@ -14,6 +14,7 @@ import {
 import useEdgeConnector from '@cloud-graph/hooks/useConnector';
 import useDrag from '@cloud-graph/hooks/useDrag';
 import useKey from '@cloud-graph/hooks/useKey';
+import useNode from '@cloud-graph/hooks/useNode';
 import useSplitEdge from '@cloud-graph/hooks/useSplitEdge';
 import useSvgViewBox from '@cloud-graph/hooks/useSvgViewBox';
 import useVisible from '@cloud-graph/hooks/useVisible';
@@ -36,10 +37,10 @@ export const CloudGraph = () => {
         handleDeselectAll,
         handleAddEdge,
         handleSplitEdge,
-        handleRemoveSelected,
         handleSelectEntireEdge,
     } = useGraphContext();
     const { svgRef, viewBox, setViewBox } = useSvgViewBox();
+    const { handleRemove: handleRemoveNode } = useNode();
     const { handleStartDrag, handleStopDrag, handleDrag } = useDrag({
         svg: svgRef.current!,
         dimension,
@@ -82,7 +83,8 @@ export const CloudGraph = () => {
 
     useEffect(() => {
         if (activeKey) {
-            handleRemoveSelected();
+            handleRemoveNode(selectedIds.at(0)!);
+            // handleRemoveSelected();
         }
     }, [activeKey]);
     return (

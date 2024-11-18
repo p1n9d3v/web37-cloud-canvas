@@ -14,9 +14,12 @@ RUN npx prisma generate && npm run build && rm -rf node_modules && pnpm install 
 
 FROM node:20-alpine AS production
 WORKDIR /app
+ENV DOCKERIZE_VERSION v0.6.1
 RUN apk add --no-cache openssl
 COPY --from=build /build/server/node_modules ./node_modules
 COPY --from=build /build/server/dist ./dist
+RUN mkdir -p /app/prisma
+COPY ./apps/server/prisma/ /app/prisma/
 
 ENV DATABASE_URL=mysql://johndoe:randompassword@localhost:3306/mydb
 ENV PORT=3000

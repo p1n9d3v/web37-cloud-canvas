@@ -1,5 +1,7 @@
 import NodeRenderer from '@cloud-graph/components/Node/NodeRenderer';
+import useKey from '@cloud-graph/hooks/useKey';
 import { Dimension, Node } from '@cloud-graph/types';
+import { useRef } from 'react';
 
 type Props = {
     node: Node;
@@ -9,6 +11,7 @@ type Props = {
     onDrag: (point: { x: number; y: number }) => void;
     onStopDrag: () => void;
     onSelect?: (nodeId: string) => void;
+    onMultiSelect?: (nodeId: string) => void;
 };
 export default ({
     node,
@@ -18,9 +21,16 @@ export default ({
     onDrag,
     onStopDrag,
     onSelect,
+    onMultiSelect,
 }: Props) => {
     const handleMouseDown = (event: React.MouseEvent) => {
+        event.stopPropagation();
         const { clientX, clientY } = event;
+
+        if (event.shiftKey) {
+            onMultiSelect && onMultiSelect(node.id);
+            return;
+        }
         onSelect && onSelect(node.id);
         onStartDrag(node.id, {
             x: clientX,

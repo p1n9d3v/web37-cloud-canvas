@@ -19,6 +19,23 @@ export default ({ svg }: Props) => {
         });
     };
 
+    const handleRemoveEntire = (edges: Edge[]) => {
+        const pointerIds = new Set<string>();
+        edges.forEach((edge) => {
+            const { source, target } = edge;
+            if (source.node.type === 'pointer') pointerIds.add(source.node.id);
+            if (target.node.type === 'pointer') pointerIds.add(target.node.id);
+        });
+
+        dispatch({
+            type: 'REMOVE_ENTIRE_EDGE',
+            payload: {
+                pointerIds: Array.from(pointerIds),
+                edgeIds: edges.map((edge) => edge.id),
+            },
+        });
+    };
+
     const handleRemove = (id: string) => {
         const selectedEdge = edges.find((edge) => edge.id === id);
         if (!selectedEdge) return;
@@ -122,6 +139,7 @@ export default ({ svg }: Props) => {
     return {
         handleAdd,
         handleRemove,
+        handleRemoveEntire,
         handleSplit,
     };
 };

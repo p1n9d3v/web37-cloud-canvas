@@ -139,7 +139,6 @@ export default function useDrag({ svg, dimension }: Props) {
         });
     };
 
-    // Handle drag stop
     const handleStopDrag = () => {
         isDragging.current = false;
         draggingId.current = null;

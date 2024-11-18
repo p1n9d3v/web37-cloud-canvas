@@ -16,6 +16,7 @@ import useDrag from '@cloud-graph/hooks/useDrag';
 import useEdge from '@cloud-graph/hooks/useEdge';
 import useKey from '@cloud-graph/hooks/useKey';
 import useNode from '@cloud-graph/hooks/useNode';
+import useSelect from '@cloud-graph/hooks/useSelect';
 import useSvgViewBox from '@cloud-graph/hooks/useSvgViewBox';
 import useVisible from '@cloud-graph/hooks/useVisible';
 import useZoomPan from '@cloud-graph/hooks/useZoomPan';
@@ -24,25 +25,23 @@ import { Box } from '@mui/material';
 import { ReactNode, useEffect } from 'react';
 
 //INFO: 일단 한곳에 모아놓고 코딩을 했음 나중에 리팩토링 필요
-//기존 메모이제이션 코드는 다 삭제, 개발 과정에서 메모이제이션을 적용하니 다른 기능 구현이 까다로워 짐
-//추후 성능 문제가 있을시 메모이제이션 적용해야함
-//최소한의 최적화로 viewBox내의 노드만 렌더링하도록 함
+//- 기존 메모이제이션 코드는 다 삭제, 개발 과정에서 메모이제이션을 적용하니 다른 기능 구현이 까다로워 짐
+//- 추후 성능 문제가 있을시 메모이제이션 적용해야함
+//- 최소한의 최적화로 viewBox내의 노드만 렌더링하도록 함
+//- Context로 구현한 의미가 없을 듯 함 -> 추후 리팩토링 필요, 코드 분리가 필요하여 일단은 hooks로 분리
+
 export const CloudGraph = () => {
     const { dimension } = useDimensionContext();
-    const {
-        nodes,
-        edges,
-        selectedIds,
-        handleSelect,
-        handleDeselectAll,
-        handleSelectEntireEdge,
-    } = useGraphContext();
+    const { nodes, edges } = useGraphContext();
     const { svgRef, viewBox, setViewBox } = useSvgViewBox();
     const { handleRemove: handleRemoveNode } = useNode();
-    const { handleRemove: handleRemoveEdge, handleSplit: handleSplitEdge } =
-        useEdge({
-            svg: svgRef.current!,
-        });
+    const {
+        handleRemove: handleRemoveEdge,
+        handleSplit: handleSplitEdge,
+        handleRemoveEntire: handleRemoveEntireEdge,
+    } = useEdge({
+        svg: svgRef.current!,
+    });
     const { handleStartDrag, handleStopDrag, handleDrag } = useDrag({
         svg: svgRef.current!,
         dimension,
@@ -66,25 +65,40 @@ export const CloudGraph = () => {
         viewBox,
         dimension,
     });
+    const {
+        isSelected,
+        handleSelect,
+        handleDeselectAll,
+        handleSelectEntireEdge,
+        handleMultiSelect,
+    } = useSelect();
 
-    const activeKey = useKey('backspace');
-
+    // Delete
+    const backspaceKey = useKey('backspace');
     useEffect(() => {
-        const handleMouseDown = () => handleDeselectAll();
-        svgRef.current?.addEventListener('mousedown', handleMouseDown);
+        if (backspaceKey) {
+            const selectedNodes = nodes.filter((node) => isSelected(node.id));
+            const selectedEdges = edges.filter((edge) => isSelected(edge.id));
+            selectedNodes.forEach((node) => handleRemoveNode(node.id));
+            if (selectedEdges.length === 1) {
+                handleRemoveEdge(selectedEdges.at(0)!.id);
+            } else if (selectedEdges.length > 1) {
+                handleRemoveEntireEdge(selectedEdges);
+            }
+            handleDeselectAll();
+        }
+    }, [backspaceKey]);
+
+    // Global Event Listener
+    useEffect(() => {
+        const handleContextMenu = (event: MouseEvent) => event.preventDefault();
+        document.addEventListener('contextmenu', handleContextMenu);
 
         return () => {
-            svgRef.current?.removeEventListener('mousedown', handleMouseDown);
+            document.removeEventListener('contextmenu', handleContextMenu);
         };
-    }, [svgRef.current]);
+    }, []);
 
-    useEffect(() => {
-        if (activeKey) {
-            // handleRemoveNode(selectedIds.at(0)!);
-            handleRemoveEdge(selectedIds.at(0)!);
-            // handleRemoveSelected();
-        }
-    }, [activeKey]);
     return (
         <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
             <Graph
@@ -95,37 +109,38 @@ export const CloudGraph = () => {
                 onStartPan={handleStartPan}
                 onStopPan={handleStopPan}
                 onMovePan={handleMovePan}
+                onDeselectAll={handleDeselectAll}
             >
                 {visibleEdges.map((edge) => (
                     <Edge
                         key={edge.id}
                         edge={edge}
                         dimension={dimension}
-                        isSelected={selectedIds.includes(edge.id)}
+                        isSelected={isSelected(edge.id)}
                         onSelect={handleSelect}
                         onSplit={handleSplitEdge}
                         onSelectEntireEdge={handleSelectEntireEdge}
                     />
                 ))}
                 {visibleNodes.filter(isCloudNode).map((node) => {
-                    const isSelected = selectedIds.includes(node.id);
-
+                    const isNodeSelected = isSelected(node.id);
                     return (
                         <g key={node.id}>
                             <Node
                                 node={node}
                                 dimension={dimension}
-                                isSelected={isSelected}
+                                isSelected={isNodeSelected}
                                 onStartDrag={handleStartDrag}
                                 onDrag={handleDrag}
                                 onStopDrag={handleStopDrag}
                                 onSelect={handleSelect}
+                                onMultiSelect={handleMultiSelect}
                             />
                             <Anchors
                                 node={node}
                                 edges={edges}
                                 dimension={dimension}
-                                isSelected={isSelected}
+                                isSelected={isNodeSelected}
                                 onStartConnect={handleStartConnect}
                                 onConnect={handleConnect}
                                 onStopConnect={handleStopConnect}

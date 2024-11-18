@@ -38,14 +38,16 @@ export default ({
         ? theme.palette.primary.main
         : theme.palette.text.primary;
 
-    const handleClick = () => {
-        onSelect(id);
-    };
-    const handleDoubleClick = () => {
-        onSelectEntireEdge(edge);
+    const handleClick = (event: React.MouseEvent) => {
+        if (event.shiftKey) {
+            onSelectEntireEdge(edge);
+        } else {
+            onSelect(id);
+        }
     };
 
     const handleMouseDown = (event: React.MouseEvent) => {
+        event.stopPropagation();
         timeoutRef.current = setTimeout(() => {
             const { clientX, clientY } = event;
             onSplit(edge, { x: clientX, y: clientY });
@@ -67,9 +69,8 @@ export default ({
         <g
             id={id}
             data-type="graph-edge"
-            onClick={handleClick}
-            onDoubleClick={handleDoubleClick}
             onMouseDown={handleMouseDown}
+            onClick={handleClick}
         >
             <defs>
                 <marker

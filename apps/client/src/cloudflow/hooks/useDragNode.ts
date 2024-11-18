@@ -1,8 +1,4 @@
-import {
-    GRID_3D_HEIGHT_SIZE,
-    GRID_3D_WIDTH_SIZE,
-    GRID_SIZE,
-} from '@cloudflow/constants';
+import { GRID_SIZE } from '@cloudflow/constants';
 import { useEdgeContext } from '@cloudflow/contexts/EdgeContext';
 import { useNodeContext } from '@cloudflow/contexts/NodeContext';
 import { AnchorsPoint, AnchorType, Dimension, Point } from '@cloudflow/types';
@@ -10,6 +6,8 @@ import {
     calculateAnchorPoints,
     getDistance,
     getSvgPoint,
+    gridToScreen,
+    screenToGrid,
 } from '@cloudflow/utils';
 import { RefObject, useCallback, useRef, useState } from 'react';
 
@@ -23,23 +21,6 @@ export default (flowRef: RefObject<SVGSVGElement>, dimension: Dimension) => {
 
     const [draggingId, setDraggingId] = useState<string | null>(null);
     const [isDragging, setIsDragging] = useState(false);
-
-    const gridToScreen = (col: number, row: number): Point => {
-        const x = (col - row) * (GRID_3D_WIDTH_SIZE / 2);
-        const y = (col + row) * (GRID_3D_HEIGHT_SIZE / 2);
-        return { x, y };
-    };
-
-    const screenToGrid = (
-        x: number,
-        y: number,
-    ): { col: number; row: number } => {
-        const col =
-            (x / (GRID_3D_WIDTH_SIZE / 2) + y / (GRID_3D_HEIGHT_SIZE / 2)) / 2;
-        const row =
-            (y / (GRID_3D_HEIGHT_SIZE / 2) - x / (GRID_3D_WIDTH_SIZE / 2)) / 2;
-        return { col, row };
-    };
 
     const getGridAlignedPoint = (
         cursorPoint: Point,
@@ -66,7 +47,7 @@ export default (flowRef: RefObject<SVGSVGElement>, dimension: Dimension) => {
 
             return gridToScreen(snappedCol, snappedRow);
         } else {
-            throw new Error('Invalid dimension');
+            throw new Error('only support 2d and 3d dimension');
         }
     };
 
@@ -100,12 +81,14 @@ export default (flowRef: RefObject<SVGSVGElement>, dimension: Dimension) => {
                 const snappedSize = dimension === '2d' ? GRID_SIZE / 4 : 1 / 4;
                 if (distance < snappedSize / 2) return;
 
-                const nodeElement = flowRef.current!.getElementById(draggingId);
+                const nodeElement = flowRef.current!.getElementById(
+                    draggingId,
+                ) as SVGGraphicsElement;
                 if (!nodeElement) return;
 
                 const newPoint = getGridAlignedPoint(
                     cursorSvgPoint,
-                    nodeElement as SVGSVGElement,
+                    nodeElement,
                     dimension,
                     snappedSize,
                 );
@@ -193,6 +176,11 @@ export default (flowRef: RefObject<SVGSVGElement>, dimension: Dimension) => {
                 draggingAnchorPoints,
                 connectedAnchorPoints,
             );
+
+            // 포인터일 경우 anchorType을 변경하지 않음
+            if (target.type === 'pointer' || source.type === 'pointer') {
+                nearestAnchorPair.connectedAnchorType = null;
+            }
 
             dispatchEdge({
                 type: 'UPDATE_EDGE',

@@ -18,7 +18,7 @@ export const createMockNodesAndEdges = (
     edgeCount: number,
 ) => {
     const nodes: Node[] = Array.from({ length: nodeCount }, () => ({
-        id: nanoid(),
+        id: 'mock'.concat(nanoid()),
         type: 'server',
         point: getRandomPoint(),
     }));

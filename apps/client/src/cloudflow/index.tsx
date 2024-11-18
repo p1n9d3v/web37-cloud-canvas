@@ -149,28 +149,32 @@ export const SvgFlow = () => {
             onEndConnect={handleEndConnect}
             onDeSelectNode={handleDeSelectNode}
         >
-            {visibleEdges.map((edge) => (
-                <Edge
-                    key={edge.id}
-                    edge={edge}
-                    dimension={dimension}
-                    isSelected={edge.id === selectedEdgeId}
-                    onSplitEdge={handleSplitEdge}
-                    onSelectEdge={handleSelectEdge}
-                />
-            ))}
+            <g id="flow-edges">
+                {visibleEdges.map((edge) => (
+                    <Edge
+                        key={edge.id}
+                        edge={edge}
+                        dimension={dimension}
+                        isSelected={edge.id === selectedEdgeId}
+                        onSplitEdge={handleSplitEdge}
+                        onSelectEdge={handleSelectEdge}
+                    />
+                ))}
+            </g>
 
-            {visibleCloudNode.map((node) => (
-                <Node
-                    key={node.id}
-                    node={node}
-                    dimension={dimension}
-                    isSelected={node.id === selectedNodeId}
-                    onStartDragNode={handleStartDragNode}
-                    onSelectNode={handleSelectNode}
-                    onStartConnect={handleStartConnect}
-                />
-            ))}
+            <g id="flow-nodes">
+                {visibleCloudNode.map((node) => (
+                    <Node
+                        key={node.id}
+                        node={node}
+                        dimension={dimension}
+                        isSelected={node.id === selectedNodeId}
+                        onStartDragNode={handleStartDragNode}
+                        onSelectNode={handleSelectNode}
+                        onStartConnect={handleStartConnect}
+                    />
+                ))}
+            </g>
 
             {isConnecting && connection && connection.target && (
                 <Connector

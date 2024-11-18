@@ -69,6 +69,7 @@ export default forwardRef<SVGSVGElement, Props>(
         };
         return (
             <svg
+                id="cloudflow"
                 ref={ref}
                 width="100%"
                 height="100%"

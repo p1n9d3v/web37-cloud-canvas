@@ -33,11 +33,19 @@ export const nodeReducer = (
         case 'MOVE_NODE':
             return {
                 ...state,
-                nodes: state.nodes.map((node) =>
-                    node.id === action.payload.id
-                        ? { ...node, point: action.payload.point }
-                        : node,
-                ),
+                nodes: state.nodes
+                    .map((node) =>
+                        node.id === action.payload.id
+                            ? { ...node, point: action.payload.point }
+                            : node,
+                    )
+                    .sort((a, b) => {
+                        if (a.point.y === b.point.y) {
+                            return a.point.x - b.point.x;
+                        } else {
+                            return a.point.y - b.point.y;
+                        }
+                    }),
             };
         default:
             return state;

@@ -41,3 +41,38 @@ export const calculateAnchorPoints = (
         left: { x: point.x, y: point.y + height / 2 },
     };
 };
+
+export const gridToScreen = (col: number, row: number): Point => {
+    const x = (col - row) * (GRID_3D_WIDTH_SIZE / 2);
+    const y = (col + row) * (GRID_3D_HEIGHT_SIZE / 2);
+    return { x, y };
+};
+
+export const screenToGrid = (
+    x: number,
+    y: number,
+): { col: number; row: number } => {
+    const col =
+        (x / (GRID_3D_WIDTH_SIZE / 2) + y / (GRID_3D_HEIGHT_SIZE / 2)) / 2;
+    const row =
+        (y / (GRID_3D_HEIGHT_SIZE / 2) - x / (GRID_3D_WIDTH_SIZE / 2)) / 2;
+    return { col, row };
+};
+
+export const getGridAlignedPoint = (point: Point, dimension: Dimension) => {
+    const snappedSize = dimension === '2d' ? GRID_SIZE / 4 : 1 / 4;
+
+    if (dimension === '2d') {
+        const gridAlignedX = Math.round(point.x / snappedSize) * snappedSize;
+        const gridAlignedY = Math.round(point.y / snappedSize) * snappedSize;
+
+        return screenToGrid(gridAlignedX, gridAlignedY);
+    }
+
+    const { col, row } = screenToGrid(point.x, point.y);
+
+    const snappedCol = Math.round(col / snappedSize) * snappedSize;
+    const snappedRow = Math.round(row / snappedSize) * snappedSize;
+
+    return { col: snappedCol, row: snappedRow };
+};

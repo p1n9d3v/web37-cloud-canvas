@@ -12,7 +12,6 @@
             "@cloud-graph/*": ["src/cloud-graph/*"],
             "@cloud-graph": ["src/cloud-graph/index.ts"],
             "@cloudflow": ["src/cloudflow/index.tsx"],
-            "@cloudflow/*": ["src/cloudflow/*"],
             "@components/*": ["src/components/*"],
             "@hooks/*": ["src/hooks/*"],
             "@utils/*": ["src/utils/*"],

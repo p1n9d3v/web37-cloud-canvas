@@ -7,6 +7,10 @@ terraform {
   required_version = ">= 0.13"
 }
 
+resource "ncloud_login_key" "servers_login_key" {
+  key_name = var.login_key_name
+}
+
 resource ncloud_server "servers" {
     for_each = {for s in var.servers : s.name => s }
     server_image_product_code = each.value.server_image_product_code
@@ -15,7 +19,7 @@ resource ncloud_server "servers" {
     member_server_image_no = each.value.member_server_image_no
     name = each.value.name
     description = each.value.description
-    login_key_name = each.value.login_key_name
+    login_key_name = ncloud_login_key.servers_login_key.key_name
     zone = each.value.zone
     subnet_no = each.value.subnet_no
 }

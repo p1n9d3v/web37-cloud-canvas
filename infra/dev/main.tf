@@ -7,13 +7,6 @@ terraform {
   required_version = ">= 0.13"
 }
 
-provider "ncloud" {
-  access_key = var.access_key
-  secret_key = var.secret_key
-  support_vpc = true
-  region      = "KR"
-}
-
 module "vpc_subnet" {
   source          = "../modules/vpc_subnet"
   vpc_name        = "dev"
@@ -32,6 +25,19 @@ module "vpc_subnet" {
       subnet_type = "PRIVATE"
       name       = "good2"
       usage_type = "GEN"
+    }
+  ]
+}
+
+
+module "server" {
+  source = "../modules/server"
+  login_key_name = "dev-login"
+  servers = [
+    {
+      name = "test"
+      subnet_no = module.vpc_subnet.public_subnets[0].good.id
+      server_image_product_code = "SW.VSVR.OS.LNX64.ROCKY.0808.B050"
     }
   ]
 }

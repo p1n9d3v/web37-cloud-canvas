@@ -1,5 +1,6 @@
 import { Point } from '@cloud-graph/types';
 import { ANCHOR_RADIUS } from '@cloud-graph/constants';
+import { useTheme } from '@mui/material';
 
 type Props = {
     visible: boolean;
@@ -18,6 +19,7 @@ export default ({
     onConnect,
     onStopConnect,
 }: Props) => {
+    const theme = useTheme();
     const handleMouseDown = () => {
         onStartConnect();
 
@@ -40,7 +42,7 @@ export default ({
             r={ANCHOR_RADIUS}
             cx={cx}
             cy={cy}
-            fill="black"
+            fill={theme.palette.text.primary}
             style={{
                 visibility: visible ? 'visible' : 'hidden',
             }}

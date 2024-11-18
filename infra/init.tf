@@ -4,12 +4,14 @@ terraform {
       source = "NaverCloudPlatform/ncloud"
     }
   }
+  backend "remote" {}
+
   required_version = ">= 0.13"
 }
 
 provider "ncloud" {
-  access_key = var.access_key
-  secret_key = var.secret_key
+  access_key  = var.access_key
+  secret_key  = var.secret_key
   support_vpc = true
   region      = "KR"
 }

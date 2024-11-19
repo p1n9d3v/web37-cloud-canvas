@@ -4,7 +4,6 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { PublicImportRepository } from './public-import.repository';
-import { CreatePublicImportDto } from './dto/create-public-import.dto';
 
 @Injectable()
 export class PublicImportService {

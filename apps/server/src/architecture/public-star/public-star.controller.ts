@@ -15,6 +15,7 @@ export class PublicStarController {
 
     @Delete()
     delete(@Param('architectureId', ParseIntPipe) architectureId: number) {
-        return this.publicStarService.delete(architectureId);
+        const userId = 1;
+        return this.publicStarService.delete(userId, architectureId);
     }
 }

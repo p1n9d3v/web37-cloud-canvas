@@ -1,17 +1,7 @@
-import {
-    Injectable,
-    Get,
-    Post,
-    Delete,
-    Patch,
-    Param,
-    NotFoundException,
-    ForbiddenException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePublicDto } from './dto/create-public.dto';
 import { UpdatePublicDto } from './dto/update-public.dto';
 import { PublicRepository } from './public.repository';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class PublicService {

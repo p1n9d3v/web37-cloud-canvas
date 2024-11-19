@@ -4,7 +4,6 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { PublicStarRepository } from './public-star.repository';
-import { CreatePublicStarDto } from './dto/create-public-star.dto';
 
 @Injectable()
 export class PublicStarService {
@@ -33,9 +32,12 @@ export class PublicStarService {
         }
     }
 
-    async delete(architectureId: number) {
+    async delete(userId: number, architectureId: number) {
         try {
-            return await this.publicStarRepository.delete(1, architectureId);
+            return await this.publicStarRepository.delete(
+                userId,
+                architectureId,
+            );
         } catch (error) {
             if (error.code === 'P2025') {
                 throw new NotFoundException('Star not found');

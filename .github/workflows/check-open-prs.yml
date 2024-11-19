@@ -31,7 +31,7 @@ jobs:
         echo "::set-output name=prs::$prs"
 
       env:
-        GITHUB_TOKEN: ${{ secrets.G_TOKEN }} # GitHub 기본 제공 토큰
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub 기본 제공 토큰
 
     # 3. Slack 알림 전송
     - name: Notify Slack

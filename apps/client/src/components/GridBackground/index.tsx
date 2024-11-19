@@ -1,4 +1,4 @@
-import { useGraphCanvasContext } from '@contexts/GraphCanvas';
+import { useGraphCanvasContext } from '@contexts/GraphCanvasContext';
 import { useGraphDimensionContext } from '@contexts/GraphDimensionContext';
 import GridPatternMajor from './patterns/GridPatternMajor';
 import GridPatternMinor from './patterns/GridPatternMinor';

@@ -12,14 +12,15 @@ import {
 } from 'react';
 
 type GraphCanvasContextProps = {
-    svgRef: RefObject<SVGSVGElement>;
+    canvasRef: RefObject<SVGSVGElement>;
+    canvas: SVGSVGElement;
     viewBox: ViewBox;
     setViewBox: Dispatch<SetStateAction<ViewBox>>;
 };
 const GraphCanvasContext = createContext<GraphCanvasContextProps | null>(null);
 
 export const GraphCanvasProvider = ({ children }: { children: ReactNode }) => {
-    const svgRef = useRef<SVGSVGElement>(null);
+    const canvasRef = useRef<SVGSVGElement>(null);
     const [viewBox, setViewBox] = useState<ViewBox>({
         x: 0,
         y: 0,
@@ -28,12 +29,12 @@ export const GraphCanvasProvider = ({ children }: { children: ReactNode }) => {
     });
 
     useLayoutEffect(() => {
-        if (svgRef.current) {
+        if (canvasRef.current) {
             const updateViewBoxSize = () => {
                 setViewBox((prev) => ({
                     ...prev,
-                    width: svgRef.current!.clientWidth,
-                    height: svgRef.current!.clientHeight,
+                    width: canvasRef.current!.clientWidth,
+                    height: canvasRef.current!.clientHeight,
                 }));
             };
             updateViewBoxSize();
@@ -45,7 +46,14 @@ export const GraphCanvasProvider = ({ children }: { children: ReactNode }) => {
         }
     }, []);
     return (
-        <GraphCanvasContext.Provider value={{ svgRef, viewBox, setViewBox }}>
+        <GraphCanvasContext.Provider
+            value={{
+                canvasRef,
+                canvas: canvasRef.current!,
+                viewBox,
+                setViewBox,
+            }}
+        >
             {children}
         </GraphCanvasContext.Provider>
     );

@@ -1,18 +1,17 @@
 import Graph from '@components/Graph';
 import GridBackground from '@components/GridBackground';
 import Header from '@components/Header';
+import Node from '@components/Node';
 import Sidebar from '@components/Sidebar';
+import { useGraphInstanceContext } from '@contexts/GraphInstanceContext';
 import Box from '@mui/material/Box';
+import { Node as NodeType } from '@types';
 import { useState } from 'react';
 
 function App() {
-    const [groups, setGroups] = useState<{ [id: string]: any }>({
-        // region1: regionGroup,
-        // vpc1: vpcGroup,
-        // subnet1: subnetGroup,
-    });
-    const [nodes, setNodes] = useState<{ [id: string]: any }>({});
-
+    const {
+        state: { nodes },
+    } = useGraphInstanceContext();
     return (
         <Box
             sx={{
@@ -32,6 +31,9 @@ function App() {
                 <Header />
                 <Graph>
                     <GridBackground />
+                    {Object.values(nodes).map((node) => (
+                        <Node node={node} />
+                    ))}
                 </Graph>
             </Box>
         </Box>

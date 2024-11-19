@@ -1,8 +1,7 @@
-// import CloudFlow from '@cloudflow/CloudFlow';
 import Header from '@components/Header';
 import Sidebar from '@components/Sidebar';
 import Box from '@mui/material/Box';
-import ClodFlow from '@cloudflow';
+import { CloudGraph } from '@cloud-graph/index';
 
 function App() {
     return (
@@ -22,7 +21,7 @@ function App() {
                 }}
             >
                 <Header />
-                <ClodFlow />
+                <CloudGraph />
             </Box>
         </Box>
     );

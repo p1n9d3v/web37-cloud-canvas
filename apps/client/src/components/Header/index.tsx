@@ -1,7 +1,9 @@
+import { useDimensionContext } from '@cloud-graph/contexts/DimensionContext';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import ManageHistoryIcon from '@mui/icons-material/ManageHistory';
+import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import Box from '@mui/material/Box';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import Divider from '@mui/material/Divider';
@@ -35,6 +37,7 @@ const StyledIconButton = styled(IconButton)(({ theme }) => ({
 
 export default () => {
     const { mode: themeMode, setMode: setThemeMode } = useColorScheme();
+    const { dimension, handleToggleDimension } = useDimensionContext();
 
     const handleToggleTheme = () =>
         setThemeMode(themeMode === 'dark' ? 'light' : 'dark');
@@ -49,6 +52,17 @@ export default () => {
                 </Typography>
             </Stack>
             <Stack direction="row" spacing={1} alignItems="center">
+                <ToggleButtonGroup
+                    value={dimension}
+                    exclusive
+                    onChange={handleToggleDimension}
+                    sx={{
+                        height: '38px',
+                    }}
+                >
+                    <ToggleButton value="2d">2D</ToggleButton>
+                    <ToggleButton value="3d">3D</ToggleButton>
+                </ToggleButtonGroup>
                 <ButtonGroup>
                     <StyledIconButton onClick={() => openWindow(GITHUB_URL)}>
                         <GitHubIcon />

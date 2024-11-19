@@ -16,7 +16,6 @@ export class PublicImportService {
             await this.publicImportRepository.architectureExists(
                 architectureId,
             );
-
         if (!exists) {
             throw new NotFoundException('Architecture not found');
         }

@@ -14,7 +14,7 @@
             "@cloudflow": ["src/cloudflow/index.tsx"],
             "@components/*": ["src/components/*"],
             "@hooks/*": ["src/hooks/*"],
-            "@utils/*": ["src/utils/*"],
+            "@utils": ["src/utils/index.ts"],
             "@contexts/*": ["src/contexts/*"],
             "@types": ["src/types/index.ts"],
             "@theme": ["src/theme/index.ts"],

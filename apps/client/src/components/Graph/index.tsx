@@ -1,4 +1,4 @@
-import { useGraphCanvasContext } from '@contexts/GraphCanvas';
+import { useGraphCanvasContext } from '@contexts/GraphCanvasContext';
 import useKey from '@hooks/useKey';
 import { Point } from '@types';
 import { getSvgPoint } from '@utils';
@@ -8,16 +8,14 @@ type Props = {
     children: ReactNode;
 };
 export default ({ children }: Props) => {
-    const { svgRef, viewBox, setViewBox } = useGraphCanvasContext();
+    const { canvasRef, canvas, viewBox, setViewBox } = useGraphCanvasContext();
     const isPanning = useRef(false);
     const startPoint = useRef<Point>({ x: 0, y: 0 });
     const spaceActiveKey = useKey('space');
 
     const zoom = (wheelY: number, point: Point) => {
-        if (!svgRef.current) return;
-
         const zoomFactor = wheelY > 0 ? 1.1 : 0.9;
-        const cursorSvgPoint = getSvgPoint(svgRef.current, point);
+        const cursorSvgPoint = getSvgPoint(canvas, point);
         if (!cursorSvgPoint) return;
         setViewBox((prev) => {
             const newWidth = prev.width * zoomFactor;
@@ -39,14 +37,14 @@ export default ({ children }: Props) => {
     };
 
     const movePan = (point: Point) => {
-        if (!isPanning.current || !svgRef.current) return;
+        if (!isPanning.current) return;
 
         const dx =
             (startPoint.current.x - point.x) *
-            (viewBox.width / svgRef.current.clientWidth);
+            (viewBox.width / canvas.clientWidth);
         const dy =
             (startPoint.current.y - point.y) *
-            (viewBox.height / svgRef.current.clientHeight);
+            (viewBox.height / canvas.clientHeight);
         startPoint.current = point;
 
         setViewBox((prev) => ({
@@ -56,29 +54,36 @@ export default ({ children }: Props) => {
         }));
     };
 
+    const stopPan = () => (isPanning.current = false);
+
     const handleWheel = (e: React.WheelEvent<SVGSVGElement>) => {
-        zoom(e.deltaY, { x: e.clientX, y: e.clientY });
+        const { deltaY, clientX, clientY } = e;
+        zoom(deltaY, { x: clientX, y: clientY });
+        if (deltaY > 0) document.body.style.cursor = 'zoom-out';
+        else document.body.style.cursor = 'zoom-in';
     };
 
     const handleMouseDown = (e: React.MouseEvent<SVGSVGElement>) => {
         if (!spaceActiveKey) return;
-        startPan({ x: e.clientX, y: e.clientY });
+        const { clientX, clientY } = e;
+        startPan({ x: clientX, y: clientY });
     };
 
     const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
         if (!isPanning.current) return;
+        const { clientX, clientY } = e;
+        movePan({ x: clientX, y: clientY });
         document.body.style.cursor = 'grabbing';
-        movePan({ x: e.clientX, y: e.clientY });
     };
 
     const handleMouseUp = () => {
-        isPanning.current = false;
+        stopPan();
         document.body.style.cursor = 'default';
     };
 
     return (
         <svg
-            ref={svgRef}
+            ref={canvasRef}
             width="100%"
             height="100%"
             viewBox={`${viewBox?.x} ${viewBox?.y} ${viewBox?.width} ${viewBox?.height}`}

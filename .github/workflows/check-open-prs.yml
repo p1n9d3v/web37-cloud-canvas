@@ -40,10 +40,10 @@ jobs:
 
     # 3. Slack 알림 전송
     - name: Notify Slack
-      if: env.prs_output != ''
+      if: env.PRS_OUTPUT != ''
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        PRS_OUTPUT: ${{ env.prs_output }}
+        PRS_OUTPUT: ${{ env.PRS_OUTPUT }}
       run: |
         echo "Preparing Slack notification..."
         
@@ -54,7 +54,8 @@ jobs:
 
         # Slack 메시지 작성
         message=":warning: *Open Pull Requests with Reviewers:*"
-        echo "$PRS_OUTPUT" | jq -c '.[]' | while read -r pr; do
+        
+        echo "$PRS_OUTPUT" | jq -c '.' | while read -r pr; do
           title=$(echo $pr | jq -r '.title')
           url=$(echo $pr | jq -r '.url')
           reviewers=$(echo $pr | jq -r '.reviewRequests | map(.login) | join(", ")')
@@ -63,4 +64,3 @@ jobs:
 
         # Slack 메시지 전송
         curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"$message\"}" $SLACK_WEBHOOK_URL
-

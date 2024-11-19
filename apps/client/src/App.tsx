@@ -3,15 +3,13 @@ import GridBackground from '@components/GridBackground';
 import Header from '@components/Header';
 import Node from '@components/Node';
 import Sidebar from '@components/Sidebar';
-import { useGraphInstanceContext } from '@contexts/GraphInstanceContext';
+import { useCanvasInstanceContext } from '@contexts/CanvasInstanceContext';
 import Box from '@mui/material/Box';
-import { Node as NodeType } from '@types';
-import { useState } from 'react';
 
 function App() {
     const {
         state: { nodes },
-    } = useGraphInstanceContext();
+    } = useCanvasInstanceContext();
     return (
         <Box
             sx={{

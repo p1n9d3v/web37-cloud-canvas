@@ -1,4 +1,4 @@
-import { useGraphCanvasContext } from '@contexts/GraphCanvasContext';
+import { useCanvasContext } from '@contexts/CanvasContext';
 import useKey from '@hooks/useKey';
 import { Point } from '@types';
 import { getSvgPoint } from '@utils';
@@ -8,7 +8,7 @@ type Props = {
     children: ReactNode;
 };
 export default ({ children }: Props) => {
-    const { canvasRef, canvas, viewBox, setViewBox } = useGraphCanvasContext();
+    const { canvasRef, canvas, viewBox, setViewBox } = useCanvasContext();
     const isPanning = useRef(false);
     const startPoint = useRef<Point>({ x: 0, y: 0 });
     const spaceActiveKey = useKey('space');

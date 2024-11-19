@@ -2,7 +2,7 @@ import CloudFunctionNode from '@components/Node/ncloud/CloudFunctionNode';
 import DBMySQLNode from '@components/Node/ncloud/DBMySQLNode';
 import ObjectStorageNode from '@components/Node/ncloud/ObjectStorageNode';
 import ServerNode from '@components/Node/ncloud/ServerNode';
-import { useGraphInstanceContext } from '@contexts/GraphInstanceContext';
+import { useCanvasInstanceContext } from '@contexts/CanvasInstanceContext';
 import useDrag from '@hooks/useDrag';
 import { Node } from '@types';
 import { useEffect, useState } from 'react';
@@ -28,7 +28,7 @@ type Props = {
 };
 export default ({ node }: Props) => {
     const { id, point } = node;
-    const { dispatch } = useGraphInstanceContext();
+    const { dispatch } = useCanvasInstanceContext();
     const { dragOffset, isDragging, startDrag, moveDrag, stopDrag } = useDrag({
         updateFn: (offset) =>
             dispatch({

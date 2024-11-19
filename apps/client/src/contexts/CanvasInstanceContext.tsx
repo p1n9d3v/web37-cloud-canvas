@@ -7,27 +7,27 @@ import {
     useReducer,
 } from 'react';
 
-type GraphInstanceState = {
+type CanvasInstanceState = {
     nodes: Record<string, Node>;
 };
 
-type GraphInstanceAction = {
+type CanvasInstanceAction = {
     type: 'UPDATE_NODE';
     payload: Partial<Node> & { id: Node['id'] };
 };
 
-type GraphInstanceContextProps = {
-    state: GraphInstanceState;
-    dispatch: Dispatch<GraphInstanceAction>;
+type CanvasInstanceContextProps = {
+    state: CanvasInstanceState;
+    dispatch: Dispatch<CanvasInstanceAction>;
 };
 
-const GraphInstanceContext = createContext<GraphInstanceContextProps | null>(
+const CanvasInstanceContext = createContext<CanvasInstanceContextProps | null>(
     null,
 );
 
-const graphInstanceReducer = (
-    state: GraphInstanceState,
-    action: GraphInstanceAction,
+const canvasInstanceReducer = (
+    state: CanvasInstanceState,
+    action: CanvasInstanceAction,
 ) => {
     switch (action.type) {
         case 'UPDATE_NODE': {
@@ -47,27 +47,27 @@ const graphInstanceReducer = (
     }
 };
 
-export const GraphInstanceProvider = ({
+export const CanvasInstanceProvider = ({
     children,
     initialState,
 }: {
     children: ReactNode;
-    initialState?: GraphInstanceState;
+    initialState?: CanvasInstanceState;
 }) => {
     const [state, dispatch] = useReducer(
-        graphInstanceReducer,
+        canvasInstanceReducer,
         initialState ?? { nodes: {} },
     );
 
     return (
-        <GraphInstanceContext.Provider value={{ state, dispatch }}>
+        <CanvasInstanceContext.Provider value={{ state, dispatch }}>
             {children}
-        </GraphInstanceContext.Provider>
+        </CanvasInstanceContext.Provider>
     );
 };
 
-export const useGraphInstanceContext = () => {
-    const context = useContext(GraphInstanceContext);
+export const useCanvasInstanceContext = () => {
+    const context = useContext(CanvasInstanceContext);
     if (!context) throw new Error('GraphInstanceContext: context is undefined');
 
     return context;

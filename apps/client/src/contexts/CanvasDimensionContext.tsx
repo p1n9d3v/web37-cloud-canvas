@@ -1,16 +1,15 @@
 import { Dimension } from '@types';
 import { createContext, ReactNode, useContext, useState } from 'react';
 
-type GraphDimensionContextType = {
+type CanvasDimensionContextProps = {
     dimension: Dimension;
     toggleDimension: () => void;
 };
 
-const GraphDimensionContext = createContext<GraphDimensionContextType | null>(
-    null,
-);
+const CanvasDimensionContext =
+    createContext<CanvasDimensionContextProps | null>(null);
 
-export const GraphDimensionProvider = ({
+export const CanvasDimensionProvider = ({
     children,
 }: {
     children: ReactNode;
@@ -22,14 +21,14 @@ export const GraphDimensionProvider = ({
     };
 
     return (
-        <GraphDimensionContext.Provider value={{ dimension, toggleDimension }}>
+        <CanvasDimensionContext.Provider value={{ dimension, toggleDimension }}>
             {children}
-        </GraphDimensionContext.Provider>
+        </CanvasDimensionContext.Provider>
     );
 };
 
-export const useGraphDimensionContext = () => {
-    const context = useContext(GraphDimensionContext);
+export const useCanvasDimensionContext = () => {
+    const context = useContext(CanvasDimensionContext);
     if (!context) throw new Error('DimensionContext: context is undefined');
 
     return context;

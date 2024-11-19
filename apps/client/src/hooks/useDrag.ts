@@ -1,4 +1,4 @@
-import { useGraphCanvasContext } from '@contexts/GraphCanvasContext';
+import { useCanvasContext } from '@contexts/CanvasContext';
 import { Point } from '@types';
 import { getSvgPoint } from '@utils';
 import { useRef, useState } from 'react';
@@ -7,7 +7,7 @@ type Props = {
     updateFn: (dragOffset: Point) => void;
 };
 export default ({ updateFn }: Props) => {
-    const { canvas } = useGraphCanvasContext();
+    const { canvas } = useCanvasContext();
     const [isDragging, setIsDragging] = useState(false);
     const [startDragPoint, setStartDragPoint] = useState<Point | null>(null);
     const [dragOffset, setDragOffset] = useState<Point>({ x: 0, y: 0 });

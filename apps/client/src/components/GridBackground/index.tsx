@@ -1,11 +1,11 @@
-import { useGraphCanvasContext } from '@contexts/GraphCanvasContext';
-import { useGraphDimensionContext } from '@contexts/GraphDimensionContext';
+import { useCanvasContext } from '@contexts/CanvasContext';
 import GridPatternMajor from './patterns/GridPatternMajor';
 import GridPatternMinor from './patterns/GridPatternMinor';
+import { useCanvasDimensionContext } from '@contexts/CanvasDimensionContext';
 
 export default () => {
-    const { dimension } = useGraphDimensionContext();
-    const { viewBox } = useGraphCanvasContext();
+    const { dimension } = useCanvasDimensionContext();
+    const { viewBox } = useCanvasContext();
     const { x, y, width, height } = viewBox;
 
     const points = [

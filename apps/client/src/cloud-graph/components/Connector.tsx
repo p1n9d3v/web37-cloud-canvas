@@ -1,5 +1,5 @@
 import { useTheme } from '@mui/material';
-import { Point } from '@cloudflow/types';
+import { Point } from '@cloud-graph/types';
 
 type Props = {
     from: Point;

@@ -1,8 +1,11 @@
 name: Check Open PRs and Notify Slack
+
 on:
   schedule:
-    - cron: '0 * * * *'  # 매 1시간마다 실행
-  workflow_dispatch:     # 수동 실행을 위한 트리거
+    # 매 1시간마다 실행
+    - cron: '0 * * * *'
+
+  workflow_dispatch: # 수동 실행을 위한 트리거
     inputs:
       force_notify:
         description: "Force Slack notification"
@@ -12,49 +15,59 @@ on:
 jobs:
   notify_open_prs:
     runs-on: ubuntu-latest
+
     steps:
+    # 1. GitHub 리포지토리 체크아웃
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    # 2. PR 데이터 수집
     - name: Fetch Open PRs with Reviewers
       id: fetch_prs
       run: |
-        # 더 자세한 PR 정보를 포함하여 가져오기
+        # 모든 열린 PR 가져오기
         prs=$(gh pr list --json number,title,url,reviewRequests,author,createdAt,body,additions,deletions,changedFiles --jq '.[] | select(.reviewRequests | length > 0)')
-        echo "prs=$prs" >> $GITHUB_OUTPUT
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        echo "prs=$prs"  # 디버깅: PR 데이터 출력
+        echo "prs=$prs" >> $GITHUB_OUTPUT  # GITHUB_OUTPUT에 PR 데이터 저장
 
-    - name: Notify Slack
-      if: steps.fetch_prs.outputs.prs != ''
       env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub 기본 제공 토큰
+
+    # 3. Slack 알림 전송
+    - name: Notify Slack
+      if: steps.fetch_prs.outputs.prs != '' # 열린 PR이 있을 때만 실행
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # Slack 웹훅 URL
       run: |
         echo "Preparing Slack notification..."
-        prs_json='${{ steps.fetch_prs.outputs.prs }}'
-        
+        prs_json="${{ steps.fetch_prs.outputs.prs }}"  # fetch_prs에서 출력된 데이터 사용
+
+        # PR 데이터가 비어 있는지 확인
         if [ -z "$prs_json" ]; then
           echo "No PRs to notify about."
           exit 0
         fi
-        
-        # Slack 메시지 헤더
+
+        # Slack 메시지 작성
         message=":rotating_light: *Review가 필요한 Pull Requests 목록*\n\n"
         
-        # 각 PR에 대한 상세 정보 추가
-        echo $prs_json | jq -r '.[] | "🔹 *<\(.url)|\(.title)>*\n" + 
-          "   • 작성자: \(.author.login)\n" +
-          "   • 생성일: \(.createdAt | fromdate | strftime("%Y-%m-%d %H:%M"))\n" +
-          "   • 변경사항: +\(.additions) -\(.deletions) (\(.changedFiles)개 파일)\n" +
-          "   • 리뷰어: \(.reviewRequests | map(.login) | join(", "))\n" +
-          if .body then "   • 설명: \(.body | split("\n")[0] | if length > 100 then (.[0:100] + "...") else . end)\n" else "" end +
-          "\n"' | while read -r line; do
-          message+="$line"
+        # PR 데이터 파싱
+        echo "$prs_json" | jq -r '.[] | 
+          "🔹 *<\(.url)|\(.title)>*\n" + 
+          " • 작성자: \(.author.login)\n" + 
+          " • 생성일: \(.createdAt | fromdate | strftime("%Y-%m-%d %H:%M"))\n" + 
+          " • 변경사항: +\(.additions) -\(.deletions) (\(.changedFiles)개 파일)\n" + 
+          " • 리뷰어: \(.reviewRequests | map(.login) | join(", "))\n" + 
+          if .body then " • 설명: \(.body | split("\n")[0] | if length > 100 then (.[0:100] + "...") else . end)\n" else "" end + "\n"' | while read -r line; do
+            message+="$line"
         done
-        
-        # 메시지 푸터 추가
+
+        # Slack 메시지 푸터 추가
         message+="\n:point_right: 리뷰를 부탁드립니다!"
         
+        # Slack 메시지 확인 (디버깅)
+        echo "Message to Slack: $message"
+
         # Slack 메시지 전송
         curl -X POST \
           -H 'Content-type: application/json' \

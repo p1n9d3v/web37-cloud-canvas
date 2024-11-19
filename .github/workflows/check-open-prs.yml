@@ -22,45 +22,42 @@ jobs:
     # 2. PR 데이터 수집
     - name: Fetch Open PRs with Reviewers
       id: fetch_prs
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        echo "Fetching open PRs with reviewers..."
-        # gh CLI를 사용해 PR 목록 가져오기
+        # 모든 열린 PR 가져오기
         prs=$(gh pr list --json number,title,url,reviewRequests --jq '.[] | select(.reviewRequests | length > 0)')
-        
-        if [ -z "$prs" ]; then
-          echo "No PRs with reviewers found."
-          echo "prs_output=" > $GITHUB_ENV
-          exit 0
-        fi
-
         echo "Found PRs: $prs"
-        echo "prs_output=$prs" >> $GITHUB_ENV
+
+        # JSON 데이터를 Action output으로 저장
+        echo "::set-output name=prs::$prs"
+
+      env:
+        GITHUB_TOKEN: ${{ secrets.G_TOKEN }} # GitHub 기본 제공 토큰
 
     # 3. Slack 알림 전송
     - name: Notify Slack
-      if: env.PRS_OUTPUT != ''
+      if: steps.fetch_prs.outputs.prs != '' # 열린 PR이 있을 때만 실행
       env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        PRS_OUTPUT: ${{ env.PRS_OUTPUT }}
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # Slack 웹훅 URL
       run: |
         echo "Preparing Slack notification..."
-        
-        if [ -z "$PRS_OUTPUT" ]; then
+        prs_json='${{ steps.fetch_prs.outputs.prs }}'
+
+        # prs_json 값 확인
+        echo "Debug: prs_json = $prs_json"
+
+        if [ -z "$prs_json" ]; then
           echo "No PRs to notify about."
           exit 0
         fi
 
         # Slack 메시지 작성
         message=":warning: *Open Pull Requests with Reviewers:*"
-        
-        echo "$PRS_OUTPUT" | jq -c '.' | while read -r pr; do
-          title=$(echo $pr | jq -r '.title')
-          url=$(echo $pr | jq -r '.url')
-          reviewers=$(echo $pr | jq -r '.reviewRequests | map(.login) | join(", ")')
-          message+="\n- <$url|$title> (Reviewers: $reviewers)"
+        echo $prs_json | jq -r '.[] | "- <\(.url)|\(.title)> (Reviewers: \(.reviewRequests | map(.login) | join(", ")))"' | while read -r line; do
+          message+="$line"
         done
 
+        # Slack 메시지 확인
+        echo "Debug: message = $message"
+
         # Slack 메시지 전송
-        curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"$message\"}" $SLACK_WEBHOOK_URL
+        curl -v -X POST -H 'Content-type: application/json' --data "{\"text\":\"$message\"}" $SLACK_WEBHOOK_URL

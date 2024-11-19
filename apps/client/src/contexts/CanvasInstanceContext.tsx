@@ -1,4 +1,4 @@
-import { Node } from '@types';
+import { Node, Point } from '@types';
 import {
     createContext,
     Dispatch,
@@ -18,6 +18,7 @@ type CanvasInstanceAction = {
 
 type CanvasInstanceContextProps = {
     state: CanvasInstanceState;
+    dragNode: (id: string, point: Point) => void;
     dispatch: Dispatch<CanvasInstanceAction>;
 };
 
@@ -59,8 +60,22 @@ export const CanvasInstanceProvider = ({
         initialState ?? { nodes: {} },
     );
 
+    const dragNode = (id: string, offset: Point) => {
+        const { point } = state.nodes[id];
+        dispatch({
+            type: 'UPDATE_NODE',
+            payload: {
+                id,
+                point: {
+                    x: point.x + offset.x,
+                    y: point.y + offset.y,
+                },
+            },
+        });
+    };
+
     return (
-        <CanvasInstanceContext.Provider value={{ state, dispatch }}>
+        <CanvasInstanceContext.Provider value={{ state, dispatch, dragNode }}>
             {children}
         </CanvasInstanceContext.Provider>
     );

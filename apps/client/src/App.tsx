@@ -1,15 +1,9 @@
-import Graph from '@components/Graph';
-import GridBackground from '@components/GridBackground';
+import CloudCanvas from '@/src/CloudCanvas';
 import Header from '@components/Header';
-import Node from '@components/Node';
 import Sidebar from '@components/Sidebar';
-import { useCanvasInstanceContext } from '@contexts/CanvasInstanceContext';
 import Box from '@mui/material/Box';
 
 function App() {
-    const {
-        state: { nodes },
-    } = useCanvasInstanceContext();
     return (
         <Box
             sx={{
@@ -27,12 +21,7 @@ function App() {
                 }}
             >
                 <Header />
-                <Graph>
-                    <GridBackground />
-                    {Object.values(nodes).map((node) => (
-                        <Node node={node} />
-                    ))}
-                </Graph>
+                <CloudCanvas />
             </Box>
         </Box>
     );

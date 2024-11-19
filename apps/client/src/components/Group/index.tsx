@@ -1,45 +1,33 @@
-import CloudFunctionNode from '@components/Node/ncloud/CloudFunctionNode';
-import DBMySQLNode from '@components/Node/ncloud/DBMySQLNode';
-import ObjectStorageNode from '@components/Node/ncloud/ObjectStorageNode';
-import ServerNode from '@components/Node/ncloud/ServerNode';
+import RegionGroup from '@components/Group/ncloud/RegionGroup';
 import { useCanvasInstanceContext } from '@contexts/CanvasInstanceContext/index';
 import useDrag from '@hooks/useDrag';
-import { Node, Point } from '@types';
+import { Group } from '@types';
 import { useEffect } from 'react';
 
-const nodeFactory = (type: Node['type']) => {
-    switch (type) {
-        case 'server':
-            return <ServerNode />;
-        case 'cloud-function':
-            return <CloudFunctionNode />;
-        case 'object-storage':
-            return <ObjectStorageNode />;
-        case 'db-mysql':
-            return <DBMySQLNode />;
-        // case 'pointer':
-        //     return <PointerNode />;
-        default:
-            null;
+const GroupFacctory = (group: Group) => {
+    switch (group.type) {
+        case 'region':
+            return <RegionGroup {...group} />;
     }
 };
+
 type Props = {
-    id: string;
-    type: string;
-    point: Point;
+    group: Group;
 };
-export default ({ id, point, type }: Props) => {
+
+export default ({ group }: Props) => {
+    const { id, bounds, type } = group;
     const { dispatch } = useCanvasInstanceContext();
     const { isDragging, startDrag, moveDrag, stopDrag } = useDrag({
-        initialPoint: point,
+        initialPoint: { x: bounds.x, y: bounds.y },
         updateFn: (offset) =>
             dispatch({
-                type: 'MOVE_NODE',
+                type: 'MOVE_GROUP',
                 payload: {
                     id,
                     point: {
-                        x: point.x + offset.x,
-                        y: point.y + offset.y,
+                        x: bounds.x + offset.x,
+                        y: bounds.y + offset.y,
                     },
                 },
             }),
@@ -76,10 +64,10 @@ export default ({ id, point, type }: Props) => {
     return (
         <g
             id={id}
-            transform={`translate(${point.x}, ${point.y})`}
+            transform={`translate(${bounds.x} ${bounds.y})`}
             onMouseDown={handleMouseDown}
         >
-            {nodeFactory(type)}
+            {GroupFacctory(group)}
         </g>
     );
 };

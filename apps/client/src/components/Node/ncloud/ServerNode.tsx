@@ -1,11 +1,6 @@
 import { useCanvasDimensionContext } from '@contexts/CanvasDimensionContext';
-import { Node } from '@types';
 
-type Props = {
-    node: Node;
-};
-
-const Node3D = ({ node }: Props) => {
+const Node3D = () => {
     return (
         <>
             <svg
@@ -56,7 +51,7 @@ const Node3D = ({ node }: Props) => {
     );
 };
 
-const Node2D = ({ node }: Props) => {
+const Node2D = () => {
     return (
         <>
             <svg width="90" height="90">
@@ -92,7 +87,7 @@ const Node2D = ({ node }: Props) => {
     );
 };
 
-export default ({ node }: Props) => {
+export default () => {
     const { dimension } = useCanvasDimensionContext();
-    return dimension === '2d' ? <Node2D node={node} /> : <Node3D node={node} />;
+    return dimension === '2d' ? <Node2D /> : <Node3D />;
 };

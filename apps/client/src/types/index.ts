@@ -1,10 +1,13 @@
 export type Dimension = '2d' | '3d';
-export type ViewBox = {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-};
+
+export type Point = { x: number; y: number };
+
+export type Size = { width: number; height: number };
+
+export type ViewBox = Point & Size;
+
+export type Bounds = Point & Size;
+
 export type Node = {
     id: string;
     type: string;
@@ -16,6 +19,7 @@ export type Node = {
     };
     properties: { [key: string]: any };
     connectors: { x: number; y: number }[];
+    groupIds: string[];
 };
 
 export type Edge = {
@@ -29,13 +33,12 @@ export type Group = {
     id: string;
     type: string;
     name: string;
-    nodes: string[];
-    groups: string[];
-    bounds: { x: number; y: number; width: number; height: number };
+    nodeIds: string[];
+    bounds: Bounds;
     properties: { [key: string]: any };
+    // groupIds: string[];
+    // parentGroupId?: string;
 };
-
-export type Point = { x: number; y: number };
 
 // export type Group = {
 //   id: string;

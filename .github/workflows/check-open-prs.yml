@@ -26,11 +26,10 @@ jobs:
       id: fetch_prs
       run: |
         # 모든 열린 PR 가져오기
-        prs=$(gh pr list --json number,title,url,reviewRequests --jq '.[] | select(.reviewRequests | length > 0)')
+        prs=$(gh pr list --json number,title,url,reviewRequests --jq '.[0]')
         
         # PR 데이터 출력 (디버깅용)
         echo "Found PRs: $prs"
-
         # GITHUB_OUTPUT에 PR 데이터를 저장
         echo "prs=$prs" >> $GITHUB_OUTPUT
 
@@ -55,19 +54,23 @@ jobs:
         # Slack 메시지 작성
         message=":rotating_light: *Review가 필요한 Pull Requests 목록*\n\n"
         
-        # PR 제목만 Slack 메시지에 추가
-        echo $prs_json | jq -r '.[] | "🔹 *<\(.url)|\(.title)>*\n" + 
-          "   • 작성자: \(.author.login)\n" +
-          "   • 생성일: \(.createdAt | fromdate | strftime("%Y-%m-%d %H:%M"))\n" +
-          "   • 변경사항: +\(.additions) -\(.deletions) (\(.changedFiles)개 파일)\n" +
-          "   • 리뷰어: \(.reviewRequests | map(.login) | join(", "))\n" +
-          if .body then "   • 설명: \(.body | split("\n")[0] | if length > 100 then (.[0:100] + "...") else . end)\n" else "" end +
-          "\n"' | while read -r line; do
+        # PR 데이터 파싱 및 메시지 작성
+        echo "$prs_json" | jq -r '"🔹 *<\(.url)|\(.title)>*\n" + 
+          "   • 리뷰어: \(.reviewRequests[].login | join(", "))\n\n"' | while read -r line; do
           message+="$line"
         done
-
+        
         # Slack 메시지 푸터 추가
-        message+=$'\n\n'" :point_right: 리뷰를 부탁드립니다!"
+        message+=$'\n\n':point_right: 리뷰를 부탁드립니다!"
+        
+        # Slack 메시지 확인 (디버깅)
+        echo "Message to Slack: $message"
+        
+        # Slack 메시지 전송
+        curl -X POST \
+          -H 'Content-type: application/json' \
+          --data "{\"text\":\"$message\", \"mrkdwn\": true}" \
+          "$SLACK_WEBHOOK_URL"
 
         # Slack 메시지 확인 (디버깅)
         echo "Message to Slack: $message"

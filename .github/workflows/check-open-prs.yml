@@ -56,13 +56,9 @@ jobs:
         message=":rotating_light: *Review가 필요한 Pull Requests 목록*\n\n"
         
         # PR 제목만 Slack 메시지에 추가
-        for pr in $(echo "$prs_json" | tr -d '[]' | tr -d '{}'); do
-          # PR에서 제목만 추출
-          title=$(echo "$pr" | grep -oP '"title":\s*"\K[^"]+')
-          url=$(echo "$pr" | grep -oP '"url":\s*"\K[^"]+')
-
-          # 메시지에 추가 (message에 한 줄씩 추가)
-          message+=$'\n'"🔹 *<$url|$title>*"
+        echo "$prs_json" | jq -r '.[] | "\(.title) - <\(.url)|Go to PR>"' | while read -r pr; do
+          # 메시지에 추가 (각 PR을 한 줄씩 추가)
+          message+=$'\n'"🔹 $pr"
         done
 
         # Slack 메시지 푸터 추가
@@ -76,4 +72,5 @@ jobs:
           -H 'Content-type: application/json' \
           --data "{\"text\":\"$message\", \"mrkdwn\": true}" \
           $SLACK_WEBHOOK_URL
+
 

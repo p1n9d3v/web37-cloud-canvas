@@ -61,12 +61,12 @@ jobs:
           title=$(echo "$pr" | grep -oP '"title":\s*"\K[^"]+')
           url=$(echo "$pr" | grep -oP '"url":\s*"\K[^"]+')
 
-          # 메시지에 추가
-          message+="🔹 *<$url|$title>*\n"
+          # 메시지에 추가 (message에 한 줄씩 추가)
+          message+=$'\n'"🔹 *<$url|$title>*"
         done
 
         # Slack 메시지 푸터 추가
-        message+="\n:point_right: 리뷰를 부탁드립니다!"
+        message+=$'\n\n'" :point_right: 리뷰를 부탁드립니다!"
 
         # Slack 메시지 확인 (디버깅)
         echo "Message to Slack: $message"
@@ -76,3 +76,4 @@ jobs:
           -H 'Content-type: application/json' \
           --data "{\"text\":\"$message\", \"mrkdwn\": true}" \
           $SLACK_WEBHOOK_URL
+

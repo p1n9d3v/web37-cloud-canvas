@@ -15,7 +15,7 @@ export class VserverApi {
      * @see {@link }
      */
     async getRegionList(
-        params: GetRegionListRequest
+        params: GetRegionListRequest,
     ): Promise<GetRegionListResponse> {
         return await this.client.request({
             method: 'GET',
@@ -29,7 +29,7 @@ export class VserverApi {
      * @see {@link }
      */
     async getZoneList(
-        params: GetZoneListRequest
+        params: GetZoneListRequest,
     ): Promise<GetZoneListResponse> {
         return await this.client.request({
             method: 'GET',
@@ -43,7 +43,7 @@ export class VserverApi {
      * @see {@link }
      */
     async getServerImageProductList(
-        params: GetServerImageProductListRequest
+        params: GetServerImageProductListRequest,
     ): Promise<GetServerImageProductListResponse> {
         return await this.client.request({
             method: 'GET',
@@ -57,7 +57,7 @@ export class VserverApi {
      * @see {@link }
      */
     async getServerProductList(
-        params: GetServerProductListRequest
+        params: GetServerProductListRequest,
     ): Promise<GetServerProductListResponse> {
         return await this.client.request({
             method: 'GET',
@@ -71,7 +71,7 @@ export class VserverApi {
      * @see {@link }
      */
     async getServerSpecList(
-        params: GetServerSpecListRequest
+        params: GetServerSpecListRequest,
     ): Promise<GetServerSpecListResponse> {
         return await this.client.request({
             method: 'GET',
@@ -85,7 +85,7 @@ export class VserverApi {
      * @see {@link }
      */
     async getServerSpecDetail(
-        params: GetServerSpecDetailRequest
+        params: GetServerSpecDetailRequest,
     ): Promise<GetServerSpecDetailResponse> {
         return await this.client.request({
             method: 'GET',
@@ -99,7 +99,7 @@ export class VserverApi {
      * @see {@link }
      */
     async getHypervisorTypeList(
-        params: GetHypervisorTypeListRequest
+        params: GetHypervisorTypeListRequest,
     ): Promise<GetHypervisorTypeListResponse> {
         return await this.client.request({
             method: 'GET',
@@ -113,7 +113,7 @@ export class VserverApi {
      * @see {@link }
      */
     async getRaidList(
-        params: GetRaidListRequest
+        params: GetRaidListRequest,
     ): Promise<GetRaidListResponse> {
         return await this.client.request({
             method: 'GET',
@@ -130,7 +130,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-loginkey-getloginkeylist}
      */
     async getLoginKeyList(
-        params: GetLoginKeyListRequest
+        params: GetLoginKeyListRequest,
     ): Promise<GetLoginKeyListResponse> {
         return await this.client.request({
             method: 'GET',
@@ -146,7 +146,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-loginkey-createloginkey}
      */
     async createLoginKey(
-        params: CreateLoginKeyRequest
+        params: CreateLoginKeyRequest,
     ): Promise<CreateLoginKeyResponse> {
         return await this.client.request({
             method: 'GET',
@@ -162,7 +162,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-loginkey-deleteloginkeys}
      */
     async deleteLoginKeys(
-        params: DeleteLoginKeysRequest
+        params: DeleteLoginKeysRequest,
     ): Promise<DeleteLoginKeysResponse> {
         return await this.client.request({
             method: 'GET',
@@ -179,7 +179,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-loginkey-importloginkey}
      */
     async importLoginKey(
-        params: ImportLoginKeyRequest
+        params: ImportLoginKeyRequest,
     ): Promise<ImportLoginKeyResponse> {
         return await this.client.request({
             method: 'GET',
@@ -196,7 +196,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-placementgroup-getplacementgrouplist}
      */
     async getPlacementGroupList(
-        params: GetPlacementGroupListRequest
+        params: GetPlacementGroupListRequest,
     ): Promise<GetPlacementGroupListResponse> {
         return await this.client.request({
             method: 'GET',
@@ -212,7 +212,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-placementgroup-getplacementgroupdetail}
      */
     async getPlacementGroupDetail(
-        params: GetPlacementGroupDetailRequest
+        params: GetPlacementGroupDetailRequest,
     ): Promise<GetPlacementGroupDetailResponse> {
         return await this.client.request({
             method: 'GET',
@@ -228,7 +228,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-placementgroup-createplacementgroup}
      */
     async createPlacementGroup(
-        params: CreatePlacementGroupRequest
+        params: CreatePlacementGroupRequest,
     ): Promise<CreatePlacementGroupResponse> {
         return await this.client.request({
             method: 'GET',
@@ -244,7 +244,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-placementgroup-deleteplacementgroup}
      */
     async deletePlacementGroup(
-        params: DeletePlacementGroupRequest
+        params: DeletePlacementGroupRequest,
     ): Promise<DeletePlacementGroupResponse> {
         return await this.client.request({
             method: 'GET',
@@ -260,7 +260,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-placementgroup-addplacementgroupserverinstance}
      */
     async addPlacementGroupServerInstance(
-        params: AddPlacementGroupServerInstanceRequest
+        params: AddPlacementGroupServerInstanceRequest,
     ): Promise<AddPlacementGroupServerInstanceResponse> {
         return await this.client.request({
             method: 'GET',
@@ -276,7 +276,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-placementgroup-removeplacementgroupserverinstance}
      */
     async removePlacementGroupServerInstance(
-        params: RemovePlacementGroupServerInstanceRequest
+        params: RemovePlacementGroupServerInstanceRequest,
     ): Promise<RemovePlacementGroupServerInstanceResponse> {
         return await this.client.request({
             method: 'GET',
@@ -293,7 +293,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-getserverinstancelist}
      */
     async getServerInstanceList(
-        params: GetServerInstanceListRequest
+        params: GetServerInstanceListRequest,
     ): Promise<GetServerInstanceListResponse> {
         return await this.client.request({
             method: 'GET',
@@ -309,7 +309,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-getserverinstancedetail}
      */
     async getServerInstanceDetail(
-        params: GetServerInstanceDetailRequest
+        params: GetServerInstanceDetailRequest,
     ): Promise<GetServerInstanceDetailResponse> {
         return await this.client.request({
             method: 'GET',
@@ -325,7 +325,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-createserverinstances}
      */
     async createServerInstances(
-        params: CreateServerInstancesRequest
+        params: CreateServerInstancesRequest,
     ): Promise<CreateServerInstancesResponse> {
         return await this.client.request({
             method: 'GET',
@@ -341,7 +341,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-startserverinstances}
      */
     async startServerInstances(
-        params: StartServerInstancesRequest
+        params: StartServerInstancesRequest,
     ): Promise<StartServerInstancesResponse> {
         return await this.client.request({
             method: 'GET',
@@ -357,7 +357,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-stopserverinstances}
      */
     async stopServerInstances(
-        params: StopServerInstancesRequest
+        params: StopServerInstancesRequest,
     ): Promise<StopServerInstancesResponse> {
         return await this.client.request({
             method: 'GET',
@@ -373,7 +373,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-rebootserverinstances}
      */
     async rebootServerInstances(
-        params: RebootServerInstancesRequest
+        params: RebootServerInstancesRequest,
     ): Promise<RebootServerInstancesResponse> {
         return await this.client.request({
             method: 'GET',
@@ -389,7 +389,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-terminateserverinstances}
      */
     async terminateServerInstances(
-        params: TerminateServerInstancesRequest
+        params: TerminateServerInstancesRequest,
     ): Promise<TerminateServerInstancesResponse> {
         return await this.client.request({
             method: 'GET',
@@ -405,7 +405,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-changeserverinstancespec}
      */
     async changeServerInstanceSpec(
-        params: ChangeServerInstanceSpecRequest
+        params: ChangeServerInstanceSpecRequest,
     ): Promise<ChangeServerInstanceSpecResponse> {
         return await this.client.request({
             method: 'GET',
@@ -422,7 +422,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-getrootpassword}
      */
     async getRootPassword(
-        params: GetRootPasswordRequest
+        params: GetRootPasswordRequest,
     ): Promise<GetRootPasswordResponse> {
         return await this.client.request({
             method: 'GET',
@@ -439,7 +439,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-getrootpasswordserverinstancelist}
      */
     async getRootPasswordServerInstanceList(
-        params: GetRootPasswordServerInstanceList
+        params: GetRootPasswordServerInstanceList,
     ): Promise<GetRootPasswordServerInstanceListResponse> {
         return await this.client.request({
             method: 'GET',
@@ -455,7 +455,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-setprotectservertermination}
      */
     async setProtectServerTermination(
-        params: SetProtectServerTerminationRequest
+        params: SetProtectServerTerminationRequest,
     ): Promise<SetProtectServerTerminationResponse> {
         return await this.client.request({
             method: 'GET',
@@ -472,7 +472,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-server-interruptserverinstance}
      */
     async interruptServerInstance(
-        params: InterruptServerInstanceRequest
+        params: InterruptServerInstanceRequest,
     ): Promise<InterruptServerInstanceResponse> {
         return await this.client.request({
             method: 'GET',
@@ -489,7 +489,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-serverimage-removeserveimagesharingpermission}
      */
     async removeServerImageSharingPermission(
-        params: RemoveServerImageSharingPermissionRequest
+        params: RemoveServerImageSharingPermissionRequest,
     ): Promise<RemoveServerImageSharingPermissionResponse> {
         return await this.client.request({
             method: 'GET',
@@ -505,7 +505,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-serverimage-addserverimagesharingpermission}
      */
     async addServerImageSharingPermission(
-        params: AddServerImageSharingPermissionRequest
+        params: AddServerImageSharingPermissionRequest,
     ): Promise<AddServerImageSharingPermissionResponse> {
         return await this.client.request({
             method: 'GET',
@@ -521,7 +521,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-serverimage-getserverimagelist}
      */
     async getServerImageList(
-        params: GetServerImageListRequest
+        params: GetServerImageListRequest,
     ): Promise<GetServerImageListResponse> {
         return await this.client.request({
             method: 'GET',
@@ -537,7 +537,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-serverimage-getserverimagedetail}
      */
     async getServerImageDetail(
-        params: GetServerImageDetailRequest
+        params: GetServerImageDetailRequest,
     ): Promise<GetServerImageDetailResponse> {
         return await this.client.request({
             method: 'GET',
@@ -553,7 +553,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/createserverimagefromsnapshot}
      */
     async createServerImageFromSnapshot(
-        params: CreateServerImageFromSnapshotRequest
+        params: CreateServerImageFromSnapshotRequest,
     ): Promise<CreateServerImageFromSnapshotResponse> {
         return await this.client.request({
             method: 'GET',
@@ -569,7 +569,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/createserverimage}
      */
     async createServerImage(
-        params: CreateServerImageRequest
+        params: CreateServerImageRequest,
     ): Promise<CreateServerImageResponse> {
         return await this.client.request({
             method: 'GET',
@@ -585,7 +585,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/deleteserverimage}
      */
     async deleteServerImage(
-        params: DeleteServerImageRequest
+        params: DeleteServerImageRequest,
     ): Promise<DeleteServerImageResponse> {
         return await this.client.request({
             method: 'GET',
@@ -602,7 +602,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-serverimage-getmemberserverimageinstancelist}
      */
     async getMemberServerImageInstanceList(
-        params: GetMemberServerImageInstanceListRequest
+        params: GetMemberServerImageInstanceListRequest,
     ): Promise<GetMemberServerImageInstanceListResponse> {
         return await this.client.request({
             method: 'GET',
@@ -619,7 +619,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-serverimage-getmemberserverimageinstancedetail}
      */
     async getMemberServerImageInstanceDetail(
-        params: GetMemberServerImageInstanceDetailRequest
+        params: GetMemberServerImageInstanceDetailRequest,
     ): Promise<GetMemberServerImageInstanceDetailResponse> {
         return await this.client.request({
             method: 'GET',
@@ -636,7 +636,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-serverimage-creatememberserverimageinstance}
      */
     async createMemberServerImageInstance(
-        params: CreateMemberServerImageInstanceRequest
+        params: CreateMemberServerImageInstanceRequest,
     ): Promise<CreateMemberServerImageInstanceResponse> {
         return await this.client.request({
             method: 'GET',
@@ -653,7 +653,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-serverimage-deletememberserverimageinstances}
      */
     async deleteMemberServerImageInstances(
-        params: DeleteMemberServerImageInstancesRequest
+        params: DeleteMemberServerImageInstancesRequest,
     ): Promise<DeleteMemberServerImageInstancesResponse> {
         return await this.client.request({
             method: 'GET',
@@ -669,7 +669,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-serverimage-setmemberserverimagesharingpermission}
      */
     async setMemberServerImageSharingPermission(
-        params: SetMemberServerImageSharingPermissionRequest
+        params: SetMemberServerImageSharingPermissionRequest,
     ): Promise<SetMemberServerImageSharingPermissionResponse> {
         return await this.client.request({
             method: 'GET',
@@ -686,7 +686,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-serverimage-addmemberserverimagesharingpermission}
      */
     async addMemberServerImageSharingPermission(
-        params: AddMemberServerImageSharingPermissionRequest
+        params: AddMemberServerImageSharingPermissionRequest,
     ): Promise<AddMemberServerImageSharingPermissionResponse> {
         return await this.client.request({
             method: 'GET',
@@ -703,7 +703,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-serverimage-removememberserverimagesharingpermission}
      */
     async removeMemberServerImageSharingPermission(
-        params: RemoveMemberServerImageSharingPermissionRequest
+        params: RemoveMemberServerImageSharingPermissionRequest,
     ): Promise<RemoveMemberServerImageSharingPermissionResponse> {
         return await this.client.request({
             method: 'GET',
@@ -720,7 +720,7 @@ export class VserverApi {
      * @returns {Promise<GetBlockStorageInstanceListResponse>} 블록 스토리지 인스턴스 리스트 조회 결과
      */
     async getBlockStorageInstanceList(
-        params: GetBlockStorageInstanceListRequest
+        params: GetBlockStorageInstanceListRequest,
     ): Promise<GetBlockStorageInstanceListResponse> {
         return await this.client.request({
             method: 'GET',
@@ -736,7 +736,7 @@ export class VserverApi {
      * @returns {Promise<GetBlockStorageInstanceDetailResponse>} 블록 스토리지 인스턴스 상세 정보 조회 결과
      */
     async getBlockStorageInstanceDetail(
-        params: GetBlockStorageInstanceDetailRequest
+        params: GetBlockStorageInstanceDetailRequest,
     ): Promise<GetBlockStorageInstanceDetailResponse> {
         return await this.client.request({
             method: 'GET',
@@ -752,7 +752,7 @@ export class VserverApi {
      * @returns {Promise<GetBlockStorageVolumeTypeListResponse>} 블록 스토리지 볼륨타입 리스트 조회 결과
      */
     async getBlockStorageVolumeTypeList(
-        params: GetBlockStorageVolumeTypeListRequest
+        params: GetBlockStorageVolumeTypeListRequest,
     ): Promise<GetBlockStorageVolumeTypeListResponse> {
         return await this.client.request({
             method: 'GET',
@@ -766,7 +766,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-storage-createblockstorageinstance}
      */
     async createBlockStorageInstance(
-        params: CreateBlockStorageInstanceRequest
+        params: CreateBlockStorageInstanceRequest,
     ): Promise<BlockStorageInstanceResponse> {
         return await this.client.request({
             method: 'GET',
@@ -780,7 +780,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-storage-changeblockstoragevolumesize}
      */
     async changeBlockStorageVolumeSize(
-        params: ChangeBlockStorageVolumeSizeRequest
+        params: ChangeBlockStorageVolumeSizeRequest,
     ): Promise<BlockStorageInstanceResponse> {
         return await this.client.request({
             method: 'GET',
@@ -794,7 +794,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-storage-changeblockstorageinstance}
      */
     async changeBlockStorageInstance(
-        params: ChangeBlockStorageInstanceRequest
+        params: ChangeBlockStorageInstanceRequest,
     ): Promise<BlockStorageInstanceResponse> {
         return await this.client.request({
             method: 'GET',
@@ -810,7 +810,7 @@ export class VserverApi {
      * @returns {Promise<DeleteBlockStorageInstancesResponse>} 블록 스토리지 인스턴스 리스트 삭제 결과
      */
     async deleteBlockStorageInstances(
-        params: DeleteBlockStorageInstancesRequest
+        params: DeleteBlockStorageInstancesRequest,
     ): Promise<DeleteBlockStorageInstancesResponse> {
         return await this.client.request({
             method: 'GET',
@@ -826,7 +826,7 @@ export class VserverApi {
      * @returns {Promise<AttachBlockStorageInstanceResponse>} 블록 스토리지 인스턴스 할당 결과
      */
     async attachBlockStorageInstance(
-        params: AttachBlockStorageInstanceRequest
+        params: AttachBlockStorageInstanceRequest,
     ): Promise<AttachBlockStorageInstanceResponse> {
         return await this.client.request({
             method: 'GET',
@@ -842,7 +842,7 @@ export class VserverApi {
      * @returns {Promise<DetachBlockStorageInstancesResponse>} 블록 스토리지 인스턴스 리스트 할당 해제 결과
      */
     async detachBlockStorageInstances(
-        params: DetachBlockStorageInstancesRequest
+        params: DetachBlockStorageInstancesRequest,
     ): Promise<DetachBlockStorageInstancesResponse> {
         return await this.client.request({
             method: 'GET',
@@ -858,7 +858,7 @@ export class VserverApi {
      * @returns {Promise<SetBlockStorageReturnProtectionResponse>} 블록 스토리지 반납 보호 여부 설정 결과
      */
     async setBlockStorageReturnProtection(
-        params: SetBlockStorageReturnProtectionRequest
+        params: SetBlockStorageReturnProtectionRequest,
     ): Promise<SetBlockStorageReturnProtectionResponse> {
         return await this.client.request({
             method: 'GET',
@@ -873,7 +873,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-snapshot-getblockstoragesnapshotinstancelist}
      */
     async getBlockStorageSnapshotInstanceList(
-        params: GetBlockStorageSnapshotInstanceListRequest
+        params: GetBlockStorageSnapshotInstanceListRequest,
     ): Promise<GetBlockStorageSnapshotInstanceListResponse> {
         return await this.client.request({
             method: 'GET',
@@ -887,7 +887,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-snapshot-getblockstoragesnapshotinstancedetail}
      */
     async getBlockStorageSnapshotInstanceDetail(
-        params: GetBlockStorageSnapshotInstanceDetailRequest
+        params: GetBlockStorageSnapshotInstanceDetailRequest,
     ): Promise<GetBlockStorageSnapshotInstanceDetailResponse> {
         return await this.client.request({
             method: 'GET',
@@ -901,7 +901,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-snapshot-createblockstoragesnapshotinstance}
      */
     async createBlockStorageSnapshotInstance(
-        params: CreateBlockStorageSnapshotInstanceRequest
+        params: CreateBlockStorageSnapshotInstanceRequest,
     ): Promise<CreateBlockStorageSnapshotInstanceResponse> {
         return await this.client.request({
             method: 'GET',
@@ -915,7 +915,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-snapshot-deleteblockstoragesnapshotinstances}
      */
     async deleteBlockStorageSnapshotInstances(
-        params: DeleteBlockStorageSnapshotInstancesRequest
+        params: DeleteBlockStorageSnapshotInstancesRequest,
     ): Promise<DeleteBlockStorageSnapshotInstancesResponse> {
         return await this.client.request({
             method: 'GET',
@@ -930,7 +930,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-publicip-getpublicipinstancelist}
      */
     async getPublicIpInstanceList(
-        params: GetPublicIpInstanceListRequest
+        params: GetPublicIpInstanceListRequest,
     ): Promise<GetPublicIpInstanceListResponse> {
         return await this.client.request({
             method: 'GET',
@@ -944,7 +944,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-publicip-getpublicipinstancedetail}
      */
     async getPublicIpInstanceDetail(
-        params: GetPublicIpInstanceDetailRequest
+        params: GetPublicIpInstanceDetailRequest,
     ): Promise<GetPublicIpInstanceDetailResponse> {
         return await this.client.request({
             method: 'GET',
@@ -958,7 +958,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-publicip-createpublicipinstance}
      */
     async createPublicIpInstance(
-        params: CreatePublicIpInstanceRequest
+        params: CreatePublicIpInstanceRequest,
     ): Promise<CreatePublicIpInstanceResponse> {
         return await this.client.request({
             method: 'GET',
@@ -972,7 +972,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-publicip-deletepublicipinstance}
      */
     async deletePublicIpInstance(
-        params: DeletePublicIpInstanceRequest
+        params: DeletePublicIpInstanceRequest,
     ): Promise<DeletePublicIpInstanceResponse> {
         return await this.client.request({
             method: 'GET',
@@ -986,7 +986,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-publicip-getpubliciptargetserverinstancelist}
      */
     async getPublicIpTargetServerInstanceList(
-        params: GetPublicIpTargetServerInstanceListRequest
+        params: GetPublicIpTargetServerInstanceListRequest,
     ): Promise<GetPublicIpTargetServerInstanceListResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1000,7 +1000,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-publicip-associatepublicipwithserverinstance}
      */
     async associatePublicIpWithServerInstance(
-        params: AssociatePublicIpWithServerInstanceRequest
+        params: AssociatePublicIpWithServerInstanceRequest,
     ): Promise<AssociatePublicIpWithServerInstanceResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1014,7 +1014,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-publicip-disassociatepublicipfromserverinstance}
      */
     async disassociatePublicIpFromServerInstance(
-        params: DisassociatePublicIpFromServerInstanceRequest
+        params: DisassociatePublicIpFromServerInstanceRequest,
     ): Promise<DisassociatePublicIpFromServerInstanceResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1031,7 +1031,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-initscript-getinitscriptlist}
      */
     async getInitScriptList(
-        params: GetInitScriptListRequest
+        params: GetInitScriptListRequest,
     ): Promise<GetInitScriptListResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1047,7 +1047,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-initscript-getinitscriptdetail}
      */
     async getInitScriptDetail(
-        params: GetInitScriptDetailRequest
+        params: GetInitScriptDetailRequest,
     ): Promise<GetInitScriptDetailResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1063,7 +1063,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-initscript-createinitscript}
      */
     async createInitScript(
-        params: CreateInitScriptRequest
+        params: CreateInitScriptRequest,
     ): Promise<CreateInitScriptResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1079,7 +1079,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-initscript-deleteinitscripts}
      */
     async deleteInitScripts(
-        params: DeleteInitScriptsRequest
+        params: DeleteInitScriptsRequest,
     ): Promise<DeleteInitScriptsResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1096,7 +1096,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-networkinterface-getnetworkinterfacelist}
      */
     async getNetworkInterfaceList(
-        params: GetNetworkInterfaceListRequest
+        params: GetNetworkInterfaceListRequest,
     ): Promise<GetNetworkInterfaceListResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1112,7 +1112,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-networkinterface-unassignsecondaryips}
      */
     async unassignSecondaryIps(
-        params: UnassignSecondaryIpsRequest
+        params: UnassignSecondaryIpsRequest,
     ): Promise<UnassignSecondaryIpsResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1128,7 +1128,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-networkinterface-assignsecondaryips}
      */
     async assignSecondaryIps(
-        params: AssignSecondaryIpsRequest
+        params: AssignSecondaryIpsRequest,
     ): Promise<AssignSecondaryIpsResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1144,7 +1144,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-networkinterface-getnetworkinterfacedetail}
      */
     async getNetworkInterfaceDetail(
-        params: GetNetworkInterfaceDetailRequest
+        params: GetNetworkInterfaceDetailRequest,
     ): Promise<GetNetworkInterfaceDetailResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1160,7 +1160,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-networkinterface-createnetworkinterface}
      */
     async createNetworkInterface(
-        params: CreateNetworkInterfaceRequest
+        params: CreateNetworkInterfaceRequest,
     ): Promise<CreateNetworkInterfaceResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1176,7 +1176,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-networkinterface-deletenetworkinterface}
      */
     async deleteNetworkInterface(
-        params: DeleteNetworkInterfaceRequest
+        params: DeleteNetworkInterfaceRequest,
     ): Promise<DeleteNetworkInterfaceResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1192,7 +1192,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-networkinterface-attachnetworkinterface}
      */
     async attachNetworkInterface(
-        params: AttachNetworkInterfaceRequest
+        params: AttachNetworkInterfaceRequest,
     ): Promise<AttachNetworkInterfaceResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1208,7 +1208,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-networkinterface-detachnetworkinterface}
      */
     async detachNetworkInterface(
-        params: DetachNetworkInterfaceRequest
+        params: DetachNetworkInterfaceRequest,
     ): Promise<DetachNetworkInterfaceResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1224,7 +1224,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-networkinterface-addnetworkinterfaceaccesscontrolgroup}
      */
     async addNetworkInterfaceAccessControlGroup(
-        params: AddNetworkInterfaceAccessControlGroupRequest
+        params: AddNetworkInterfaceAccessControlGroupRequest,
     ): Promise<AddNetworkInterfaceAccessControlGroupResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1240,7 +1240,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-networkinterface-removenetworkinterfaceaccesscontrolgroup}
      */
     async removeNetworkInterfaceAccessControlGroup(
-        params: RemoveNetworkInterfaceAccessControlGroupRequest
+        params: RemoveNetworkInterfaceAccessControlGroupRequest,
     ): Promise<RemoveNetworkInterfaceAccessControlGroupResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1256,7 +1256,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-networkinterface-enableflowlog}
      */
     async enableFlowLog(
-        params: EnableFlowLogRequest
+        params: EnableFlowLogRequest,
     ): Promise<EnableFlowLogResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1272,7 +1272,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-networkinterface-disableflowlog}
      */
     async disableFlowLog(
-        params: DisableFlowLogRequest
+        params: DisableFlowLogRequest,
     ): Promise<DisableFlowLogResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1288,7 +1288,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-networkinterface-getflowlogconfigurationlist}
      */
     async getFlowLogConfigurationList(
-        params: GetFlowLogConfigurationListRequest
+        params: GetFlowLogConfigurationListRequest,
     ): Promise<GetFlowLogConfigurationListResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1305,7 +1305,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-acg-getaccesscontrolgrouplist}
      */
     async getAccessControlGroupList(
-        params: GetAccessControlGroupListRequest
+        params: GetAccessControlGroupListRequest,
     ): Promise<GetAccessControlGroupListResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1321,7 +1321,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-acg-getaccesscontrolgroupdetail}
      */
     async getAccessControlGroupDetail(
-        params: GetAccessControlGroupDetailRequest
+        params: GetAccessControlGroupDetailRequest,
     ): Promise<GetAccessControlGroupDetailResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1337,7 +1337,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-acg-createaccesscontrolgroup}
      */
     async createAccessControlGroup(
-        params: CreateAccessControlGroupRequest
+        params: CreateAccessControlGroupRequest,
     ): Promise<CreateAccessControlGroupResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1353,7 +1353,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-acg-deleteaccesscontrolgroup}
      */
     async deleteAccessControlGroup(
-        params: DeleteAccessControlGroupRequest
+        params: DeleteAccessControlGroupRequest,
     ): Promise<DeleteAccessControlGroupResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1369,7 +1369,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-acg-getaccesscontrolgrouprulelist}
      */
     async getAccessControlGroupRuleList(
-        params: GetAccessControlGroupRuleListRequest
+        params: GetAccessControlGroupRuleListRequest,
     ): Promise<GetAccessControlGroupRuleListResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1385,7 +1385,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-acg-addaccesscontrolgroupinboundrule}
      */
     async addAccessControlGroupInboundRule(
-        params: AddAccessControlGroupInboundRuleRequest
+        params: AddAccessControlGroupInboundRuleRequest,
     ): Promise<AddAccessControlGroupInboundRuleResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1401,7 +1401,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-acg-addaccesscontrolgroupoutboundrule}
      */
     async addAccessControlGroupOutboundRule(
-        params: AddAccessControlGroupOutboundRuleRequest
+        params: AddAccessControlGroupOutboundRuleRequest,
     ): Promise<AddAccessControlGroupOutboundRuleResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1417,7 +1417,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-acg-removeaccesscontrolgroupinboundrule}
      */
     async removeAccessControlGroupInboundRule(
-        params: RemoveAccessControlGroupInboundRuleRequest
+        params: RemoveAccessControlGroupInboundRuleRequest,
     ): Promise<RemoveAccessControlGroupInboundRuleResponse> {
         return await this.client.request({
             method: 'GET',
@@ -1433,7 +1433,7 @@ export class VserverApi {
      * @see {@link https://api.ncloud-docs.com/docs/compute-vserver-acg-removeaccesscontrolgroupinboundrule}
      */
     async removeAccessControlGroupInboundRule(
-        params: RemoveAccessControlGroupInboundRuleRequest
+        params: RemoveAccessControlGroupInboundRuleRequest,
     ): Promise<RemoveAccessControlGroupInboundRuleResponse> {
         return await this.client.request({
             method: 'GET',

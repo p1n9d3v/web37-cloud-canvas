@@ -5,22 +5,21 @@ import { UpdatePublicDto } from './dto/update-public.dto';
 
 @Injectable()
 export class PublicRepository {
-    constructor(private readonly prisma: PrismaService) {
-    }
+    constructor(private readonly prisma: PrismaService) {}
 
     findAll() {
         return this.prisma.publicArchitecture.findMany({
             include: {
                 author: {
-                    select: { id: true, name: true }
+                    select: { id: true, name: true },
                 },
                 _count: {
                     select: {
                         stars: true,
-                        imports: true
-                    }
-                }
-            }
+                        imports: true,
+                    },
+                },
+            },
         });
     }
 
@@ -31,34 +30,33 @@ export class PublicRepository {
                 author: {
                     select: {
                         id: true,
-                        name: true
-                    }
+                        name: true,
+                    },
                 },
                 _count: {
                     select: {
                         stars: true,
-                        imports: true
-                    }
-                }
-            }
+                        imports: true,
+                    },
+                },
+            },
         });
     }
 
     create(userId: number, createPublicDto: CreatePublicDto) {
-
         return this.prisma.publicArchitecture.create({
             data: {
                 ...createPublicDto,
-                authorId: userId
+                authorId: userId,
             },
             include: {
                 author: {
                     select: {
                         id: true,
-                        name: true
-                    }
-                }
-            }
+                        name: true,
+                    },
+                },
+            },
         });
     }
 
@@ -70,16 +68,16 @@ export class PublicRepository {
                 author: {
                     select: {
                         id: true,
-                        name: true
-                    }
-                }
-            }
+                        name: true,
+                    },
+                },
+            },
         });
     }
 
     delete(id: number) {
         return this.prisma.publicArchitecture.delete({
-            where: { id }
+            where: { id },
         });
     }
 }

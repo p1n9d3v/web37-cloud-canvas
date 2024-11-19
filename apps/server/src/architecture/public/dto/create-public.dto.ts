@@ -1,4 +1,10 @@
-import { IsArray, IsNotEmpty, IsNumber, IsObject, IsString } from 'class-validator';
+import {
+    IsArray,
+    IsNotEmpty,
+    IsNumber,
+    IsObject,
+    IsString,
+} from 'class-validator';
 
 export class CreatePublicDto {
     @IsString()
@@ -12,7 +18,6 @@ export class CreatePublicDto {
     @IsNumber()
     @IsNotEmpty()
     cost: number;
-
 
     @IsArray()
     @IsString({ each: true })

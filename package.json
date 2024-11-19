@@ -23,7 +23,11 @@
         "clean:ncloud-sdk": "turbo run clean --filter=@cloud-canvas/ncloud-sdk",
         "commit": "./node_modules/cz-customizable/standalone.js",
         "format": "prettier --write .",
-        "prepare": "husky"
+        "prepare": "husky",
+        "docker-compose": "docker compose version | docker compose -f docker-composes/cloud-canvas-dev.yml up -d",
+        "docker-compose-down": "docker compose version | docker compose -f docker-composes/cloud-canvas-dev.yml down",
+        "docker-compose:monitor": "docker compose version | docker compose -f docker-composes/cloud-canvas-dev.yml -f docker-composes/monitoring/database-resource-monitoring-dev.yml up -d",
+        "docker-compose-down:monitor": "docker compose version | docker compose -f docker-composes/cloud-canvas-dev.yml -f docker-composes/monitoring/database-resource-monitoring-dev.yml down"
     },
     "devDependencies": {
         "@changesets/cli": "^2.27.9",

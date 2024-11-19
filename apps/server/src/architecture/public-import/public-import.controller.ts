@@ -3,8 +3,7 @@ import { PublicImportService } from './public-import.service';
 
 @Controller()
 export class PublicImportController {
-    constructor(private readonly publicImportService: PublicImportService) {
-    }
+    constructor(private readonly publicImportService: PublicImportService) {}
 
     @Post()
     create(@Param('architectureId', ParseIntPipe) architectureId: number) {

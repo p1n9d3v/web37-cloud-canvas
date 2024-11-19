@@ -2,7 +2,7 @@ name: Client CI
 on:
     pull_request:
         branches:
-            - develop
+            - development
         types: [closed]
 
 concurrency:

@@ -1,5 +1,4 @@
 import {
-    GRID_3D_DEPTH_SIZE,
     GRID_3D_HEIGHT_SIZE,
     GRID_3D_WIDTH_SIZE,
     GRID_2D_SIZE,
@@ -17,7 +16,7 @@ export default ({ points, dimension }: Props) => {
         dimension === '2d'
             ? `M 0 0 L 90 0 90 90 0 90 z`
             : `M 64 0 L 128 37 64 74 0 37 z`;
-    const y = dimension === '2d' ? 0 : GRID_3D_DEPTH_SIZE;
+    const y = dimension === '2d' ? 0 : GRID_3D_HEIGHT_SIZE / 2;
     const width = dimension === '2d' ? GRID_2D_SIZE : GRID_3D_WIDTH_SIZE;
     const height = dimension === '2d' ? GRID_2D_SIZE : GRID_3D_HEIGHT_SIZE;
 

@@ -14,6 +14,7 @@ const CloudFunctionNode = {
         subnet: 'subnet1',
         spec: 's2-g2-s50',
     },
+    groupIds: [],
     connectors: [],
 };
 const ObjectStorageNode = {
@@ -30,6 +31,7 @@ const ObjectStorageNode = {
         subnet: 'subnet1',
         spec: 's2-g2-s50',
     },
+    groupIds: [],
     connectors: [],
 };
 const MySQLDBNode = {
@@ -46,13 +48,14 @@ const MySQLDBNode = {
         subnet: 'subnet1',
         spec: 's2-g2-s50',
     },
+    groupIds: ['region1'],
     connectors: [],
 };
 const ServerNode = {
     id: `node-${nanoid()}`,
     type: 'server',
     name: 'WebServer1',
-    point: { x: 250, y: 250 },
+    point: { x: 180, y: 180 },
     size: {
         d2: { width: 90, height: 90 },
         d3: { width: 128, height: 111 },
@@ -65,6 +68,19 @@ const ServerNode = {
         ip: '192.168.0.2',
     },
     connectors: [],
+    groupIds: ['region1'],
+};
+
+const regionGroup: any = {
+    id: 'region1',
+    type: 'region',
+    name: 'KR-1',
+    nodeIds: [ServerNode.id, MySQLDBNode.id],
+    groupIds: ['vpc1'], // 아직 VPC 그룹이 없음
+    bounds: { x: 0, y: 0, width: 450, height: 450 },
+    properties: {
+        regionCode: 'KR-1',
+    },
 };
 
 const mockNodes = [
@@ -74,6 +90,12 @@ const mockNodes = [
     ServerNode,
 ];
 
+const mockGroups = [regionGroup];
+
 export const initialState = {
     nodes: mockNodes.reduce((acc, node) => ({ ...acc, [node.id]: node }), {}),
+    groups: mockGroups.reduce(
+        (acc, group) => ({ ...acc, [group.id]: group }),
+        {},
+    ),
 };

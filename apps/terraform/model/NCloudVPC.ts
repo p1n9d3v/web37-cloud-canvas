@@ -1,5 +1,6 @@
 import { VPC } from '../interface/VPC';
 import { NCloudModel } from '../interface/NCloudModel';
+import { ResourcePriority } from '../enum/ResourcePriority';
 
 export class NCloudVPC implements VPC, NCloudModel {
     id: string;
@@ -11,9 +12,12 @@ export class NCloudVPC implements VPC, NCloudModel {
     defaultPublicRouteTableNo: string;
     defaultPrivateRouteTableNo: string;
     serviceType: string;
+    priority: ResourcePriority;
+
 
     constructor(json: any) {
         this.serviceType = 'ncloud_vpc';
+        this.priority = ResourcePriority.VPC;
         this.id = json.id;
         this.name = json.name;
         this.region = json.region;

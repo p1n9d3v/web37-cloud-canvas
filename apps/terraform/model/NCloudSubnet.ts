@@ -1,5 +1,6 @@
 import { Subnet } from '../interface/Subnet';
 import { NCloudModel } from '../interface/NCloudModel';
+import { ResourcePriority } from '../enum/ResourcePriority';
 
 export class NCloudSubnet implements Subnet, NCloudModel {
     id: string;
@@ -11,9 +12,11 @@ export class NCloudSubnet implements Subnet, NCloudModel {
     subnetType: string;
     usageType: string;
     serviceType: string;
+    priority: ResourcePriority;
 
     constructor(json: any) {
         this.serviceType = 'ncloud_subnet';
+        this.priority = ResourcePriority.SUBNET;
         Object.assign(this, json);
     }
 

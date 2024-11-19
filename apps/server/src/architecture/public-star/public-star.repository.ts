@@ -3,15 +3,14 @@ import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class PublicStarRepository {
-    constructor(private readonly prisma: PrismaService) {
-    }
+    constructor(private readonly prisma: PrismaService) {}
 
     create(userId: number, architectureId: number) {
         return this.prisma.publicArchitectureStar.create({
             data: {
                 userId,
-                publicArchitectureId: architectureId
-            }
+                publicArchitectureId: architectureId,
+            },
         });
     }
 
@@ -20,19 +19,17 @@ export class PublicStarRepository {
             where: {
                 unique_star: {
                     userId,
-                    publicArchitectureId: architectureId
-                }
-            }
+                    publicArchitectureId: architectureId,
+                },
+            },
         });
     }
 
     architectureExists(architectureId: number) {
         return this.prisma.publicArchitecture
             .count({
-                where: { id: architectureId }
+                where: { id: architectureId },
             })
             .then(Boolean);
     }
 }
-
-

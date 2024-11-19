@@ -24,7 +24,10 @@ export class PublicController {
     @Post()
     createPublicArchitecture(@Body() createPublicDto: CreatePublicDto) {
         const userId = 1;
-        return this.publicService.createPublicArchitecture(userId, createPublicDto);
+        return this.publicService.createPublicArchitecture(
+            userId,
+            createPublicDto,
+        );
     }
 
     @Get(':id')

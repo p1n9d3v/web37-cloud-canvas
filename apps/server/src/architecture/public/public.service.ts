@@ -1,4 +1,13 @@
-import { Injectable, Get, Post, Delete, Patch, Param, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+    Injectable,
+    Get,
+    Post,
+    Delete,
+    Patch,
+    Param,
+    NotFoundException,
+    ForbiddenException,
+} from '@nestjs/common';
 import { CreatePublicDto } from './dto/create-public.dto';
 import { UpdatePublicDto } from './dto/update-public.dto';
 import { PublicRepository } from './public.repository';
@@ -6,8 +15,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class PublicService {
-    constructor(private readonly publicRepository: PublicRepository) {
-    }
+    constructor(private readonly publicRepository: PublicRepository) {}
 
     async getPublicArchitectures() {
         return this.publicRepository.findAll();
@@ -39,6 +47,5 @@ export class PublicService {
             throw new NotFoundException('Architecture not found');
         }
         return this.publicRepository.update(id, dto);
-
     }
 }

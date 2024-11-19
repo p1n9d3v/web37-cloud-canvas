@@ -4,12 +4,6 @@ on:
         branches:
             - develop
         types: [closed]
-    workflow_dispatch:
-        inputs:
-            force_notify:
-                description: 'Force Slack notification'
-                type: boolean
-                default: false
 
 concurrency:
     group: cloud-canvas

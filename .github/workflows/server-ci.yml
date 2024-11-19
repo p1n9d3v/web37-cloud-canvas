@@ -7,7 +7,6 @@ on:
 
 concurrency:
     group: cloud-canvas
-    cancel-in-progress: true
 
 jobs:
     server-image-build-and-push:

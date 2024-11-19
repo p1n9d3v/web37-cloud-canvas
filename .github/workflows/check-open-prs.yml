@@ -55,8 +55,9 @@ jobs:
         # PR 데이터 파싱 및 메시지 작성
         echo "$prs_json" | jq -r '"🔹 *<\(.url)|\(.title)>*\n" + 
           "   • 리뷰어: \(.reviewRequests | map(.login) | join(", "))\n\n"' | while read -r line; do
-          echo $line
-          message+="$line"
+          message+="$line\n"
+          echo "wo"
+          echo $message
         done
         
         # Slack 메시지 푸터 추가

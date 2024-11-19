@@ -56,9 +56,14 @@ jobs:
         message=":rotating_light: *Review가 필요한 Pull Requests 목록*\n\n"
         
         # PR 제목만 Slack 메시지에 추가
-        echo "$prs_json" | jq -r '.[] | "\(.title) - <\(.url)|Go to PR>"' | while read -r pr; do
-          # 메시지에 추가 (각 PR을 한 줄씩 추가)
-          message+=$'\n'"🔹 $pr"
+        echo $prs_json | jq -r '.[] | "🔹 *<\(.url)|\(.title)>*\n" + 
+          "   • 작성자: \(.author.login)\n" +
+          "   • 생성일: \(.createdAt | fromdate | strftime("%Y-%m-%d %H:%M"))\n" +
+          "   • 변경사항: +\(.additions) -\(.deletions) (\(.changedFiles)개 파일)\n" +
+          "   • 리뷰어: \(.reviewRequests | map(.login) | join(", "))\n" +
+          if .body then "   • 설명: \(.body | split("\n")[0] | if length > 100 then (.[0:100] + "...") else . end)\n" else "" end +
+          "\n"' | while read -r line; do
+          message+="$line"
         done
 
         # Slack 메시지 푸터 추가

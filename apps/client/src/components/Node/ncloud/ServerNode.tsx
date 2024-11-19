@@ -1,4 +1,4 @@
-import { useGraphDimensionContext } from '@contexts/GraphDimensionContext';
+import { useCanvasDimensionContext } from '@contexts/CanvasDimensionContext';
 import { Node } from '@types';
 
 type Props = {
@@ -93,6 +93,6 @@ const Node2D = ({ node }: Props) => {
 };
 
 export default ({ node }: Props) => {
-    const { dimension } = useGraphDimensionContext();
+    const { dimension } = useCanvasDimensionContext();
     return dimension === '2d' ? <Node2D node={node} /> : <Node3D node={node} />;
 };

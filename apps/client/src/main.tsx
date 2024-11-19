@@ -1,24 +1,24 @@
-import { GraphCanvasProvider } from '@contexts/GraphCanvasContext.tsx';
+import { CanvasProvider } from '@contexts/CanvasContext.tsx';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import theme from '@theme';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
-import { GraphDimensionProvider } from '@contexts/GraphDimensionContext.tsx';
-import { GraphInstanceProvider } from '@contexts/GraphInstanceContext.tsx';
+import { CanvasInstanceProvider } from '@contexts/CanvasInstanceContext.tsx';
 import { initialState } from '@/src/mocks.ts';
+import { CanvasDimensionProvider } from '@contexts/CanvasDimensionContext.tsx';
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <ThemeProvider theme={theme} defaultMode="light">
             <CssBaseline />
-            <GraphDimensionProvider>
-                <GraphCanvasProvider>
-                    <GraphInstanceProvider initialState={initialState}>
+            <CanvasDimensionProvider>
+                <CanvasProvider>
+                    <CanvasInstanceProvider initialState={initialState}>
                         <App />
-                    </GraphInstanceProvider>
-                </GraphCanvasProvider>
-            </GraphDimensionProvider>
+                    </CanvasInstanceProvider>
+                </CanvasProvider>
+            </CanvasDimensionProvider>
         </ThemeProvider>
     </StrictMode>,
 );

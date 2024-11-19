@@ -11,15 +11,15 @@ import {
     useState,
 } from 'react';
 
-type GraphCanvasContextProps = {
+type CanvasContextProps = {
     canvasRef: RefObject<SVGSVGElement>;
     canvas: SVGSVGElement;
     viewBox: ViewBox;
     setViewBox: Dispatch<SetStateAction<ViewBox>>;
 };
-const GraphCanvasContext = createContext<GraphCanvasContextProps | null>(null);
+const CanvasContext = createContext<CanvasContextProps | null>(null);
 
-export const GraphCanvasProvider = ({ children }: { children: ReactNode }) => {
+export const CanvasProvider = ({ children }: { children: ReactNode }) => {
     const canvasRef = useRef<SVGSVGElement>(null);
     const [viewBox, setViewBox] = useState<ViewBox>({
         x: 0,
@@ -46,7 +46,7 @@ export const GraphCanvasProvider = ({ children }: { children: ReactNode }) => {
         }
     }, []);
     return (
-        <GraphCanvasContext.Provider
+        <CanvasContext.Provider
             value={{
                 canvasRef,
                 canvas: canvasRef.current!,
@@ -55,12 +55,12 @@ export const GraphCanvasProvider = ({ children }: { children: ReactNode }) => {
             }}
         >
             {children}
-        </GraphCanvasContext.Provider>
+        </CanvasContext.Provider>
     );
 };
 
-export const useGraphCanvasContext = () => {
-    const context = useContext(GraphCanvasContext);
+export const useCanvasContext = () => {
+    const context = useContext(CanvasContext);
     if (!context) throw new Error('CloudGraph: context is undefined');
 
     return context;

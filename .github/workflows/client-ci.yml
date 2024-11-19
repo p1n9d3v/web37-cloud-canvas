@@ -16,7 +16,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-    docker-image-build-and-push:
+    client-image-build-and-push:
         runs-on: ubuntu-latest
 
         steps:

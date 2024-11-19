@@ -16,8 +16,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-    docker-image-build-and-test:
-        if: github.event.pull_request.merged == true
+    docker-image-build-and-push:
         runs-on: ubuntu-latest
 
         steps:

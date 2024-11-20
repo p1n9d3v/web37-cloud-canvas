@@ -20,15 +20,12 @@ export default ({ group }: Props) => {
     const { dispatch } = useCanvasInstanceContext();
     const { isDragging, startDrag, moveDrag, stopDrag } = useDrag({
         initialPoint: { x: bounds.x, y: bounds.y },
-        updateFn: (offset) =>
+        updateFn: (point) =>
             dispatch({
                 type: 'MOVE_GROUP',
                 payload: {
                     id,
-                    point: {
-                        x: bounds.x + offset.x,
-                        y: bounds.y + offset.y,
-                    },
+                    point,
                 },
             }),
     });

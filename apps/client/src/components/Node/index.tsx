@@ -32,15 +32,12 @@ export default ({ id, point, type }: Props) => {
     const { dispatch } = useCanvasInstanceContext();
     const { isDragging, startDrag, moveDrag, stopDrag } = useDrag({
         initialPoint: point,
-        updateFn: (offset) =>
+        updateFn: (point) =>
             dispatch({
                 type: 'MOVE_NODE',
                 payload: {
                     id,
-                    point: {
-                        x: point.x + offset.x,
-                        y: point.y + offset.y,
-                    },
+                    point,
                 },
             }),
     });

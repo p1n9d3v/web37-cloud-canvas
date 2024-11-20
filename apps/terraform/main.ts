@@ -1,5 +1,3 @@
-import { exec } from 'child_process';
-import { promisify } from 'util';
 import { NCloudProvider } from './model/NCloudProvider';
 import { TerraformConvertor } from './convertor/TerraformConvertor';
 import { NCloudVPC } from './model/NCloudVPC';
@@ -11,7 +9,6 @@ import { NCloudLoginKey } from './model/NCloudLoginKey';
 import { NCloudNetworkInterface } from './model/NCloudNetworkInterface';
 import { NCloudServer } from './model/NCloudServer';
 import { NCloudPublicIP } from './model/NCloudPublicIP';
-const execAsync = promisify(exec);
 
 async function main() {
     const provider = new NCloudProvider({

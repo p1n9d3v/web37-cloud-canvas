@@ -1,5 +1,7 @@
 import { NCloudModel } from '../interface/NCloudModel';
 import { NCloudProvider } from '../model/NCloudProvider';
+import { CloudCanvasNode } from '../interface/CloudCanvasNode';
+import { parseToNCloudModel } from '../util/resourceParser';
 
 export class TerraformConvertor {
     private resources: NCloudModel[];
@@ -8,6 +10,17 @@ export class TerraformConvertor {
     constructor(provider: NCloudProvider) {
         this.provider = provider;
         this.resources = [];
+    }
+
+    addResourceFromJson(jsonData: { nodes?: CloudCanvasNode[] }) {
+        jsonData.nodes?.forEach((node => {
+            try {
+                const resource = parseToNCloudModel(node);
+                this.addResource(resource);
+            }catch (error) {
+                console.warn(`Skipping unsupported node type: ${node.type}`);
+            }
+        }));
     }
 
     addResource(resource: NCloudModel) {
@@ -34,8 +47,8 @@ export class TerraformConvertor {
                     const formattedArray = value.map(item => {
                         if (typeof item === 'object') {
                             return `  ${key} {
-                                        ${this.formatProperties(item)}
-                                        }`;
+${this.formatProperties(item)}
+ }`;
                         }
                         return `  ${key} = ${this.formatValue(item)}`;
                     }).join('\n');
@@ -44,8 +57,8 @@ export class TerraformConvertor {
 
                 if (typeof value === 'object' && value !== null) {
                     return `  ${key} {
-                                ${this.formatProperties(value)}
-                                }`;
+${this.formatProperties(value)}
+ }`;
                 }
 
                 const padding = ' '.repeat(maxKeyLength - key.length);
@@ -57,24 +70,27 @@ export class TerraformConvertor {
     generate(): string {
         const providerProperties = this.provider.getProperties();
 
-        const terraformBlock = `terraform {
-                                 required_providers {
-                                   ncloud = {
-                                     source = "${providerProperties.terraform.required_providers.ncloud.source}"
-                                   }
-                                 }
-                                 required_version = "${providerProperties.terraform.required_version}"
-                                }`;
+        const terraformBlock = `
+terraform {
+ required_providers {
+   ncloud = {
+     source = "${providerProperties.terraform.required_providers.ncloud.source}"
+   }
+ }
+ required_version = "${providerProperties.terraform.required_version}"
+}`;
 
-        const providerBlock = `provider "${this.provider.name}" {
-                                ${this.formatProperties(providerProperties.provider)}
-                                }`;
+        const providerBlock = `
+provider "${this.provider.name}" {
+${this.formatProperties(providerProperties.provider)}
+}`;
 
         const resourceBlocks = this.resources
             .sort((a, b) => a.priority - b.priority)
-            .map(resource => `resource "${resource.serviceType}" "${resource.name}" {
-                                            ${this.formatProperties(resource.getProperties())}
-                                                }`);
+            .map(resource => `
+resource "${resource.serviceType}" "${resource.name}" {
+${this.formatProperties(resource.getProperties())}
+}`);
 
         return [terraformBlock, providerBlock, ...resourceBlocks].join('\n');
     }

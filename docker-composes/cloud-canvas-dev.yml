@@ -62,9 +62,7 @@ services:
         restart: unless-stopped
 
     back:
-        build:
-            context: ../
-            dockerfile: apps/server/Dockerfile
+        image: t84ar7xr.kr.private-ncr.ntruss.com/back:dev
         container_name: back
         environment:
             DATABASE_URL: mysql://cloud_canvas_user:password@mysql:3306/cloud_canvas
@@ -81,9 +79,7 @@ services:
         restart: unless-stopped
 
     front:
-        build:
-            context: ../
-            dockerfile: apps/client/Dockerfile
+        image: t84ar7xr.kr.private-ncr.ntruss.com/front:dev
         container_name: front
         ports:
             - '5001:5000'

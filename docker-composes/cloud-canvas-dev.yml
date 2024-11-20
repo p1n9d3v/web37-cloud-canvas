@@ -10,7 +10,7 @@ services:
             test: ['CMD', 'redis-cli', 'ping']
             interval: 30s
             retries: 3
-            start_period: 10s
+            start_period: 20s
             timeout: 5s
         logging:
             driver: 'fluentd'
@@ -41,6 +41,7 @@ services:
             interval: 10s
             timeout: 5s
             retries: 5
+            start_period: 20s
         command:
             - sh
             - -c
@@ -58,6 +59,7 @@ services:
         networks:
             - cloud-canvas-network
             - cloud-canvas-database-network
+        restart: unless-stopped
 
     back:
         build:
@@ -73,7 +75,7 @@ services:
                 condition: service_healthy
             redis:
                 condition: service_healthy
-        entrypoint: sh -c "npx prisma migrate deploy && node ./dist/src/main.js"
+        entrypoint: sh -c "npx prisma migrate deploy && npx prisma db seed && node ./dist/src/main.js"
         networks:
             - cloud-canvas-network
         restart: unless-stopped

@@ -3,4 +3,6 @@ model Tag {
   name                  String                  @db.VarChar(15)
   createdAt             DateTime                @default(now()) @map("created_at") @db.Timestamp(0)
   PublicArchitectureTag PublicArchitectureTag[]
+
+  @@map("tag")
 }

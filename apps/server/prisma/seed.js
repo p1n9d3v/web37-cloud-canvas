@@ -1,36 +1,8 @@
-import { PrismaClient } from '@prisma/client';
-import { faker } from '@faker-js/faker';
+const PrismaClient = require('@prisma/client');
+const { faker } = require('@faker-js/faker');
 
-// interface UsercreateInput {
-//     id?: number;
-//     name: string;
-// }
-
-// interface PrivateArchitectureInput {
-//     title: string;
-//     authorId: number;
-//     architecture: {}
-//     createdAt?: Date | string
-//     updatedAt?: Date | string | null
-// }
-
-// interface PrivateArchitectureVersionInput {
-//     privateArchitectureId: number
-//     title: string
-//     createdAt?: Date | string
-//     architecture: {}
-// }
-
-const prisma = new PrismaClient();
-
+const prisma = new PrismaClient.PrismaClient();
 async function main() {
-    await prisma.publicArchitectureStar.deleteMany({});
-    await prisma.publicArchitectureImport.deleteMany({});
-    await prisma.publicArchitecture.deleteMany({});
-    await prisma.privateArchitectureVersion.deleteMany({});
-    await prisma.privateArchitecture.deleteMany({});
-    await prisma.user.deleteMany({});
-
     const userAmount = 10;
     const users = [];
     for (let i = 0; i < userAmount; i++) {
@@ -49,7 +21,6 @@ async function main() {
                 title: faker.book.title(),
                 authorId: userData.id,
                 architecture: {},
-                createdAt: new Date(),
                 updatedAt: new Date(),
             };
             privateArchitectures.push(privateArchitecture);
@@ -75,7 +46,6 @@ async function main() {
             const privateArchitectureVersion = {
                 privateArchitectureId: privateArchitectureData.id,
                 title: faker.git.commitSha(),
-                createdAt: new Date(),
                 architecture: {},
             };
             privateArchitectureVersions.push(privateArchitectureVersion);
@@ -86,6 +56,89 @@ async function main() {
             data: privateArchitectureVersions,
         });
     await addPrivateArchitectureVersions();
+
+    const publicArchitectureAmountPerUser = 5;
+    const publicArchitectures = [];
+    userDatas.forEach((userData) => {
+        for (let i = 0; i < publicArchitectureAmountPerUser; i++) {
+            const publicArchitecture = {
+                title: faker.book.title(),
+                authorId: userData.id,
+                architecture: {},
+                cost: parseFloat(faker.commerce.price()),
+            };
+            publicArchitectures.push(publicArchitecture);
+        }
+    });
+    const addPublicArchitectures = async () =>
+        await prisma.publicArchitecture.createMany({
+            data: publicArchitectures,
+        });
+    await addPublicArchitectures();
+
+    const userIds = [2, 4, 1, 3];
+    const publicArchitectureDatas = await prisma.publicArchitecture.findMany(
+        {},
+    );
+    const importedPublicArchitectures = [];
+    publicArchitectureDatas.forEach((publicArchitectureData) => {
+        userIds.forEach((userId) => {
+            const importedPublicArchitecture = {
+                publicArchitectureId: publicArchitectureData.id,
+                userId: userId,
+            };
+            importedPublicArchitectures.push(importedPublicArchitecture);
+        });
+    });
+    const addImportedPublicArchitectures = async () =>
+        await prisma.publicArchitectureImport.createMany({
+            data: importedPublicArchitectures,
+        });
+    await addImportedPublicArchitectures();
+
+    const staredPublicArchitectures = [];
+    publicArchitectureDatas.forEach((publicArchitectureData) => {
+        userIds.forEach((userId) => {
+            const staredPublicArchitecture = {
+                publicArchitectureId: publicArchitectureData.id,
+                userId: userId,
+            };
+            staredPublicArchitectures.push(staredPublicArchitecture);
+        });
+    });
+    const addstaredPublicArchitectures = async () =>
+        await prisma.publicArchitectureStar.createMany({
+            data: staredPublicArchitectures,
+        });
+    await addstaredPublicArchitectures();
+
+    const tagAmount = 8;
+    const tags = [];
+    for (let i = 0; i < tagAmount; i++) {
+        const tag = {
+            name: faker.word.verb({ length: { max: 15 } }),
+        };
+        tags.push(tag);
+    }
+    const addTags = async () => await prisma.tag.createMany({ data: tags });
+    await addTags();
+
+    const tagIds = [1, 2, 4, 5];
+    const taggedPublicArcitectures = [];
+    publicArchitectureDatas.forEach((publicArchitectureData) => {
+        tagIds.forEach((tagId) => {
+            const taggedPublicArchitecture = {
+                publicArchitectureId: publicArchitectureData.id,
+                tagId: tagId,
+            };
+            taggedPublicArcitectures.push(taggedPublicArchitecture);
+        });
+    });
+    const addTaggedPublicArchitectures = async () =>
+        await prisma.publicArchitectureTag.createMany({
+            data: taggedPublicArcitectures,
+        });
+    await addTaggedPublicArchitectures();
 }
 
 main()

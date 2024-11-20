@@ -1,6 +1,4 @@
 import { Provider } from '../interface/Provider';
-import { NCloudModel } from '../interface/NCloudModel';
-import { ResourcePriority } from '../enum/ResourcePriority';
 
 export class NCloudProvider implements Provider {
     accessKey: string;

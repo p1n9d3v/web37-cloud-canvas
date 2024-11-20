@@ -2,15 +2,15 @@ import { useCanvasContext } from '@contexts/CanvasContext';
 import { useCanvasDimensionContext } from '@contexts/CanvasDimensionContext';
 import { Point } from '@types';
 import {
-    getGridAlignedPoint2D,
-    getGridAlignedPoint3D,
+    getGridAlignedPoint2d,
+    getGridAlignedPoint3d,
     getSvgPoint,
 } from '@utils';
 import { useState } from 'react';
 
 type Props = {
     initialPoint: Point;
-    updateFn: (dragOffset: Point) => void;
+    updateFn: (newPoint: Point) => void;
 };
 
 export default ({ initialPoint, updateFn }: Props) => {
@@ -43,15 +43,10 @@ export default ({ initialPoint, updateFn }: Props) => {
 
             const alignedPoint =
                 dimension === '2d'
-                    ? getGridAlignedPoint2D(newPoint)
-                    : getGridAlignedPoint3D(newPoint);
+                    ? getGridAlignedPoint2d(newPoint)
+                    : getGridAlignedPoint3d(newPoint);
 
-            const alignedOffset = {
-                x: alignedPoint.x - initialPoint.x,
-                y: alignedPoint.y - initialPoint.y,
-            };
-
-            updateFn(alignedOffset);
+            updateFn(alignedPoint);
         });
     };
 

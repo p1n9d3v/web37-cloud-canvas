@@ -1,8 +1,9 @@
 import { Dimension } from '@types';
-import { createContext, ReactNode, useContext, useState } from 'react';
+import { createContext, ReactNode, useContext, useRef, useState } from 'react';
 
 type CanvasDimensionContextProps = {
     dimension: Dimension;
+    prevDimension: Dimension;
     toggleDimension: () => void;
 };
 
@@ -14,14 +15,22 @@ export const CanvasDimensionProvider = ({
 }: {
     children: ReactNode;
 }) => {
-    const [dimension, setDimension] = useState<Dimension>('3d');
+    const [dimension, setDimension] = useState<Dimension>('2d');
+    const prevDimensionRef = useRef<Dimension | null>('2d');
 
     const toggleDimension = () => {
+        prevDimensionRef.current = dimension;
         setDimension((prev) => (prev === '2d' ? '3d' : '2d'));
     };
 
     return (
-        <CanvasDimensionContext.Provider value={{ dimension, toggleDimension }}>
+        <CanvasDimensionContext.Provider
+            value={{
+                dimension,
+                prevDimension: prevDimensionRef.current!,
+                toggleDimension,
+            }}
+        >
             {children}
         </CanvasDimensionContext.Provider>
     );

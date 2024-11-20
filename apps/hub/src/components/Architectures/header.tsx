@@ -26,11 +26,11 @@ export const ArchitectureHeader = () => {
 
     return (
         <div className="bg-gray-50 flex border-b p-3 font-semibold">
-            <div className="basis-7/12">Architecture</div>
-            <div className="flex flex-grow justify-end items-center text-right">
-                <div>Costs</div>
-                <div className="w-32">Stars</div>
-                <div className="w-32">Imports</div>
+            <div className="w-full">Architecture</div>
+            <div className="flex items-center">
+                <div className="w-24">Costs</div>
+                <div className="w-24">Imports</div>
+                <div className="w-24">Stars</div>
             </div>
             {/* {data.map((item) => (
                 <div

@@ -52,15 +52,7 @@ export const gridToScreen2d = (gridPoint: GridPoint): Point => {
     return { x, y };
 };
 
-export const convert2Dto3DPoint = (gridPoint: GridPoint) => {
-    const { col, row } = gridPoint;
-    return {
-        x: (col - row) * (GRID_3D_WIDTH_SIZE / 2),
-        y: (col + row) * (GRID_3D_HEIGHT_SIZE / 2),
-    };
-};
-
-export const getGridAlignedPoint2d = (point: Point) => {
+export const alignPoint2d = (point: Point) => {
     const snappedSize = GRID_2D_SIZE / 4;
     const gridAlignedX = Math.round(point.x / snappedSize) * snappedSize;
     const gridAlignedY = Math.round(point.y / snappedSize) * snappedSize;
@@ -71,10 +63,10 @@ export const getGridAlignedPoint2d = (point: Point) => {
     };
 };
 
-export const getGridAlignedPoint3d = (point: Point) => {
+export const alignPoint3d = (point: Point) => {
     const { col, row } = screenToGrid3d(point);
-    const snappedSize = 1 / 4;
 
+    const snappedSize = 1 / 4;
     const snappedCol = Math.round(col / snappedSize) * snappedSize;
     const snappedRow = Math.round(row / snappedSize) * snappedSize;
 
@@ -82,4 +74,12 @@ export const getGridAlignedPoint3d = (point: Point) => {
         col: snappedCol,
         row: snappedRow,
     });
+};
+
+export const convert3dTo2dPoint = (point: Point) => {
+    return gridToScreen2d(screenToGrid3d(point));
+};
+
+export const convert2dTo3dPoint = (point: Point) => {
+    return gridToScreen3d(screenToGrid2d(point));
 };

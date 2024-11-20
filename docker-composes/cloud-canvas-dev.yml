@@ -73,7 +73,7 @@ services:
                 condition: service_healthy
             redis:
                 condition: service_healthy
-        entrypoint: sh -c "npx prisma migrate deploy && npx prisma db seed && node ./dist/src/main.js"
+        entrypoint: sh -c "npx prisma generate && npx prisma migrate deploy && npx prisma db seed && node ./dist/src/main.js"
         networks:
             - cloud-canvas-network
         restart: unless-stopped

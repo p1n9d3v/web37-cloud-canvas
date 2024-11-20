@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { LinkButton } from './LinkButton';
 
 export const GlobalHeader = () => {
     const router = useRouter();
@@ -39,12 +40,7 @@ export const GlobalHeader = () => {
                                     </button>
                                 </li>
                                 <li>
-                                    <Link
-                                        href="/canvas"
-                                        className="bg-blue-600 text-white py-2 px-4 rounded"
-                                    >
-                                        새 캔버스
-                                    </Link>
+                                    <NewCanvasButton />
                                 </li>
                             </>
                         ) : (
@@ -55,12 +51,7 @@ export const GlobalHeader = () => {
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link
-                                        href="/canvas"
-                                        className="bg-blue-600 text-white py-2 px-4 rounded"
-                                    >
-                                        새 캔버스
-                                    </Link>
+                                    <NewCanvasButton />
                                 </li>
                             </>
                         )}
@@ -70,3 +61,5 @@ export const GlobalHeader = () => {
         </header>
     );
 };
+
+const NewCanvasButton = () => <LinkButton text="새 캔버스" href="/canvas" />;

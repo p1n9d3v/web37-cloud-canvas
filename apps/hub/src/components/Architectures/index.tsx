@@ -166,15 +166,11 @@ export const Architectures = () => {
 
     return (
         <>
-            <div className="w-[1040px] mx-auto overflow-x-auto my-4">
-                {/* <table className="min-w-full bg-white border-y border-gray-200"> */}
+            <div className="max-w-5xl mx-auto overflow-x-auto my-4">
                 <ArchitectureHeader />
-                {/* <tbody> */}
                 {data.map((item) => (
                     <ArchitectureItem key={item.id} {...item} />
                 ))}
-                {/* </tbody> */}
-                {/* </table> */}
             </div>
         </>
     );

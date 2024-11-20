@@ -1,36 +1,36 @@
 'use client';
 import { useSelectedLayoutSegment } from 'next/navigation';
 import { SidebarItem } from './item';
+import Link from 'next/link';
 
 export const MyPageSidebar = () => {
     const segment = useSelectedLayoutSegment();
 
     const data = [
         {
-            name: '내 아키텍쳐',
+            name: 'My Architectures',
             href: './architectures',
         },
         {
-            name: 'star 누른',
+            name: 'Starred Architectures',
             href: './starred',
         },
         {
-            name: '내가 공유한',
+            name: 'Shared Architectures',
             href: './shared',
-        },
-        {
-            name: '회원 탈퇴',
-            href: './withdrawal',
         },
     ];
     return (
         <>
-            <h2 className="px-4 mb-3 font-bold text-lg">마이 페이지</h2>
+            <h2 className="px-4 mb-3 font-bold text-lg">My Page</h2>
             <ul>
                 {data.map((item) => (
                     <SidebarItem key={item.href} segment={segment} {...item} />
                 ))}
             </ul>
+            <Link href="./withdrawal" className="px-2 fixed bottom-0 mb-10">
+                Withdrawal
+            </Link>
         </>
     );
 };

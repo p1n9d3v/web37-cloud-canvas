@@ -2,9 +2,10 @@ import CloudFunctionNode from '@components/Node/ncloud/CloudFunctionNode';
 import DBMySQLNode from '@components/Node/ncloud/DBMySQLNode';
 import ObjectStorageNode from '@components/Node/ncloud/ObjectStorageNode';
 import ServerNode from '@components/Node/ncloud/ServerNode';
+import { useCanvasDimensionContext } from '@contexts/CanvasDimensionContext';
 import { useCanvasInstanceContext } from '@contexts/CanvasInstanceContext/index';
 import useDrag from '@hooks/useDrag';
-import { Node, Point } from '@types';
+import { Node } from '@types';
 import { useEffect } from 'react';
 
 const nodeFactory = (type: Node['type']) => {
@@ -24,11 +25,11 @@ const nodeFactory = (type: Node['type']) => {
     }
 };
 type Props = {
-    id: string;
-    type: string;
-    point: Point;
+    node: Node;
 };
-export default ({ id, point, type }: Props) => {
+export default ({ node }: Props) => {
+    const { id, type, point } = node;
+    const { dimension } = useCanvasDimensionContext();
     const { dispatch } = useCanvasInstanceContext();
     const { isDragging, startDrag, moveDrag, stopDrag } = useDrag({
         initialPoint: point,
@@ -38,6 +39,7 @@ export default ({ id, point, type }: Props) => {
                 payload: {
                     id,
                     point,
+                    dimension,
                 },
             }),
     });

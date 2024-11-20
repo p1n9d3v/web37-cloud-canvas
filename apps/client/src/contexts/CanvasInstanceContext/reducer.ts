@@ -1,3 +1,4 @@
+import { computeGroupBounds } from '@contexts/CanvasInstanceContext/helpers';
 import { Group, Node, Point } from '@types';
 
 export type CanvasInstanceState = {
@@ -16,11 +17,15 @@ export type CanvasInstanceAction =
       }
     | {
           type: 'MOVE_NODE';
-          payload: { id: string; point: Point };
+          payload: { id: string; point: Point; dimension: '2d' | '3d' };
       }
     | {
           type: 'MOVE_GROUP';
           payload: { id: string; point: Point };
+      }
+    | {
+          type: 'UPDATE_ALL';
+          payload: Partial<CanvasInstanceState>;
       };
 
 export const canvasInstanceReducer = (
@@ -28,8 +33,13 @@ export const canvasInstanceReducer = (
     action: CanvasInstanceAction,
 ) => {
     switch (action.type) {
+        case 'UPDATE_ALL': {
+            return {
+                ...state,
+                ...action.payload,
+            };
+        }
         case 'UPDATE_NODE': {
-            console.log('UPDATE_NODE');
             return {
                 ...state,
                 nodes: {
@@ -42,7 +52,6 @@ export const canvasInstanceReducer = (
             };
         }
         case 'UPDATE_GROUP': {
-            console.log('UPDATE_GROUP');
             return {
                 ...state,
                 groups: {
@@ -55,50 +64,25 @@ export const canvasInstanceReducer = (
             };
         }
         case 'MOVE_NODE': {
-            const { id, point } = action.payload;
+            const { id, point, dimension } = action.payload;
             const node = state.nodes[id];
-            const { groupIds, size } = node;
+            const { groupIds } = node;
 
-            const updatedState = {
-                ...state,
-                nodes: {
-                    ...state.nodes,
-                    [id]: {
-                        ...node,
-                        point,
-                    },
+            const updatedNodes = {
+                ...state.nodes,
+                [id]: {
+                    ...node,
+                    point,
                 },
             };
 
             const groups = groupIds.map((groupId) => state.groups[groupId]);
             const updatedGroups = groups.reduce((acc, group) => {
                 const innerNodes = group.nodeIds.map(
-                    (nodeId) => updatedState.nodes[nodeId],
+                    (nodeId) => updatedNodes[nodeId],
                 );
 
-                const minX = Math.min(
-                    ...innerNodes.map((node) => node.point.x),
-                );
-                const minY = Math.min(
-                    ...innerNodes.map((node) => node.point.y),
-                );
-                const maxX = Math.max(
-                    ...innerNodes.map(
-                        (node) => node.point.x + node.size.d2.width,
-                    ),
-                );
-                const maxY = Math.max(
-                    ...innerNodes.map(
-                        (node) => node.point.y + node.size.d2.height,
-                    ),
-                );
-
-                const bounds = {
-                    x: minX - 180,
-                    y: minY - 180,
-                    width: maxX - minX + 360,
-                    height: maxY - minY + 360,
-                };
+                const bounds = computeGroupBounds(innerNodes, dimension);
                 return {
                     ...acc,
                     [group.id]: {
@@ -109,7 +93,8 @@ export const canvasInstanceReducer = (
             }, {});
 
             return {
-                ...updatedState,
+                ...state,
+                nodes: updatedNodes,
                 groups: {
                     ...state.groups,
                     ...updatedGroups,
@@ -125,22 +110,20 @@ export const canvasInstanceReducer = (
                 x: point.x - group.bounds.x,
                 y: point.y - group.bounds.y,
             };
-            const updatedState = {
-                ...state,
-                groups: {
-                    ...state.groups,
-                    [id]: {
-                        ...group,
-                        bounds: {
-                            ...group.bounds,
-                            x: point.x,
-                            y: point.y,
-                        },
+
+            const updatedGroups = {
+                ...state.groups,
+                [id]: {
+                    ...group,
+                    bounds: {
+                        ...group.bounds,
+                        x: point.x,
+                        y: point.y,
                     },
                 },
             };
             const updatedNodes = nodeIds.reduce((acc, nodeId) => {
-                const node = updatedState.nodes[nodeId];
+                const node = state.nodes[nodeId];
                 const updatedNode = {
                     ...node,
                     point: {
@@ -154,11 +137,12 @@ export const canvasInstanceReducer = (
                 };
             }, {});
             return {
-                ...updatedState,
+                ...state,
                 nodes: {
                     ...state.nodes,
                     ...updatedNodes,
                 },
+                groups: updatedGroups,
             };
         }
         default:

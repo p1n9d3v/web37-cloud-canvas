@@ -4,7 +4,6 @@ on:
         branches:
             - development
         types: [closed]
-    workflow_dispatch:
 
 concurrency:
     group: cloud-canvas
@@ -45,6 +44,7 @@ jobs:
                       cloud-canvas.kr.ncr.ntruss.com/back:${{ github.sha }}
 
     CD:
+        needs: CI
         runs-on: ubuntu-latest
 
         steps:

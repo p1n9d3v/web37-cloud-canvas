@@ -17,7 +17,7 @@ export type Node = {
     point: Point;
     size: {
         d2: { width: number; height: number };
-        d3: { width: number; height: number };
+        d3: { width: number; height: number; offset?: number };
     };
     properties: { [key: string]: any };
     connectors: { x: number; y: number }[];

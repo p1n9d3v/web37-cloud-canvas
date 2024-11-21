@@ -1,6 +1,11 @@
 import { computeGroupBounds } from '@contexts/CanvasInstanceContext/helpers';
 import { Dimension, Group, Node, Point } from '@types';
-import { convert2dTo3dPoint, convert3dTo2dPoint } from '@utils';
+import {
+    alignPoint2d,
+    alignPoint3d,
+    convert2dTo3dPoint,
+    convert3dTo2dPoint,
+} from '@utils';
 
 export type CanvasInstanceState = {
     nodes: Record<string, Node>;
@@ -65,11 +70,29 @@ export const canvasInstanceReducer = (
             const node = state.nodes[id];
             const { groupIds } = node;
 
+            let newPoint = point;
+            if (dimension === '2d') {
+                newPoint = alignPoint2d(newPoint);
+            } else {
+                const adjustPoint = {
+                    x: point.x + node.size.d3.width / 2,
+                    y: point.y + node.size.d3.height,
+                };
+                newPoint = alignPoint3d(adjustPoint);
+                newPoint = {
+                    x: newPoint.x - node.size.d3.width / 2,
+                    y:
+                        newPoint.y -
+                        node.size.d3.height -
+                        (node.size.d3.offset || 0),
+                };
+            }
+
             const updatedNodes = {
                 ...state.nodes,
                 [id]: {
                     ...node,
-                    point,
+                    point: newPoint,
                 },
             };
 

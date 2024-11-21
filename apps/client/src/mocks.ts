@@ -7,7 +7,7 @@ const CloudFunctionNode = {
     point: { x: 90, y: 90 },
     size: {
         d2: { width: 90, height: 90 },
-        d3: { width: 96, height: 113.438 },
+        d3: { width: 96, height: 113.438, offset: 10 },
     },
     properties: {
         vpc: 'vpc1',
@@ -24,7 +24,7 @@ const ObjectStorageNode = {
     point: { x: 100, y: 0 },
     size: {
         d2: { width: 90, height: 90 },
-        d3: { width: 100.626, height: 115.695 },
+        d3: { width: 100.626, height: 115.695, offset: 20 },
     },
     properties: {
         vpc: 'vpc1',

@@ -74,6 +74,7 @@ services:
         networks:
             - cloud-canvas-network
         restart: unless-stopped
+        pull_policy: always
 
     front:
         image: t84ar7xr.kr.private-ncr.ntruss.com/front:dev
@@ -83,6 +84,7 @@ services:
         networks:
             - cloud-canvas-network
         restart: unless-stopped
+        pull_policy: always
 
     fluentd:
         build: ./logging/fluentd/

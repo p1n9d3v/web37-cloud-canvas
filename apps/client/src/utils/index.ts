@@ -114,3 +114,37 @@ export const getConnectorPoints = (node: Node, dimension: Dimension) => {
         bottom: { x: point.x + width / 2, y: point.y + height },
     };
 };
+
+//INFO: 선분과 내적/외적 사이의 최단 거리를 계산(For Bend Point)
+export const getDistanceToSegment = (
+    p: Point,
+    p1: Point,
+    p2: Point,
+): number => {
+    const A = p.x - p1.x;
+    const B = p.y - p1.y;
+    const C = p2.x - p1.x;
+    const D = p2.y - p1.y;
+
+    const dot = A * C + B * D;
+    const len_sq = C * C + D * D;
+    let param = -1;
+    if (len_sq !== 0) param = dot / len_sq;
+
+    let xx, yy;
+
+    if (param < 0) {
+        xx = p1.x;
+        yy = p1.y;
+    } else if (param > 1) {
+        xx = p2.x;
+        yy = p2.y;
+    } else {
+        xx = p1.x + param * C;
+        yy = p1.y + param * D;
+    }
+
+    const dx = p.x - xx;
+    const dy = p.y - yy;
+    return Math.sqrt(dx * dx + dy * dy);
+};

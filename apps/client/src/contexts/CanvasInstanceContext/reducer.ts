@@ -63,8 +63,9 @@ export type CanvasInstanceAction =
     | {
           type: 'SPLIT_EDGE';
           payload: {
-              id: string;
+              edgeId: string;
               point: Point;
+              insertAfter: number;
           };
       }
     | {
@@ -308,22 +309,25 @@ export const canvasInstanceReducer = (
             };
         }
         case 'SPLIT_EDGE': {
-            const { id, point } = action.payload;
-            const edge = state.edges[id];
+            const { edgeId, point, insertAfter } = action.payload;
+            const edge = state.edges[edgeId];
             if (!edge) {
                 return state;
             }
+            const updatedBendPoints = [...edge.bendPoints];
+
+            updatedBendPoints.splice(insertAfter, 0, point);
 
             const updatedEdge: Edge = {
                 ...edge,
-                bendPoints: [...edge.bendPoints, point],
+                bendPoints: updatedBendPoints,
             };
 
             return {
                 ...state,
                 edges: {
                     ...state.edges,
-                    [id]: updatedEdge,
+                    [edgeId]: updatedEdge,
                 },
             };
         }

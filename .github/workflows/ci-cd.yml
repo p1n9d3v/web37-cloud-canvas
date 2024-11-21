@@ -9,7 +9,7 @@ concurrency:
     group: cloud-canvas
 
 jobs:
-    client-image-build-and-push:
+    CI:
         runs-on: ubuntu-latest
 
         steps:
@@ -43,8 +43,13 @@ jobs:
                       cloud-canvas.kr.ncr.ntruss.com/back:dev
                       cloud-canvas.kr.ncr.ntruss.com/back:${{ github.sha }}
 
+    CD:
+        runs-on: ubuntu-latest
+
+        steps:
             - name: SSH login and deploy
               run: |
-                  echo ${{ secrets.NCP_DEV_SSH }} > dev_login.pem
+                  printf "%s" "${{ secrets.NCP_DEV_SSH }}" > dev_login.pem
+                  chmod 600 dev_login.pem
                   ssh -i dev_login.pem ncloud@${{ secrets.NCP_DEV_INSTANCE }} -p ${{ secrets.NCP_DEV_INSTANCE_PORT }}
                   ./docker.sh

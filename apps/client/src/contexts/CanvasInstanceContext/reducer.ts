@@ -1,21 +1,24 @@
 import {
-    convertNodePointDimension,
     alignNodePoint,
+    convertNodePointDimension,
     getParentGroups,
     sortNodes,
     updateGroupBounds,
 } from '@contexts/CanvasInstanceContext/helpers';
-import { Dimension, Group, Node, Point } from '@types';
+import { Dimension, Edge, Group, Node, Point } from '@types';
 import {
     alignPoint2d,
     alignPoint3d,
     convert2dTo3dPoint,
     convert3dTo2dPoint,
 } from '@utils';
+import { nanoid } from 'nanoid';
 
 export type CanvasInstanceState = {
     nodes: Record<string, Node>;
+    edges: Record<string, Edge>;
     groups: Record<string, Group>;
+    connection: { from: Point; to: Point } | null;
 };
 
 export type CanvasInstanceAction =
@@ -40,6 +43,22 @@ export type CanvasInstanceAction =
           payload: {
               dimension: Dimension;
           };
+      }
+    | {
+          type: 'OPEN_CONNECTION';
+          payload: {
+              point: Point;
+          };
+      }
+    | {
+          type: 'CONNECT_CONNECTION';
+          payload: {
+              point: Point;
+          };
+      }
+    | {
+          type: 'ADD_EDGE';
+          payload: Pick<Edge, 'target' | 'source' | 'type'>;
       };
 
 export const canvasInstanceReducer = (
@@ -220,6 +239,50 @@ export const canvasInstanceReducer = (
                         },
                     };
                 }, {}),
+            };
+        }
+
+        case 'OPEN_CONNECTION': {
+            return {
+                ...state,
+                connection: {
+                    from: action.payload.point,
+                    to: action.payload.point,
+                },
+            };
+        }
+        case 'CONNECT_CONNECTION': {
+            if (!state.connection) {
+                console.error('No use connection');
+                return state;
+            }
+            return {
+                ...state,
+                connection: {
+                    ...state.connection,
+                    to: action.payload.point,
+                },
+            };
+        }
+        case 'ADD_EDGE': {
+            const { source, target, type } = action.payload;
+            const newEdge = {
+                id: `edge-${nanoid()}`,
+                type,
+                source,
+                target,
+                bendPoints: [],
+            };
+
+            return {
+                ...state,
+                connection: null,
+                edges: {
+                    ...state.edges,
+                    [newEdge.id]: {
+                        ...newEdge,
+                    },
+                },
             };
         }
         default:

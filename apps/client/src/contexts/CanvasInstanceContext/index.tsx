@@ -32,7 +32,7 @@ export const CanvasInstanceProvider = ({
     const { dimension, prevDimension } = useCanvasDimensionContext();
     const [state, dispatch] = useReducer(
         canvasInstanceReducer,
-        initialState ?? { nodes: {}, groups: {} },
+        initialState ?? { nodes: {}, edges: {}, groups: {}, connection: null },
     );
 
     useEffect(() => {

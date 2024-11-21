@@ -1,12 +1,11 @@
 import { GRID_2D_SIZE, NODE_BASE_SIZE } from '@constants';
 import { CanvasInstanceState } from '@contexts/CanvasInstanceContext/reducer';
-import { Bounds, Dimension, Group, Node, Point } from '@types';
+import { Bounds, Dimension, Group, Node, Point, Size } from '@types';
 import {
     alignPoint2d,
     alignPoint3d,
     convert2dTo3dPoint,
     convert3dTo2dPoint,
-    getNodeOffsetForConvertDimension,
 } from '@utils';
 
 export const computeBounds = (_bounds: Bounds[], dimension: Dimension) => {
@@ -79,6 +78,15 @@ export const updateGroupBounds = (
     }, {});
 };
 
+export const getNodeOffsetForConvertDimension = (
+    nodeSize: Size,
+    baseSize: Size,
+) => {
+    return {
+        x: (baseSize.width - nodeSize.width) / 2,
+        y: baseSize.height - nodeSize.height - (nodeSize.offset || 0),
+    };
+};
 //INFO: 처음이 2d로 시작하기 때문에 nodeSize : 3d , baseSize : 3d로 해야함. 다른 방법은 잘 모르곘음.
 //2d에서 3d로 변환할 때는 3d에서 2d로 변환할 때와 달리 baseSize와 nodeSize가 반대로 들어가야 할 것 같음
 export const convertNodePointDimension = (node: Node, dimension: Dimension) => {

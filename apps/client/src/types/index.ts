@@ -20,14 +20,22 @@ export type Node = {
         '3d': Size;
     };
     properties: { [key: string]: any };
-    connectors: { x: number; y: number }[];
+    //INFO: 미리 노드를 생성할 때 connector를 계산할지 고민
+    // connectors: { x: number; y: number }[];
     groupIds: string[];
 };
 
 export type Edge = {
     id: string;
-    sourceNodeId: string;
-    targetNodeId: string;
+    type: 'arrow' | 'line';
+    source: {
+        id: string;
+        connectorType: ConnectorType;
+    };
+    target: {
+        id: string;
+        connectorType: ConnectorType;
+    };
     bendPoints: { x: number; y: number }[];
 };
 
@@ -40,16 +48,7 @@ export type Group = {
     properties: { [key: string]: any };
     childGroupIds: string[];
     parentGroupId?: string;
-    // parentGroupId?: string;
 };
 
-// export type Group = {
-//   id: string;
-//   type: 'Region' | 'VPC' | 'Subnet' | 'SecurityGroup'; // 그룹 유형 명시
-//   name: string;
-//   nodes: string[]; // 그룹에 직접 속한 노드들의 ID
-//   groups: string[]; // 하위 그룹들의 ID
-//   parentGroupId?: string; // 상위 그룹의 ID (루트 그룹인 경우 없음)
-//   bounds: { x: number; y: number; width: number; height: number };
-//   properties: { [key: string]: any }; // 그룹별 속성 (CIDR 블록 등)
-// };
+export type ConnectorType = 'top' | 'right' | 'bottom' | 'left';
+export type Connectors = Record<ConnectorType, Point>;

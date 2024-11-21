@@ -4,8 +4,6 @@ services:
         container_name: redis
         ports:
             - '6379:6379'
-        volumes:
-            - redis-data:/data
         healthcheck:
             test: ['CMD', 'redis-cli', 'ping']
             interval: 30s
@@ -33,7 +31,6 @@ services:
         ports:
             - '3306:3306'
         volumes:
-            - mysql-data:/var/lib/mysql
             - ../config/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
             - ../config/mysql/log.cnf:/etc/mysql/conf.d/log.cnf:ro
         healthcheck:
@@ -62,9 +59,7 @@ services:
         restart: unless-stopped
 
     back:
-        build:
-            context: ../
-            dockerfile: apps/server/Dockerfile
+        image: t84ar7xr.kr.private-ncr.ntruss.com/back:dev
         container_name: back
         environment:
             DATABASE_URL: mysql://cloud_canvas_user:password@mysql:3306/cloud_canvas
@@ -75,21 +70,21 @@ services:
                 condition: service_healthy
             redis:
                 condition: service_healthy
-        entrypoint: sh -c "npx prisma migrate deploy && npx prisma db seed && node ./dist/src/main.js"
+        entrypoint: sh -c "npx prisma generate && npx prisma migrate deploy && npx prisma db seed && node ./dist/src/main.js"
         networks:
             - cloud-canvas-network
         restart: unless-stopped
+        pull_policy: always
 
     front:
-        build:
-            context: ../
-            dockerfile: apps/client/Dockerfile
+        image: t84ar7xr.kr.private-ncr.ntruss.com/front:dev
         container_name: front
         ports:
             - '5001:5000'
         networks:
             - cloud-canvas-network
         restart: unless-stopped
+        pull_policy: always
 
     fluentd:
         build: ./logging/fluentd/
@@ -131,9 +126,3 @@ networks:
         driver: bridge
     cloud-canvas-database-network:
         driver: bridge
-
-volumes:
-    redis-data:
-        driver: local
-    mysql-data:
-        driver: local

@@ -91,18 +91,30 @@ export const canvasInstanceReducer = (
                 };
             }
 
-            const updatedNodes = {
+            const updatedNodes = Object.values({
                 ...state.nodes,
                 [id]: {
                     ...node,
                     point: newPoint,
                 },
-            };
+            })
+                .sort((a, b) => {
+                    if (a.point.y === b.point.y) {
+                        return a.point.x - b.point.x;
+                    }
+                    return a.point.y - b.point.y;
+                })
+                .reduce((acc, node) => {
+                    return {
+                        ...acc,
+                        [node.id]: node,
+                    };
+                }, {});
 
             const groups = groupIds.map((groupId) => state.groups[groupId]);
             const updatedGroups = groups.reduce((acc, group) => {
                 const innerNodes = group.nodeIds.map(
-                    (nodeId) => updatedNodes[nodeId],
+                    (nodeId) => state.nodes[nodeId],
                 );
 
                 const bounds = computeGroupBounds(innerNodes, dimension);

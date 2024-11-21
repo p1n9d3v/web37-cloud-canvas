@@ -127,9 +127,3 @@ networks:
         driver: bridge
     cloud-canvas-database-network:
         driver: bridge
-
-volumes:
-    redis-data:
-        driver: local
-    mysql-data:
-        driver: local

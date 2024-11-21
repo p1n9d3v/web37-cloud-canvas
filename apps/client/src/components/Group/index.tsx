@@ -1,4 +1,5 @@
 import RegionGroup from '@components/Group/ncloud/RegionGroup';
+import { useCanvasDimensionContext } from '@contexts/CanvasDimensionContext';
 import { useCanvasInstanceContext } from '@contexts/CanvasInstanceContext/index';
 import useDrag from '@hooks/useDrag';
 import { Group } from '@types';
@@ -17,6 +18,7 @@ type Props = {
 
 export default ({ group }: Props) => {
     const { id, bounds, type } = group;
+    const { dimension } = useCanvasDimensionContext();
     const { dispatch } = useCanvasInstanceContext();
     const { isDragging, startDrag, moveDrag, stopDrag } = useDrag({
         initialPoint: { x: bounds.x, y: bounds.y },
@@ -26,6 +28,7 @@ export default ({ group }: Props) => {
                 payload: {
                     id,
                     point,
+                    dimension,
                 },
             }),
     });

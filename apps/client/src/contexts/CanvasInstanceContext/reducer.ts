@@ -1,6 +1,12 @@
-import { computeGroupBounds } from '@contexts/CanvasInstanceContext/helpers';
+import { NODE_BASE_SIZE } from '@constants';
+import {
+    adjustNodePoint,
+    computeGroupBounds,
+} from '@contexts/CanvasInstanceContext/helpers';
 import { Dimension, Group, Node, Point } from '@types';
 import {
+    adjustPoint2dTo3d,
+    adjustPoint3dTo2d,
     alignPoint2d,
     alignPoint3d,
     convert2dTo3dPoint,
@@ -27,7 +33,7 @@ export type CanvasInstanceAction =
       }
     | {
           type: 'MOVE_GROUP';
-          payload: { id: string; point: Point };
+          payload: { id: string; point: Point; dimension: Dimension };
       }
     | {
           type: 'ADJUST_POINT_FOR_DIMENSION';
@@ -123,12 +129,14 @@ export const canvasInstanceReducer = (
         }
 
         case 'MOVE_GROUP': {
-            const { id, point } = action.payload;
+            const { id, point, dimension } = action.payload;
             const group = state.groups[id];
             const { nodeIds } = group;
+            const newPoint =
+                dimension === '2d' ? alignPoint2d(point) : alignPoint3d(point);
             const offset = {
-                x: point.x - group.bounds.x,
-                y: point.y - group.bounds.y,
+                x: newPoint.x - group.bounds.x,
+                y: newPoint.y - group.bounds.y,
             };
 
             const updatedGroups = {
@@ -137,8 +145,8 @@ export const canvasInstanceReducer = (
                     ...group,
                     bounds: {
                         ...group.bounds,
-                        x: point.x,
-                        y: point.y,
+                        x: newPoint.x,
+                        y: newPoint.y,
                     },
                 },
             };
@@ -175,13 +183,12 @@ export const canvasInstanceReducer = (
 
             return {
                 ...state,
-                nodes: Object.values(nodes).reduce((acc, cur) => {
-                    const { point } = cur;
-                    const updatedPoint = converterPoint(point);
+                nodes: Object.values(nodes).reduce((acc, node) => {
+                    const updatedPoint = adjustNodePoint(node, dimension);
                     return {
                         ...acc,
-                        [cur.id]: {
-                            ...cur,
+                        [node.id]: {
+                            ...node,
                             point: updatedPoint,
                         },
                     };

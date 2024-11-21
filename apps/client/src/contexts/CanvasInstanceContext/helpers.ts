@@ -1,6 +1,11 @@
-import { GRID_2D_SIZE } from '@constants';
+import { GRID_2D_SIZE, NODE_BASE_SIZE } from '@constants';
 import { Dimension, Node } from '@types';
-import { convert2dTo3dPoint, convert3dTo2dPoint } from '@utils';
+import {
+    adjustPoint2dTo3d,
+    adjustPoint3dTo2d,
+    convert2dTo3dPoint,
+    convert3dTo2dPoint,
+} from '@utils';
 
 export const computeGroupBounds = (nodes: Node[], dimension: Dimension) => {
     let points = nodes.map((node) => node.point);
@@ -34,4 +39,18 @@ export const computeGroupBounds = (nodes: Node[], dimension: Dimension) => {
         width,
         height,
     };
+};
+
+export const adjustNodePoint = (node: Node, dimension: Dimension) => {
+    const { point, size } = node;
+    let result;
+    if (dimension === '2d') {
+        result = adjustPoint3dTo2d(point, size.d3, NODE_BASE_SIZE['3d']);
+        result = convert3dTo2dPoint(result);
+    } else {
+        result = convert2dTo3dPoint(point);
+        result = adjustPoint2dTo3d(result, size.d3, NODE_BASE_SIZE['3d']);
+    }
+
+    return result;
 };

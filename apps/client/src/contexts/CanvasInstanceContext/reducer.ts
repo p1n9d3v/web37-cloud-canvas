@@ -1,7 +1,9 @@
 import {
-    adjustNodePoint,
-    computeBounds,
+    convertNodePointDimension,
+    alignNodePoint,
+    getParentGroups,
     sortNodes,
+    updateGroupBounds,
 } from '@contexts/CanvasInstanceContext/helpers';
 import { Dimension, Group, Node, Point } from '@types';
 import {
@@ -74,29 +76,11 @@ export const canvasInstanceReducer = (
             const node = state.nodes[id];
             const { groupIds } = node;
 
-            let newPoint = point;
-            if (dimension === '2d') {
-                newPoint = alignPoint2d(newPoint);
-            } else {
-                const adjustPoint = {
-                    x: point.x + node.size[dimension].width / 2,
-                    y: point.y + node.size[dimension].height,
-                };
-                newPoint = alignPoint3d(adjustPoint);
-                newPoint = {
-                    x: newPoint.x - node.size[dimension].width / 2,
-                    y:
-                        newPoint.y -
-                        node.size[dimension].height -
-                        (node.size[dimension].offset || 0),
-                };
-            }
-
             let updatedNodes = {
                 ...state.nodes,
                 [id]: {
                     ...node,
-                    point: newPoint,
+                    point: alignNodePoint(node, point, dimension),
                 },
             };
             if (dimension === '3d') {
@@ -104,30 +88,7 @@ export const canvasInstanceReducer = (
             }
 
             const groups = groupIds.map((groupId) => state.groups[groupId]);
-            let updatedGroups = groups.reduce((acc, group) => {
-                const childGroupBounds = group.childGroupIds.map(
-                    (childGroupId) => {
-                        return state.groups[childGroupId].bounds;
-                    },
-                );
-                const points = group.nodeIds
-                    .map((nodeId) => ({
-                        ...state.nodes[nodeId].point,
-                        ...state.nodes[nodeId].size[dimension],
-                    }))
-                    .concat(childGroupBounds);
-
-                const bounds = computeBounds(points, dimension);
-
-                return {
-                    ...acc,
-                    [group.id]: {
-                        ...group,
-                        bounds,
-                    },
-                };
-            }, {});
-
+            const updatedGroups = updateGroupBounds(state, groups, dimension);
             return {
                 ...state,
                 nodes: updatedNodes,
@@ -160,7 +121,8 @@ export const canvasInstanceReducer = (
                 },
             };
 
-            const updateChildrenGroups = group.childGroupIds.reduce(
+            //INFO: Update Inner Group Point
+            const updatedChildrenGroups = group.childGroupIds.reduce(
                 (acc, childGroupId) => {
                     const childGroup = state.groups[childGroupId];
                     const updatedChildGroup = {
@@ -180,6 +142,7 @@ export const canvasInstanceReducer = (
                 {},
             );
 
+            //INFO: Update Inner Node Point
             const updatedNodes = nodeIds.reduce((acc, nodeId) => {
                 const node = state.nodes[nodeId];
                 const updatedNode = {
@@ -195,40 +158,14 @@ export const canvasInstanceReducer = (
                 };
             }, {});
 
-            let updatedParentGroup = {};
-            if (group.parentGroupId) {
-                const getParentGroups = (group: Group): Group[] => {
-                    if (!group.parentGroupId) return [];
-                    const parentGroup = state.groups[group.parentGroupId];
-                    return [parentGroup, ...getParentGroups(parentGroup)];
-                };
-
-                const allParentGroups = getParentGroups(group);
-                updatedParentGroup = allParentGroups.reduce(
-                    (acc, parentGroup) => {
-                        const childGroupBounds = parentGroup.childGroupIds.map(
-                            (childGroupId) => {
-                                return state.groups[childGroupId].bounds;
-                            },
-                        );
-                        const points = parentGroup.nodeIds
-                            .map((nodeId) => ({
-                                ...state.nodes[nodeId].point,
-                                ...state.nodes[nodeId].size[dimension],
-                            }))
-                            .concat(childGroupBounds);
-                        const bounds = computeBounds(points, dimension);
-                        return {
-                            ...acc,
-                            [parentGroup.id]: {
-                                ...parentGroup,
-                                bounds,
-                            },
-                        };
-                    },
-                    {},
-                );
-            }
+            //INFO: Update Parent Group Bounds
+            const updatedParentGroups = group.parentGroupId
+                ? updateGroupBounds(
+                      state,
+                      getParentGroups(state.groups, group),
+                      dimension,
+                  )
+                : {};
 
             return {
                 ...state,
@@ -239,8 +176,8 @@ export const canvasInstanceReducer = (
                 groups: {
                     ...state.groups,
                     ...updatedGroups,
-                    ...updateChildrenGroups,
-                    ...updatedParentGroup,
+                    ...updatedChildrenGroups,
+                    ...updatedParentGroups,
                 },
             };
         }
@@ -255,7 +192,10 @@ export const canvasInstanceReducer = (
             return {
                 ...state,
                 nodes: Object.values(nodes).reduce((acc, node) => {
-                    const updatedPoint = adjustNodePoint(node, dimension);
+                    const updatedPoint = convertNodePointDimension(
+                        node,
+                        dimension,
+                    );
                     return {
                         ...acc,
                         [node.id]: {

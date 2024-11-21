@@ -1,23 +1,28 @@
 import { GRID_2D_SIZE, NODE_BASE_SIZE } from '@constants';
-import { Dimension, Node } from '@types';
+import { Bounds, Dimension, Group, Node, Point } from '@types';
 import {
-    adjustPoint2dTo3d,
-    adjustPoint3dTo2d,
     convert2dTo3dPoint,
     convert3dTo2dPoint,
+    getNodeOffsetForConvertDimension,
 } from '@utils';
 
-export const computeGroupBounds = (nodes: Node[], dimension: Dimension) => {
-    let points = nodes.map((node) => node.point);
+export const computeBounds = (_bounds: Bounds[], dimension: Dimension) => {
     const padding = GRID_2D_SIZE * 2;
+    let bounds = _bounds;
     if (dimension === '3d') {
-        points = points.map((point) => convert3dTo2dPoint(point));
+        bounds = bounds.map((bound) => ({
+            ...bound,
+            ...convert3dTo2dPoint({
+                x: bound.x,
+                y: bound.y,
+            }),
+        }));
     }
 
-    const minX = Math.min(...points.map((point) => point.x));
-    const minY = Math.min(...points.map((point) => point.y));
-    const maxX = Math.max(...points.map((point) => point.x + GRID_2D_SIZE));
-    const maxY = Math.max(...points.map((point) => point.y + GRID_2D_SIZE));
+    const minX = Math.min(...bounds.map((bounds) => bounds.x));
+    const minY = Math.min(...bounds.map((bounds) => bounds.y));
+    const maxX = Math.max(...bounds.map((bounds) => bounds.x + bounds.width));
+    const maxY = Math.max(...bounds.map((bounds) => bounds.y + bounds.height));
 
     let x = minX - padding;
     let y = minY - padding;
@@ -41,23 +46,27 @@ export const computeGroupBounds = (nodes: Node[], dimension: Dimension) => {
     };
 };
 
+//INFO: 처음이 2d로 시작하기 때문에 nodeSize : 3d , baseSize : 3d로 해야함. 다른 방법은 잘 모르곘음.
+//2d에서 3d로 변환할 때는 3d에서 2d로 변환할 때와 달리 baseSize와 nodeSize가 반대로 들어가야 할 것 같음
 export const adjustNodePoint = (node: Node, dimension: Dimension) => {
     const { point, size } = node;
+
+    const offset = getNodeOffsetForConvertDimension(
+        size['3d'],
+        NODE_BASE_SIZE['3d'],
+    );
     let result;
     if (dimension === '2d') {
-        result = adjustPoint3dTo2d(
-            point,
-            size[dimension],
-            NODE_BASE_SIZE[dimension],
-        );
-        result = convert3dTo2dPoint(result);
+        result = convert3dTo2dPoint({
+            x: point.x - offset.x,
+            y: point.y - offset.y,
+        });
     } else {
         result = convert2dTo3dPoint(point);
-        result = adjustPoint2dTo3d(
-            result,
-            size[dimension],
-            NODE_BASE_SIZE[dimension],
-        );
+        result = {
+            x: result.x + offset.x,
+            y: result.y + offset.y,
+        };
     }
 
     return result;
@@ -78,3 +87,5 @@ export const sortNodes = (nodes: Node[]) => {
             };
         }, {});
 };
+
+export const computeGroupBounds = (groups: Group[]) => {};

@@ -1,6 +1,6 @@
 import {
     adjustNodePoint,
-    computeGroupBounds,
+    computeBounds,
     sortNodes,
 } from '@contexts/CanvasInstanceContext/helpers';
 import { Dimension, Group, Node, Point } from '@types';
@@ -104,12 +104,21 @@ export const canvasInstanceReducer = (
             }
 
             const groups = groupIds.map((groupId) => state.groups[groupId]);
-            const updatedGroups = groups.reduce((acc, group) => {
-                const innerNodes = group.nodeIds.map(
-                    (nodeId) => state.nodes[nodeId],
+            let updatedGroups = groups.reduce((acc, group) => {
+                const childGroupBounds = group.childGroupIds.map(
+                    (childGroupId) => {
+                        return state.groups[childGroupId].bounds;
+                    },
                 );
+                const points = group.nodeIds
+                    .map((nodeId) => ({
+                        ...state.nodes[nodeId].point,
+                        ...state.nodes[nodeId].size[dimension],
+                    }))
+                    .concat(childGroupBounds);
 
-                const bounds = computeGroupBounds(innerNodes, dimension);
+                const bounds = computeBounds(points, dimension);
+
                 return {
                     ...acc,
                     [group.id]: {
@@ -141,7 +150,6 @@ export const canvasInstanceReducer = (
             };
 
             const updatedGroups = {
-                ...state.groups,
                 [id]: {
                     ...group,
                     bounds: {
@@ -151,6 +159,27 @@ export const canvasInstanceReducer = (
                     },
                 },
             };
+
+            const updateChildrenGroups = group.childGroupIds.reduce(
+                (acc, childGroupId) => {
+                    const childGroup = state.groups[childGroupId];
+                    const updatedChildGroup = {
+                        ...childGroup,
+                        bounds: {
+                            ...childGroup.bounds,
+                            x: childGroup.bounds.x + offset.x,
+                            y: childGroup.bounds.y + offset.y,
+                        },
+                    };
+
+                    return {
+                        ...acc,
+                        [childGroupId]: updatedChildGroup,
+                    };
+                },
+                {},
+            );
+
             const updatedNodes = nodeIds.reduce((acc, nodeId) => {
                 const node = state.nodes[nodeId];
                 const updatedNode = {
@@ -165,13 +194,54 @@ export const canvasInstanceReducer = (
                     [nodeId]: updatedNode,
                 };
             }, {});
+
+            let updatedParentGroup = {};
+            if (group.parentGroupId) {
+                const getParentGroups = (group: Group): Group[] => {
+                    if (!group.parentGroupId) return [];
+                    const parentGroup = state.groups[group.parentGroupId];
+                    return [parentGroup, ...getParentGroups(parentGroup)];
+                };
+
+                const allParentGroups = getParentGroups(group);
+                updatedParentGroup = allParentGroups.reduce(
+                    (acc, parentGroup) => {
+                        const childGroupBounds = parentGroup.childGroupIds.map(
+                            (childGroupId) => {
+                                return state.groups[childGroupId].bounds;
+                            },
+                        );
+                        const points = parentGroup.nodeIds
+                            .map((nodeId) => ({
+                                ...state.nodes[nodeId].point,
+                                ...state.nodes[nodeId].size[dimension],
+                            }))
+                            .concat(childGroupBounds);
+                        const bounds = computeBounds(points, dimension);
+                        return {
+                            ...acc,
+                            [parentGroup.id]: {
+                                ...parentGroup,
+                                bounds,
+                            },
+                        };
+                    },
+                    {},
+                );
+            }
+
             return {
                 ...state,
                 nodes: {
                     ...state.nodes,
                     ...updatedNodes,
                 },
-                groups: updatedGroups,
+                groups: {
+                    ...state.groups,
+                    ...updatedGroups,
+                    ...updateChildrenGroups,
+                    ...updatedParentGroup,
+                },
             };
         }
 

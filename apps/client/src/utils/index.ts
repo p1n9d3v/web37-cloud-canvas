@@ -84,29 +84,19 @@ export const convert2dTo3dPoint = (point: Point) => {
     return gridToScreen3d(screenToGrid2d(point));
 };
 
-//INFO: 처음이 2d로 시작하기 때문에 nodeSize : 3d , baseSize : 3d로 해야함
-export const adjustPoint3dTo2d = (
-    point: Point,
+export const getNodeOffsetForConvertDimension = (
     nodeSize: Size,
     baseSize: Size,
 ) => {
     return {
-        x: point.x - (baseSize.width - nodeSize.width) / 2,
-        y:
-            point.y -
-            (baseSize.height - nodeSize.height - (nodeSize.offset || 0)),
+        x: (baseSize.width - nodeSize.width) / 2,
+        y: baseSize.height - nodeSize.height - (nodeSize.offset || 0),
     };
 };
 
-export const adjustPoint2dTo3d = (
-    point: Point,
-    nodeSize: Size,
-    baseSize: Size,
-) => {
-    return {
-        x: point.x + (baseSize.width - nodeSize.width) / 2,
-        y:
-            point.y +
-            (baseSize.height - nodeSize.height - (nodeSize.offset || 0)),
-    };
+export const generateRandomRGB = () => {
+    const r = Math.floor(Math.random() * 255);
+    const g = Math.floor(Math.random() * 255);
+    const b = Math.floor(Math.random() * 255);
+    return `rgb(${r},${g},${b})`;
 };

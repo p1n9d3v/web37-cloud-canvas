@@ -23,12 +23,12 @@ export class NCloudACGRule implements NCloudModel {
     getProperties() {
         return {
             access_control_group_no: "ACG_ID_PLACEHOLDER",
-            inbound: [{
+            inbound: {
                 protocol: this.protocol,
                 ip_block: this.ipBlock,
                 port_range: this.portRange,
                 description: this.description
-            }]
+            }
         };
     }
 }

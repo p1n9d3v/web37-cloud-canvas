@@ -68,9 +68,13 @@ export class TerraformConvertor {
                         break;
                 }
             } else if (Array.isArray(value)) {
-                result[key] = value.map(item =>
-                    typeof item === 'string' ? this.replaceReferences({temp: item}).temp : this.replaceReferences(item)
-                );
+                result[key] = value.map(item => {
+                    if (typeof item === 'string') {
+                        const replacedValue = this.replaceReferences({ temp: item }).temp;
+                        return replacedValue;
+                    }
+                    return this.replaceReferences(item);
+                });
             } else if (typeof value === 'object' && value !== null) {
                 result[key] = this.replaceReferences(value);
             }
@@ -79,12 +83,13 @@ export class TerraformConvertor {
         return result;
     }
 
-
-
     private formatValue(value: any): string {
+        if (Array.isArray(value)) {
+            return `[${value.map(item => this.formatValue(item)).join(', ')}]`;
+        }
+
         if (typeof value === 'string') {
             const ncloudRefPattern = /^ncloud_[a-zA-Z_]+\.[a-zA-Z_-]+\.[a-zA-Z_]+$/;
-
             const varRefPattern = /^var\.[a-zA-Z_]+$/;
 
             if (ncloudRefPattern.test(value) || varRefPattern.test(value)) {
@@ -101,30 +106,18 @@ export class TerraformConvertor {
 
         return Object.entries(properties)
             .map(([key, value]) => {
-                if (Array.isArray(value)) {
-                    const formattedArray = value.map(item => {
-                        if (typeof item === 'object') {
-                            return `  ${key} {
-${this.formatProperties(item)}
- }`;
-                        }
-                        return `  ${key} = ${this.formatValue(item)}`;
-                    }).join('\n');
-                    return formattedArray;
-                }
+                const padding = ' '.repeat(maxKeyLength - key.length);
 
-                if (typeof value === 'object' && value !== null) {
+                if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
                     return `  ${key} {
 ${this.formatProperties(value)}
  }`;
                 }
 
-                const padding = ' '.repeat(maxKeyLength - key.length);
                 return `  ${key}${padding} = ${this.formatValue(value)}`;
             })
             .join('\n');
     }
-
     generate(): string {
         const providerProperties = this.provider.getProperties();
 

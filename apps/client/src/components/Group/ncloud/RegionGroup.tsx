@@ -1,12 +1,14 @@
 import { useCanvasDimensionContext } from '@contexts/CanvasDimensionContext';
 import { Bounds } from '@types';
-import { gridToScreen3d, screenToGrid2d } from '@utils';
+import { generateRandomRGB, gridToScreen3d, screenToGrid2d } from '@utils';
+import { useMemo } from 'react';
 
 type Props = {
     bounds: Bounds;
+    stroke: string;
 };
 
-const Region3D = ({ bounds }: Props) => {
+const Region3D = ({ bounds, stroke }: Props) => {
     const topLeftGrid = screenToGrid2d({ x: 0, y: 0 });
     const topRightGrid = screenToGrid2d({ x: bounds.width, y: 0 });
     const bottomRightGrid = screenToGrid2d({
@@ -41,30 +43,31 @@ const Region3D = ({ bounds }: Props) => {
     return (
         <polygon
             points={points}
-            stroke="#e64a19"
+            stroke={stroke}
             strokeWidth="8"
             fill="none"
         ></polygon>
     );
 };
 
-const Region2D = ({ bounds }: Props) => {
+const Region2D = ({ bounds, stroke }: Props) => {
     const points = `0 0, 0 ${bounds.height}, ${bounds.width} ${bounds.height}, ${bounds.width} 0`;
     return (
         <polygon
             points={points}
-            stroke="#ffa000"
+            stroke={stroke}
             strokeWidth="8"
             fill="none"
         ></polygon>
     );
 };
 
-export default ({ bounds }: Props) => {
+export default ({ bounds }: Pick<Props, 'bounds'>) => {
     const { dimension } = useCanvasDimensionContext();
+    const stroke = useMemo(() => generateRandomRGB(), []);
     return dimension === '2d' ? (
-        <Region2D bounds={bounds} />
+        <Region2D bounds={bounds} stroke={stroke} />
     ) : (
-        <Region3D bounds={bounds} />
+        <Region3D bounds={bounds} stroke={stroke} />
     );
 };

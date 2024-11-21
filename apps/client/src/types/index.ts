@@ -38,7 +38,8 @@ export type Group = {
     nodeIds: string[];
     bounds: Bounds;
     properties: { [key: string]: any };
-    // groupIds: string[];
+    childGroupIds: string[];
+    parentGroupId?: string;
     // parentGroupId?: string;
 };
 

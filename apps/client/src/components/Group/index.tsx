@@ -9,6 +9,12 @@ const GroupFacctory = (group: Group) => {
     switch (group.type) {
         case 'region':
             return <RegionGroup {...group} />;
+        case 'vpc':
+            return <RegionGroup {...group} />;
+        case 'subnet':
+            return <RegionGroup {...group} />;
+        case 'security-group':
+            return <RegionGroup {...group} />;
     }
 };
 
@@ -17,7 +23,7 @@ type Props = {
 };
 
 export default ({ group }: Props) => {
-    const { id, bounds, type } = group;
+    const { id, bounds } = group;
     const { dimension } = useCanvasDimensionContext();
     const { dispatch } = useCanvasInstanceContext();
     const { isDragging, startDrag, moveDrag, stopDrag } = useDrag({

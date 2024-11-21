@@ -4,7 +4,6 @@ on:
         branches:
             - development
         types: [closed]
-    workflow_dispatch:
 
 concurrency:
     group: cloud-canvas
@@ -51,10 +50,10 @@ jobs:
         steps:
             - name: Add SSH known hosts
               run: |
+                  mkdir -p ~/.ssh
                   ssh-keyscan -p ${{ secrets.NCP_DEV_INSTANCE_PORT }} ${{ secrets.NCP_DEV_INSTANCE }} >> ~/.ssh/known_hosts
             - name: SSH login and deploy
               run: |
                   printf "%s" "${{ secrets.NCP_DEV_SSH }}" > dev_login.pem
                   chmod 600 dev_login.pem
-                  ssh -t -i dev_login.pem ncloud@${{ secrets.NCP_DEV_INSTANCE }} -p ${{ secrets.NCP_DEV_INSTANCE_PORT }}
-                  ./docker.sh
+                  ssh -t -i dev_login.pem ncloud@${{ secrets.NCP_DEV_INSTANCE }} -p ${{ secrets.NCP_DEV_INSTANCE_PORT }} './docker.sh'

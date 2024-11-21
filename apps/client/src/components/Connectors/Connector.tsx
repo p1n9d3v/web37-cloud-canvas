@@ -96,7 +96,6 @@ export default ({ cx, cy, visible, node, type }: Props) => {
             y: clientY,
         });
         if (target) targetRef.current = target;
-        console.log('target', target);
         dispatch({
             type: 'CONNECT_CONNECTION',
             payload: {

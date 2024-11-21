@@ -5,7 +5,6 @@ import Graph from '@components/Graph';
 import GridBackground from '@components/GridBackground';
 import Group from '@components/Group';
 import Node from '@components/Node';
-import Pointer from '@components/Pointer';
 import { useCanvasDimensionContext } from '@contexts/CanvasDimensionContext';
 import { useCanvasInstanceContext } from '@contexts/CanvasInstanceContext';
 import { useEffect } from 'react';
@@ -44,12 +43,7 @@ export default () => {
 
             {edges &&
                 Object.values(edges).map((edge) => (
-                    <>
-                        <Edge key={edge.id} edge={edge} isSelected={true} />
-                        {/* {edge.bendPoints.map((bendPoint) => ( */}
-                        {/*     <Pointer point={bendPoint} /> */}
-                        {/* ))} */}
-                    </>
+                    <Edge key={edge.id} edge={edge} isSelected={true} />
                 ))}
         </Graph>
     );

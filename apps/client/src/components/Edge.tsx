@@ -1,10 +1,10 @@
-import Pointer from '@components/Pointer';
+import BendPointer from '@components/BendPointer';
 import { useCanvasContext } from '@contexts/CanvasContext';
 import { useCanvasDimensionContext } from '@contexts/CanvasDimensionContext';
 import { useCanvasInstanceContext } from '@contexts/CanvasInstanceContext';
 import { useTheme } from '@mui/material';
 import { Edge, Point } from '@types';
-import { getConnectorPoints, getSvgPoint } from '@utils';
+import { getConnectorPoints, getDistanceToSegment, getSvgPoint } from '@utils';
 
 type Props = {
     edge: Edge;
@@ -35,14 +35,38 @@ export default ({ edge, isSelected }: Props) => {
         : theme.palette.text.primary;
 
     const splitEdge = (point: Point) => {
-        const svgPoing = getSvgPoint(canvas, point);
-        dispatch({
-            type: 'SPLIT_EDGE',
-            payload: {
-                id: edge.id,
-                point: svgPoing,
-            },
-        });
+        const svgPoint = getSvgPoint(canvas, point);
+        const allPoints: Point[] = [
+            sourceConnector,
+            ...bendPoints,
+            targetConnector,
+        ];
+
+        // 가장 가까운 선분 찾기
+        let closestDistance = Infinity;
+        let closestSegmentIndex = -1;
+
+        for (let i = 0; i < allPoints.length - 1; i++) {
+            const p1 = allPoints[i];
+            const p2 = allPoints[i + 1];
+            const distance = getDistanceToSegment(svgPoint, p1, p2);
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closestSegmentIndex = i;
+            }
+        }
+
+        if (closestSegmentIndex !== -1) {
+            // 가장 가까운 선분 뒤에 포인트 삽입
+            dispatch({
+                type: 'SPLIT_EDGE',
+                payload: {
+                    edgeId: edge.id,
+                    point: svgPoint,
+                    insertAfter: closestSegmentIndex,
+                },
+            });
+        }
     };
 
     const handleMouseDown = (e: React.MouseEvent) => {
@@ -92,7 +116,7 @@ export default ({ edge, isSelected }: Props) => {
             />
 
             {bendPoints.map((bendPoint, index) => (
-                <Pointer
+                <BendPointer
                     key={`${edge.id}-${index}`}
                     edgeId={edge.id}
                     point={bendPoint}

@@ -110,9 +110,10 @@ export default ({ edge, isSelected }: Props) => {
             <polyline
                 points={allPoints}
                 stroke={color}
-                strokeWidth={2}
+                strokeWidth={4}
                 fill="none"
                 markerEnd={type === 'arrow' ? 'url(#arrowhead)' : ''}
+                cursor="pointer"
             />
 
             {bendPoints.map((bendPoint, index) => (

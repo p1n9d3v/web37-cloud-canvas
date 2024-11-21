@@ -32,7 +32,7 @@ export default ({ from, to }: Props) => {
                 d={linePathD}
                 stroke={color}
                 fill="none"
-                strokeWidth={2}
+                strokeWidth={4}
                 markerEnd="url(#arrowhead)"
             />
         </g>

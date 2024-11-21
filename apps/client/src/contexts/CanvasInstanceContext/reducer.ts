@@ -256,6 +256,20 @@ export const canvasInstanceReducer = (
                         },
                     };
                 }, {}),
+                edges: Object.values(state.edges).reduce((acc, edge) => {
+                    const updatedBendPoints = edge.bendPoints.map((point) => {
+                        return dimension === '2d'
+                            ? convert3dTo2dPoint(point)
+                            : convert2dTo3dPoint(point);
+                    });
+                    return {
+                        ...acc,
+                        [edge.id]: {
+                            ...edge,
+                            bendPoints: updatedBendPoints,
+                        },
+                    };
+                }, {}),
             };
         }
 

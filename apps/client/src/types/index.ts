@@ -16,8 +16,8 @@ export type Node = {
     name: string;
     point: Point;
     size: {
-        d2: Size;
-        d3: Size;
+        '2d': Size;
+        '3d': Size;
     };
     properties: { [key: string]: any };
     connectors: { x: number; y: number }[];

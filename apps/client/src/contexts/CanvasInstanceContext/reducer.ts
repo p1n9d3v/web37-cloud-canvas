@@ -1,12 +1,9 @@
-import { NODE_BASE_SIZE } from '@constants';
 import {
     adjustNodePoint,
     computeGroupBounds,
 } from '@contexts/CanvasInstanceContext/helpers';
 import { Dimension, Group, Node, Point } from '@types';
 import {
-    adjustPoint2dTo3d,
-    adjustPoint3dTo2d,
     alignPoint2d,
     alignPoint3d,
     convert2dTo3dPoint,
@@ -81,16 +78,16 @@ export const canvasInstanceReducer = (
                 newPoint = alignPoint2d(newPoint);
             } else {
                 const adjustPoint = {
-                    x: point.x + node.size.d3.width / 2,
-                    y: point.y + node.size.d3.height,
+                    x: point.x + node.size[dimension].width / 2,
+                    y: point.y + node.size[dimension].height,
                 };
                 newPoint = alignPoint3d(adjustPoint);
                 newPoint = {
-                    x: newPoint.x - node.size.d3.width / 2,
+                    x: newPoint.x - node.size[dimension].width / 2,
                     y:
                         newPoint.y -
-                        node.size.d3.height -
-                        (node.size.d3.offset || 0),
+                        node.size[dimension].height -
+                        (node.size[dimension].offset || 0),
                 };
             }
 

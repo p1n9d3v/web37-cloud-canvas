@@ -1,6 +1,7 @@
 import {
     adjustNodePoint,
     computeGroupBounds,
+    sortNodes,
 } from '@contexts/CanvasInstanceContext/helpers';
 import { Dimension, Group, Node, Point } from '@types';
 import {
@@ -91,25 +92,16 @@ export const canvasInstanceReducer = (
                 };
             }
 
-            const updatedNodes = Object.values({
+            let updatedNodes = {
                 ...state.nodes,
                 [id]: {
                     ...node,
                     point: newPoint,
                 },
-            })
-                .sort((a, b) => {
-                    if (a.point.y === b.point.y) {
-                        return a.point.x - b.point.x;
-                    }
-                    return a.point.y - b.point.y;
-                })
-                .reduce((acc, node) => {
-                    return {
-                        ...acc,
-                        [node.id]: node,
-                    };
-                }, {});
+            };
+            if (dimension === '3d') {
+                updatedNodes = sortNodes(Object.values(updatedNodes));
+            }
 
             const groups = groupIds.map((groupId) => state.groups[groupId]);
             const updatedGroups = groups.reduce((acc, group) => {

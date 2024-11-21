@@ -45,6 +45,7 @@ jobs:
 
             - name: SSH login and deploy
               run: |
-                  echo ${{ secrets.NCP_DEV_SSH }} > dev_login.pem
+                  echo "${{ secrets.NCP_DEV_SSH }}" > dev_login.pem
+                  chmod 600 dev_login.pem
                   ssh -i dev_login.pem ncloud@${{ secrets.NCP_DEV_INSTANCE }} -p ${{ secrets.NCP_DEV_INSTANCE_PORT }}
                   ./docker.sh

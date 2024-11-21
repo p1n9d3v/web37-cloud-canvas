@@ -2,17 +2,15 @@ import { ArrowDownIcon } from '@/ui/ArrowDownIcon';
 import { ArrowUpIcon } from '@/ui/ArrowUpIcon';
 import { SortIcon } from '@/ui/SortIcon';
 
-interface ArchitectureHeaderProps {
-    onSort: (column: string) => void;
-    sort?: string;
-    order?: 'asc' | 'desc';
-}
-
-export const ArchitectureHeader = ({
-    onSort,
+export const BoardHeader = ({
     sort,
     order,
-}: ArchitectureHeaderProps) => {
+    onSort,
+}: {
+    sort?: string;
+    order?: string;
+    onSort: (column: string) => void;
+}) => {
     const columns = [
         { key: 'name', title: 'Architecture', width: 'w-full' },
         { key: 'cost', title: 'Costs', width: 'w-40' },
@@ -29,11 +27,11 @@ export const ArchitectureHeader = ({
     };
 
     return (
-        <div className="bg-gray-50 flex border-b p-3 pl-4 font-semibold">
+        <div className="bg-gray-50 flex border-b p-4 font-semibold">
             {columns.map((column) => (
                 <div
                     key={column.key}
-                    className={`${column.width} cursor-pointer hover:bg-gray-100 flex items-center gap-1`}
+                    className={`${column.width} cursor-pointer flex items-center gap-1`}
                     onClick={() => onSort(column.key)}
                 >
                     <span>{column.title}</span>

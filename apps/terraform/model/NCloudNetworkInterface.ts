@@ -18,9 +18,9 @@ export class NCloudNetworkInterface implements NetworkInterface, NCloudModel {
 
     getProperties() {
         return {
-            subnet_no: "ncloud_subnet.subnet.id",
+            subnet_no: 'SUBNET_ID_PLACEHOLDER',
             name: this.name,
-            access_control_groups: "[ncloud_access_control_group.acg.id]",
+            access_control_groups: ['ACG_ID_PLACEHOLDER']
         };
     }
 }

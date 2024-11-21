@@ -6,12 +6,12 @@ import { parseToNCloudModel } from '../util/resourceParser';
 export class TerraformConvertor {
     private resources: NCloudModel[];
     private provider: NCloudProvider;
-    private resourceMap: Map<string, string>;
+    private resourceNameMap: Map<string, string>;
 
     constructor(provider: NCloudProvider) {
         this.provider = provider;
         this.resources = [];
-        this.resourceMap = new Map();
+        this.resourceNameMap = new Map();
     }
 
     addResourceFromJson(jsonData: { nodes?: CloudCanvasNode[] }) {
@@ -27,26 +27,50 @@ export class TerraformConvertor {
 
     addResource(resource: NCloudModel) {
         this.resources.push(resource);
-        this.resourceMap.set(resource.serviceType, resource.name);
+        this.resourceNameMap.set(resource.serviceType, resource.name);
     }
 
-    getResourceName(serviceType: string): string {
-        return this.resourceMap.get(serviceType) || '';
-    }
+
 
     private replaceReferences(properties: { [key: string]: any }): { [key: string]: any } {
         const result = { ...properties };
 
         for (const [key, value] of Object.entries(result)) {
             if (typeof value === 'string') {
-                if (value === 'VPC_ID_PLACEHOLDER') {
-                    const vpcName = this.resourceMap.get('ncloud_vpc');
-                    result[key] = `ncloud_vpc.${vpcName}.id`;
+                switch(value) {
+                    case 'VPC_ID_PLACEHOLDER':
+                        const vpcName = this.resourceNameMap.get('ncloud_vpc');
+                        result[key] = `ncloud_vpc.${vpcName}.id`;
+                        break;
+                    case 'VPC_ACL_PLACEHOLDER':
+                        const vpcAclName = this.resourceNameMap.get('ncloud_vpc');
+                        result[key] = `ncloud_vpc.${vpcAclName}.default_network_acl_no`;
+                        break;
+                    case 'SUBNET_ID_PLACEHOLDER':
+                        const subnetName = this.resourceNameMap.get('ncloud_subnet');
+                        result[key] = `ncloud_subnet.${subnetName}.id`;
+                        break;
+                    case 'ACG_ID_PLACEHOLDER':
+                        const acgName = this.resourceNameMap.get('ncloud_access_control_group');
+                        result[key] = `ncloud_access_control_group.${acgName}.id`;
+                        break;
+                    case 'LOGIN_KEY_NAME_PLACEHOLDER':
+                        const loginKeyName = this.resourceNameMap.get('ncloud_login_key');
+                        result[key] = `ncloud_login_key.${loginKeyName}.key_name`;
+                        break;
+                    case 'NIC_ID_PLACEHOLDER':
+                        const nicName = this.resourceNameMap.get('ncloud_network_interface');
+                        result[key] = `ncloud_network_interface.${nicName}.id`;
+                        break;
+                    case 'SERVER_ID_PLACEHOLDER':
+                        const serverName = this.resourceNameMap.get('ncloud_server');
+                        result[key] = `ncloud_server.${serverName}.id`;
+                        break;
                 }
-                if (value === 'VPC_ACL_PLACEHOLDER') {
-                    const vpcName = this.resourceMap.get('ncloud_vpc');
-                    result[key] = `ncloud_vpc.${vpcName}.default_network_acl_no`;
-                }
+            } else if (Array.isArray(value)) {
+                result[key] = value.map(item =>
+                    typeof item === 'string' ? this.replaceReferences({temp: item}).temp : this.replaceReferences(item)
+                );
             } else if (typeof value === 'object' && value !== null) {
                 result[key] = this.replaceReferences(value);
             }
@@ -54,6 +78,7 @@ export class TerraformConvertor {
 
         return result;
     }
+
 
 
     private formatValue(value: any): string {

@@ -19,7 +19,7 @@ export class NCloudNetworkACL implements NetworkACL, NCloudModel {
 
     getProperties() {
         return {
-            vpc_no: "ncloud_vpc.vpc.id"
+            vpc_no: "VPC_ID_PLACEHOLDER"
         };
     }
 }

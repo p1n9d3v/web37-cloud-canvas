@@ -22,7 +22,7 @@ export class NCloudACGRule implements NCloudModel {
 
     getProperties() {
         return {
-            access_control_group_no: "ncloud_access_control_group.acg.id",
+            access_control_group_no: "ACG_ID_PLACEHOLDER",
             inbound: [{
                 protocol: this.protocol,
                 ip_block: this.ipBlock,

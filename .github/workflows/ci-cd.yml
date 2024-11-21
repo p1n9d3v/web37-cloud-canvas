@@ -1,4 +1,4 @@
-name: Server CI
+name: Client CI
 on:
     pull_request:
         branches:
@@ -9,7 +9,7 @@ concurrency:
     group: cloud-canvas
 
 jobs:
-    server-image-build-and-push:
+    client-image-build-and-push:
         runs-on: ubuntu-latest
 
         steps:
@@ -23,7 +23,17 @@ jobs:
                   username: ${{ secrets.NCP_ACCESS_KEY }}
                   password: ${{ secrets.NCP_SECRET_KEY }}
 
-            - name: Docker image build and push
+            - name: Docker front image build and push
+              uses: docker/build-push-action@v3
+              with:
+                  context: .
+                  file: ./apps/client/Dockerfile
+                  push: true
+                  tags: |
+                      cloud-canvas.kr.ncr.ntruss.com/front:dev
+                      cloud-canvas.kr.ncr.ntruss.com/front:${{ github.sha }}
+
+            - name: Docker back image build and push
               uses: docker/build-push-action@v3
               with:
                   context: .
@@ -32,3 +42,9 @@ jobs:
                   tags: |
                       cloud-canvas.kr.ncr.ntruss.com/back:dev
                       cloud-canvas.kr.ncr.ntruss.com/back:${{ github.sha }}
+
+            - name: SSH login and deploy
+              run: |
+                  echo ${{ secrets.NCP_DEV_SSH }} > dev_login.pem
+                  ssh -i dev_login.pem ncloud@${{ secrets.NCP_DEV_INSTANCE }} -p ${{ secrets.NCP_DEV_INSTANCE_PORT }}
+                  ./docker.sh

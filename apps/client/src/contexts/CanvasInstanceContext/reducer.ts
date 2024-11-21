@@ -59,6 +59,22 @@ export type CanvasInstanceAction =
     | {
           type: 'ADD_EDGE';
           payload: Pick<Edge, 'target' | 'source' | 'type'>;
+      }
+    | {
+          type: 'SPLIT_EDGE';
+          payload: {
+              id: string;
+              point: Point;
+          };
+      }
+    | {
+          type: 'MOVE_BENDING_POINT';
+          payload: {
+              edgeId: string;
+              bendPointIdx: number;
+              point: Point;
+              dimension: Dimension;
+          };
       };
 
 export const canvasInstanceReducer = (
@@ -266,6 +282,12 @@ export const canvasInstanceReducer = (
         }
         case 'ADD_EDGE': {
             const { source, target, type } = action.payload;
+            if (source.id === target.id) {
+                return {
+                    ...state,
+                    connection: null,
+                };
+            }
             const newEdge = {
                 id: `edge-${nanoid()}`,
                 type,
@@ -281,6 +303,49 @@ export const canvasInstanceReducer = (
                     ...state.edges,
                     [newEdge.id]: {
                         ...newEdge,
+                    },
+                },
+            };
+        }
+        case 'SPLIT_EDGE': {
+            const { id, point } = action.payload;
+            const edge = state.edges[id];
+            if (!edge) {
+                return state;
+            }
+
+            const updatedEdge: Edge = {
+                ...edge,
+                bendPoints: [...edge.bendPoints, point],
+            };
+
+            return {
+                ...state,
+                edges: {
+                    ...state.edges,
+                    [id]: updatedEdge,
+                },
+            };
+        }
+
+        case 'MOVE_BENDING_POINT': {
+            const { edgeId, bendPointIdx, point, dimension } = action.payload;
+            const edge = state.edges[edgeId];
+            if (!edge) {
+                return state;
+            }
+
+            const updatedBendPoints = [...edge.bendPoints];
+            const alignedPoint =
+                dimension === '2d' ? alignPoint2d(point) : alignPoint3d(point);
+            updatedBendPoints[bendPointIdx] = alignedPoint;
+            return {
+                ...state,
+                edges: {
+                    ...state.edges,
+                    [edgeId]: {
+                        ...edge,
+                        bendPoints: updatedBendPoints,
                     },
                 },
             };

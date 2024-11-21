@@ -1,8 +1,10 @@
+import Pointer from '@components/Pointer';
+import { useCanvasContext } from '@contexts/CanvasContext';
 import { useCanvasDimensionContext } from '@contexts/CanvasDimensionContext';
 import { useCanvasInstanceContext } from '@contexts/CanvasInstanceContext';
 import { useTheme } from '@mui/material';
 import { Edge, Point } from '@types';
-import { getConnectorPoints } from '@utils';
+import { getConnectorPoints, getSvgPoint } from '@utils';
 
 type Props = {
     edge: Edge;
@@ -10,12 +12,15 @@ type Props = {
 };
 
 export default ({ edge, isSelected }: Props) => {
-    const { type } = edge;
+    const { id, type, bendPoints } = edge;
     const theme = useTheme();
     const { dimension } = useCanvasDimensionContext();
+    const { canvas } = useCanvasContext();
     const {
         state: { nodes },
+        dispatch,
     } = useCanvasInstanceContext();
+
     const sourceConnector = getConnectorPoints(
         nodes[edge.source.id],
         dimension,
@@ -28,54 +33,42 @@ export default ({ edge, isSelected }: Props) => {
     const color = isSelected
         ? theme.palette.primary.main
         : theme.palette.text.primary;
-    console.log(sourceConnector);
-    console.log(targetConnector);
-    // const { id, type, source, target } = edge;
-    // const timeoutRef = useRef<number | null>(null);
-    //
-    // const sourceAnchor = calculateAnchorPoints(source.node, dimension);
-    // const targetAnchor = calculateAnchorPoints(target.node, dimension);
-    //
-    // const sourcePoint = source.anchorType
-    //     ? sourceAnchor[source.anchorType]
-    //     : source.node.point;
-    // const targetPoint = target.anchorType
-    //     ? targetAnchor[target.anchorType]
-    //     : target.node.point;
-    //
-    //
-    // const handleClick = (event: React.MouseEvent) => {
-    //     if (event.shiftKey) {
-    //         onSelectEntireEdge(edge);
-    //     } else {
-    //         onSelect(id);
-    //     }
-    // };
-    //
-    // const handleMouseDown = (event: React.MouseEvent) => {
-    //     event.stopPropagation();
-    //     timeoutRef.current = setTimeout(() => {
-    //         const { clientX, clientY } = event;
-    //         onSplit(edge, { x: clientX, y: clientY });
-    //     }, );
-    //
-    //     const handleMouseUp = () => {
-    //         if (timeoutRef.current) {
-    //             clearTimeout(timeoutRef.current);
-    //             timeoutRef.current = null;
-    //         }
-    //
-    //         document.removeEventListener('mouseup', handleMouseUp);
-    //     };
-    //
-    //     document.addEventListener('mouseup', handleMouseUp);
-    // };
+
+    const splitEdge = (point: Point) => {
+        const svgPoing = getSvgPoint(canvas, point);
+        dispatch({
+            type: 'SPLIT_EDGE',
+            payload: {
+                id: edge.id,
+                point: svgPoing,
+            },
+        });
+    };
+
+    const handleMouseDown = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (e.ctrlKey) {
+            const { clientX, clientY } = e;
+            splitEdge({ x: clientX, y: clientY });
+        }
+
+        const handleMouseUp = () => {
+            document.removeEventListener('mouseup', handleMouseUp);
+        };
+
+        document.addEventListener('mouseup', handleMouseUp);
+    };
+
+    const bendPointsString = bendPoints
+        .map((point) => `${point.x},${point.y}`)
+        .join(' ');
+    const allPoints = `${sourceConnector.x},${sourceConnector.y} ${bendPointsString} ${targetConnector.x},${targetConnector.y}`;
 
     return (
         <g
-            // id={id}
-            data-type="graph-edge"
-            // onMouseDown={handleMouseDown}
+            id={id}
+            data-type="edge"
+            onMouseDown={handleMouseDown}
             // onClick={handleClick}
         >
             <defs>
@@ -90,15 +83,22 @@ export default ({ edge, isSelected }: Props) => {
                     <path d="M 0 0 L 5 2.5 L 0 5 Z" fill={color} />
                 </marker>
             </defs>
-            <line
-                x1={sourceConnector.x}
-                y1={sourceConnector.y}
-                x2={targetConnector.x}
-                y2={targetConnector.y}
+            <polyline
+                points={allPoints}
                 stroke={color}
                 strokeWidth={2}
+                fill="none"
                 markerEnd={type === 'arrow' ? 'url(#arrowhead)' : ''}
             />
+
+            {bendPoints.map((bendPoint, index) => (
+                <Pointer
+                    key={`${edge.id}-${index}`}
+                    edgeId={edge.id}
+                    point={bendPoint}
+                    index={index}
+                />
+            ))}
         </g>
     );
 };

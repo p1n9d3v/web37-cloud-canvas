@@ -1,9 +1,10 @@
-name: Client CI
+name: CI/CD
 on:
     pull_request:
         branches:
             - development
         types: [closed]
+    workflow_dispatch:
 
 concurrency:
     group: cloud-canvas
@@ -44,12 +45,16 @@ jobs:
                       cloud-canvas.kr.ncr.ntruss.com/back:${{ github.sha }}
 
     CD:
+        needs: CI
         runs-on: ubuntu-latest
 
         steps:
+            - name: Add SSH known hosts
+              run: |
+                  ssh-keyscan -p ${{ secrets.NCP_DEV_INSTANCE_PORT }} ${{ secrets.NCP_DEV_INSTANCE }} >> ~/.ssh/known_hosts
             - name: SSH login and deploy
               run: |
                   printf "%s" "${{ secrets.NCP_DEV_SSH }}" > dev_login.pem
                   chmod 600 dev_login.pem
-                  ssh -i dev_login.pem ncloud@${{ secrets.NCP_DEV_INSTANCE }} -p ${{ secrets.NCP_DEV_INSTANCE_PORT }}
+                  ssh -t -i dev_login.pem ncloud@${{ secrets.NCP_DEV_INSTANCE }} -p ${{ secrets.NCP_DEV_INSTANCE_PORT }}
                   ./docker.sh

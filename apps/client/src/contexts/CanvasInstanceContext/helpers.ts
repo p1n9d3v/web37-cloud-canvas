@@ -45,11 +45,19 @@ export const adjustNodePoint = (node: Node, dimension: Dimension) => {
     const { point, size } = node;
     let result;
     if (dimension === '2d') {
-        result = adjustPoint3dTo2d(point, size.d3, NODE_BASE_SIZE['3d']);
+        result = adjustPoint3dTo2d(
+            point,
+            size[dimension],
+            NODE_BASE_SIZE[dimension],
+        );
         result = convert3dTo2dPoint(result);
     } else {
         result = convert2dTo3dPoint(point);
-        result = adjustPoint2dTo3d(result, size.d3, NODE_BASE_SIZE['3d']);
+        result = adjustPoint2dTo3d(
+            result,
+            size[dimension],
+            NODE_BASE_SIZE[dimension],
+        );
     }
 
     return result;

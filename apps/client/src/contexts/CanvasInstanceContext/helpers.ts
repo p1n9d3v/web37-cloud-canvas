@@ -62,3 +62,19 @@ export const adjustNodePoint = (node: Node, dimension: Dimension) => {
 
     return result;
 };
+
+export const sortNodes = (nodes: Node[]) => {
+    return nodes
+        .sort((a, b) => {
+            if (a.point.y === b.point.y) {
+                return a.point.x - b.point.x;
+            }
+            return a.point.y - b.point.y;
+        })
+        .reduce((acc, node) => {
+            return {
+                ...acc,
+                [node.id]: node,
+            };
+        }, {});
+};

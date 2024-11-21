@@ -5,8 +5,10 @@ import Graph from '@components/Graph';
 import GridBackground from '@components/GridBackground';
 import Group from '@components/Group';
 import Node from '@components/Node';
+import Pointer from '@components/Pointer';
 import { useCanvasDimensionContext } from '@contexts/CanvasDimensionContext';
 import { useCanvasInstanceContext } from '@contexts/CanvasInstanceContext';
+import { useEffect } from 'react';
 
 export default () => {
     const { dimension } = useCanvasDimensionContext();
@@ -15,10 +17,15 @@ export default () => {
         dispatch,
     } = useCanvasInstanceContext();
 
-    console.log(groups);
-    console.log(nodes);
-    console.log(edges);
+    //INFO: ctrl + 왼쪽 마우스 클릭시 컨텍스트 메뉴 뜨는거 방지
+    useEffect(() => {
+        const handleContextMenu = (event: MouseEvent) => event.preventDefault();
+        document.addEventListener('contextmenu', handleContextMenu);
 
+        return () => {
+            document.removeEventListener('contextmenu', handleContextMenu);
+        };
+    }, []);
     return (
         <Graph>
             <GridBackground />
@@ -37,7 +44,12 @@ export default () => {
 
             {edges &&
                 Object.values(edges).map((edge) => (
-                    <Edge key={edge.id} edge={edge} isSelected={true} />
+                    <>
+                        <Edge key={edge.id} edge={edge} isSelected={true} />
+                        {/* {edge.bendPoints.map((bendPoint) => ( */}
+                        {/*     <Pointer point={bendPoint} /> */}
+                        {/* ))} */}
+                    </>
                 ))}
         </Graph>
     );

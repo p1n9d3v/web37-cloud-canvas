@@ -6,10 +6,12 @@ import { parseToNCloudModel } from '../util/resourceParser';
 export class TerraformConvertor {
     private resources: NCloudModel[];
     private provider: NCloudProvider;
+    private resourceMap: Map<string, string>;
 
     constructor(provider: NCloudProvider) {
         this.provider = provider;
         this.resources = [];
+        this.resourceMap = new Map();
     }
 
     addResourceFromJson(jsonData: { nodes?: CloudCanvasNode[] }) {
@@ -17,7 +19,7 @@ export class TerraformConvertor {
             try {
                 const resource = parseToNCloudModel(node);
                 this.addResource(resource);
-            }catch (error) {
+            } catch (error) {
                 console.warn(`Skipping unsupported node type: ${node.type}`);
             }
         }));
@@ -25,13 +27,44 @@ export class TerraformConvertor {
 
     addResource(resource: NCloudModel) {
         this.resources.push(resource);
+        this.resourceMap.set(resource.serviceType, resource.name);
     }
+
+    getResourceName(serviceType: string): string {
+        return this.resourceMap.get(serviceType) || '';
+    }
+
+    private replaceReferences(properties: { [key: string]: any }): { [key: string]: any } {
+        const result = { ...properties };
+
+        for (const [key, value] of Object.entries(result)) {
+            if (typeof value === 'string') {
+                if (value === 'VPC_ID_PLACEHOLDER') {
+                    const vpcName = this.resourceMap.get('ncloud_vpc');
+                    result[key] = `ncloud_vpc.${vpcName}.id`;
+                }
+                if (value === 'VPC_ACL_PLACEHOLDER') {
+                    const vpcName = this.resourceMap.get('ncloud_vpc');
+                    result[key] = `ncloud_vpc.${vpcName}.default_network_acl_no`;
+                }
+            } else if (typeof value === 'object' && value !== null) {
+                result[key] = this.replaceReferences(value);
+            }
+        }
+
+        return result;
+    }
+
 
     private formatValue(value: any): string {
         if (typeof value === 'string') {
-            if (value.includes('ncloud_') && value.includes('.') && value.includes('_')) return value.replace(/"/g, '');
+            const ncloudRefPattern = /^ncloud_[a-zA-Z_]+\.[a-zA-Z_-]+\.[a-zA-Z_]+$/;
 
-            if (value.startsWith('var.')) return value;
+            const varRefPattern = /^var\.[a-zA-Z_]+$/;
+
+            if (ncloudRefPattern.test(value) || varRefPattern.test(value)) {
+                return value;
+            }
 
             return `"${value}"`;
         }
@@ -87,10 +120,13 @@ ${this.formatProperties(providerProperties.provider)}
 
         const resourceBlocks = this.resources
             .sort((a, b) => a.priority - b.priority)
-            .map(resource => `
+            .map(resource => {
+                const properties = this.replaceReferences(resource.getProperties());
+                return `
 resource "${resource.serviceType}" "${resource.name}" {
-${this.formatProperties(resource.getProperties())}
-}`);
+${this.formatProperties(properties)}
+}`;
+            });
 
         return [terraformBlock, providerBlock, ...resourceBlocks].join('\n');
     }

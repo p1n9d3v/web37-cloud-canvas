@@ -1,14 +1,11 @@
-import { Subnet } from '../interface/Subnet';
-import { NCloudModel } from '../interface/NCloudModel';
 import { ResourcePriority } from '../enum/ResourcePriority';
+import { NCloudModel } from '../interface/NCloudModel';
 
-export class NCloudSubnet implements Subnet, NCloudModel {
+export class NCloudSubnet implements NCloudModel {
     id: string;
     name: string;
-    vpcNo: string;
     subnet: string;
     zone: string;
-    networkAclNo: string;
     subnetType: string;
     usageType: string;
     serviceType: string;
@@ -17,18 +14,23 @@ export class NCloudSubnet implements Subnet, NCloudModel {
     constructor(json: any) {
         this.serviceType = 'ncloud_subnet';
         this.priority = ResourcePriority.SUBNET;
-        Object.assign(this, json);
+        this.name = json.name || 'subnet';
+        this.subnet = json.subnet;
+        this.zone = json.zone;
+        this.subnetType = json.subnetType;
+        this.usageType = json.usageType;
     }
 
     getProperties() {
         return {
-            vpc_no: "ncloud_vpc.vpc.id",
+            vpc_no: "VPC_ID_PLACEHOLDER",
             subnet: this.subnet,
             zone: this.zone,
-            network_acl_no: "ncloud_vpc.vpc.default_network_acl_no",
+            network_acl_no: "VPC_ACL_PLACEHOLDER",
             subnet_type: this.subnetType,
             name: this.name,
             usage_type: this.usageType
         };
     }
 }
+

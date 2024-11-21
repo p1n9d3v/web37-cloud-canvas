@@ -75,7 +75,7 @@ const regionGroup: any = {
     id: 'region1',
     type: 'region',
     name: 'KR-1',
-    nodeIds: [ServerNode.id, MySQLDBNode.id],
+    nodeIds: [ServerNode.id, MySQLDBNode.id, CloudFunctionNode.id],
     groupIds: ['vpc1'], // 아직 VPC 그룹이 없음
     bounds: { x: 0, y: 0, width: 600, height: 450 },
     properties: {
@@ -84,7 +84,7 @@ const regionGroup: any = {
 };
 
 const mockNodes = [
-    // CloudFunctionNode,
+    CloudFunctionNode,
     // ObjectStorageNode,
     // MySQLDBNode,
     MySQLDBNode,

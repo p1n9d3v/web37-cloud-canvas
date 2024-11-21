@@ -4,7 +4,7 @@ export type Point = { x: number; y: number };
 
 export type GridPoint = { col: number; row: number };
 
-export type Size = { width: number; height: number };
+export type Size = { width: number; height: number; offset?: number };
 
 export type ViewBox = Point & Size;
 
@@ -16,8 +16,8 @@ export type Node = {
     name: string;
     point: Point;
     size: {
-        d2: { width: number; height: number };
-        d3: { width: number; height: number; offset?: number };
+        d2: Size;
+        d3: Size;
     };
     properties: { [key: string]: any };
     connectors: { x: number; y: number }[];

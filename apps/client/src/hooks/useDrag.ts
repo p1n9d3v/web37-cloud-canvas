@@ -1,7 +1,6 @@
 import { useCanvasContext } from '@contexts/CanvasContext';
-import { useCanvasDimensionContext } from '@contexts/CanvasDimensionContext';
 import { Point } from '@types';
-import { alignPoint2d, alignPoint3d, getSvgPoint } from '@utils';
+import { getSvgPoint } from '@utils';
 import { useState } from 'react';
 
 type Props = {
@@ -11,7 +10,6 @@ type Props = {
 
 export default ({ initialPoint, updateFn }: Props) => {
     const { canvas } = useCanvasContext();
-    const { dimension } = useCanvasDimensionContext();
 
     const [isDragging, setIsDragging] = useState(false);
     const [startDragPoint, setStartDragPoint] = useState<Point | null>(null);
@@ -37,12 +35,7 @@ export default ({ initialPoint, updateFn }: Props) => {
                 y: initialPoint.y + offset.y,
             };
 
-            const alignedPoint =
-                dimension === '2d'
-                    ? alignPoint2d(newPoint)
-                    : alignPoint3d(newPoint);
-
-            updateFn(alignedPoint);
+            updateFn(newPoint);
         });
     };
 

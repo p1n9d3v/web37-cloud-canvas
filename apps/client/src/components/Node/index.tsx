@@ -51,8 +51,8 @@ export default ({ node }: Props) => {
         document.body.style.cursor = 'move';
     };
 
-    const handleMouseMove = (moveEvent: MouseEvent) => {
-        moveDrag({ x: moveEvent.clientX, y: moveEvent.clientY });
+    const handleMouseMove = (e: MouseEvent) => {
+        moveDrag({ x: e.clientX, y: e.clientY });
     };
 
     const handleMouseUp = () => {

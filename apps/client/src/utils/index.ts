@@ -3,7 +3,7 @@ import {
     GRID_3D_HEIGHT_SIZE,
     GRID_3D_WIDTH_SIZE,
 } from '@constants';
-import { GridPoint, Point, Size } from '@types';
+import { Dimension, GridPoint, Node, Point } from '@types';
 
 export const getDistance = (point1: Point, point2: Point) => {
     return Math.sqrt((point1.x - point2.x) ** 2 + (point1.y - point2.y) ** 2);
@@ -84,19 +84,33 @@ export const convert2dTo3dPoint = (point: Point) => {
     return gridToScreen3d(screenToGrid2d(point));
 };
 
-export const getNodeOffsetForConvertDimension = (
-    nodeSize: Size,
-    baseSize: Size,
-) => {
-    return {
-        x: (baseSize.width - nodeSize.width) / 2,
-        y: baseSize.height - nodeSize.height - (nodeSize.offset || 0),
-    };
-};
-
 export const generateRandomRGB = () => {
     const r = Math.floor(Math.random() * 255);
     const g = Math.floor(Math.random() * 255);
     const b = Math.floor(Math.random() * 255);
     return `rgb(${r},${g},${b})`;
+};
+
+export const getConnectorPoints = (node: Node, dimension: Dimension) => {
+    const point = node.point;
+    const { width, height } = node.size[dimension];
+    const depth = GRID_3D_HEIGHT_SIZE / 2;
+    return {
+        top: { x: point.x + width / 2, y: point.y },
+        right:
+            dimension === '2d'
+                ? { x: point.x + width, y: point.y + height / 2 }
+                : {
+                      x: point.x + width,
+                      y: point.y + (height - depth) / 2,
+                  },
+        left:
+            dimension === '2d'
+                ? { x: point.x, y: point.y + height / 2 }
+                : {
+                      x: point.x,
+                      y: point.y + (height - depth) / 2,
+                  },
+        bottom: { x: point.x + width / 2, y: point.y + height },
+    };
 };

@@ -1,3 +1,6 @@
+import Connection from '@components/Connection';
+import Connectors from '@components/Connectors/index';
+import Edge from '@components/Edge';
 import Graph from '@components/Graph';
 import GridBackground from '@components/GridBackground';
 import Group from '@components/Group';
@@ -8,9 +11,13 @@ import { useCanvasInstanceContext } from '@contexts/CanvasInstanceContext';
 export default () => {
     const { dimension } = useCanvasDimensionContext();
     const {
-        state: { nodes, groups },
+        state: { nodes, edges, groups, connection },
         dispatch,
     } = useCanvasInstanceContext();
+
+    console.log(groups);
+    console.log(nodes);
+    console.log(edges);
 
     return (
         <Graph>
@@ -19,8 +26,19 @@ export default () => {
                 <Group group={group} />
             ))}
             {Object.values(nodes).map((node) => (
-                <Node node={node} />
+                <>
+                    <Node node={node} />
+                    <Connectors node={node} />
+                </>
             ))}
+            {connection && (
+                <Connection from={connection.from} to={connection.to} />
+            )}
+
+            {edges &&
+                Object.values(edges).map((edge) => (
+                    <Edge key={edge.id} edge={edge} isSelected={true} />
+                ))}
         </Graph>
     );
 };

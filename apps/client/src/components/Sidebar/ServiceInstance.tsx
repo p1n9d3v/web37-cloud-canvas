@@ -1,3 +1,4 @@
+import useGraphActions from '@hooks/useGraphActions';
 import ListItem, { ListItemProps } from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import { styled } from '@mui/material/styles';
@@ -20,11 +21,18 @@ const StyledServiceInstanceText = styled(ListItemText)(({ theme }) => ({
 
 export default ({
     title,
+    type,
     desc,
     ...props
-}: { title: string; desc: string } & ListItemProps) => {
+}: { title: string; desc: string; type: string } & ListItemProps) => {
+    const { addNode } = useGraphActions();
+
     return (
-        <StyledServiceInstance key={title} {...props}>
+        <StyledServiceInstance
+            key={title}
+            {...props}
+            onClick={() => addNode(type)}
+        >
             <StyledServiceInstanceText primary={title} secondary={desc} />
         </StyledServiceInstance>
     );

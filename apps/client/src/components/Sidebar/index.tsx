@@ -10,6 +10,7 @@ import List from '@mui/material/List';
 import { MOCK_SERVICES } from '@/mocks';
 import Service from '@components/Sidebar/Service';
 import SelectPlatform from '@components/Sidebar/SelectPlatform';
+import { NCLOUD_SERVICES } from '@constants';
 
 const CLOUD_PLATFORMS = [
     {
@@ -60,7 +61,7 @@ export default () => {
                     overflow: 'auto',
                 }}
             >
-                {MOCK_SERVICES.map((service) => (
+                {NCLOUD_SERVICES.map((service) => (
                     <Service
                         key={service.title}
                         title={service.title}

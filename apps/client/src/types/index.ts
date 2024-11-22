@@ -20,8 +20,6 @@ export type Node = {
         '3d': Size;
     };
     properties: { [key: string]: any };
-    //INFO: 미리 노드를 생성할 때 connector를 계산할지 고민
-    // connectors: { x: number; y: number }[];
     groupIds: string[];
 };
 

@@ -51,7 +51,7 @@ export default ({
     items: Array<{
         title: string;
         desc: string;
-        nodeType?: string;
+        type: string;
     }>;
 }) => {
     return (
@@ -75,6 +75,7 @@ export default ({
                     {items.map((item, index) => (
                         <ServiceInstanceItem
                             key={`${title}-${index}`}
+                            type={item.type}
                             title={item.title}
                             desc={item.desc}
                             onClick={() => {}}

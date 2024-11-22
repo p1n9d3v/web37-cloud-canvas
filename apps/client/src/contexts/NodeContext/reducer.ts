@@ -9,7 +9,7 @@ export type NodeAction =
     | { type: 'UPDATE_NODE'; payload: Partial<Node> & { id: string } }
     | { type: 'DELETE_NODE'; payload: { id: string } }
     | {
-          type: 'MOVE_NODE';
+          type: 'DRAG_NODE';
           payload: { id: string; point: Point };
       };
 
@@ -45,10 +45,11 @@ export const nodeReducer = (
                 nodes: remainingNodes,
             };
         }
-        case 'MOVE_NODE': {
+        case 'DRAG_NODE': {
             const { id, point } = action.payload;
             const node = state.nodes[id];
             if (!node) return state;
+
             return {
                 ...state,
                 nodes: {

@@ -5,6 +5,7 @@ import ServerNode from '@components/Node/ncloud/ServerNode';
 import { useCanvasDimensionContext } from '@contexts/CanvasDimensionContext';
 import { useCanvasInstanceContext } from '@contexts/CanvasInstanceContext/index';
 import useDrag from '@hooks/useDrag';
+import useGraphActions from '@hooks/useGraphActions';
 import { Node } from '@types';
 import { useEffect } from 'react';
 
@@ -29,19 +30,12 @@ type Props = {
 };
 export default ({ node }: Props) => {
     const { id, type, point } = node;
-    const { dimension } = useCanvasDimensionContext();
-    const { dispatch } = useCanvasInstanceContext();
-    const { isDragging, startDrag, moveDrag, stopDrag } = useDrag({
+    // const { dimension } = useCanvasDimensionContext();
+    // const { dispatch } = useCanvasInstanceContext();
+    const { dragNode } = useGraphActions();
+    const { isDragging, startDrag, drag, stopDrag } = useDrag({
         initialPoint: point,
-        updateFn: (point) =>
-            dispatch({
-                type: 'MOVE_NODE',
-                payload: {
-                    id,
-                    point,
-                    dimension,
-                },
-            }),
+        updateFn: (newPoint) => dragNode(id, newPoint),
     });
 
     const handleMouseDown = (e: React.MouseEvent) => {
@@ -52,7 +46,7 @@ export default ({ node }: Props) => {
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-        moveDrag({ x: e.clientX, y: e.clientY });
+        drag({ x: e.clientX, y: e.clientY });
     };
 
     const handleMouseUp = () => {

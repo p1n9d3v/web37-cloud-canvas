@@ -1,6 +1,6 @@
 import CloudCanvas from '@/src/CloudCanvas';
-import Header from '@components/Header';
-import Sidebar from '@components/Sidebar';
+import Header from '@components/Layout/Header';
+import Sidebar from '@components/Layout/Sidebar';
 import Box from '@mui/material/Box';
 
 function App() {

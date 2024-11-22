@@ -1,4 +1,4 @@
-import ServiceInstanceItem from '@components/Sidebar/ServiceInstance';
+import ServiceInstanceItem from '@components/Layout/Sidebar/ServiceInstance';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -6,7 +6,6 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import List from '@mui/material/List';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import { nanoid } from 'nanoid';
 
 const StyledService = styled(Accordion)(({ theme }) => ({
     backgroundColor:

@@ -1,4 +1,4 @@
-import { useCanvasDimensionContext } from '@contexts/CanvasDimensionContext';
+import { useDimensionContext } from '@contexts/DimensionContext';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LightModeIcon from '@mui/icons-material/LightMode';
@@ -37,7 +37,7 @@ const StyledIconButton = styled(IconButton)(({ theme }) => ({
 
 export default () => {
     const { mode: themeMode, setMode: setThemeMode } = useColorScheme();
-    const { dimension, toggleDimension } = useCanvasDimensionContext();
+    const { dimension, toggleDimension } = useDimensionContext();
 
     const handleToggleTheme = () =>
         setThemeMode(themeMode === 'dark' ? 'light' : 'dark');

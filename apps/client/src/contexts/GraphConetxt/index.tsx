@@ -36,9 +36,7 @@ export const GraphProvider = ({ children }: { children: ReactNode }) => {
 export const useGraphContext = () => {
     const context = useContext(CanvasContext);
     if (!context) {
-        throw new Error(
-            'useCanvasContext must be used within a CanvasProvider',
-        );
+        throw new Error('GraphContext: context is undefined');
     }
     return context;
 };

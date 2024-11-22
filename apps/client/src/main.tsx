@@ -10,6 +10,8 @@ import { CanvasInstanceProvider } from '@contexts/CanvasInstanceContext';
 import { SvgProvider } from '@contexts/SvgContext.tsx';
 import { GraphProvider } from '@contexts/GraphConetxt';
 import { DimensionProvider } from '@contexts/DimensionContext';
+import { NodeProvider } from '@contexts/NodeContext/index.tsx';
+import { EdgeProvider } from '@contexts/EdgeContext/index.tsx';
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
@@ -18,15 +20,21 @@ createRoot(document.getElementById('root')!).render(
             <SvgProvider>
                 <DimensionProvider>
                     <GraphProvider>
-                        <CanvasDimensionProvider>
-                            <CanvasProvider>
-                                <CanvasInstanceProvider
-                                    initialState={initialState}
-                                >
-                                    <App />
-                                </CanvasInstanceProvider>
-                            </CanvasProvider>
-                        </CanvasDimensionProvider>
+                        <GraphProvider>
+                            <NodeProvider>
+                                <EdgeProvider>
+                                    <CanvasDimensionProvider>
+                                        <CanvasProvider>
+                                            <CanvasInstanceProvider
+                                                initialState={initialState}
+                                            >
+                                                <App />
+                                            </CanvasInstanceProvider>
+                                        </CanvasProvider>
+                                    </CanvasDimensionProvider>
+                                </EdgeProvider>
+                            </NodeProvider>
+                        </GraphProvider>
                     </GraphProvider>
                 </DimensionProvider>
             </SvgProvider>

@@ -5,3 +5,21 @@ export const NODE_BASE_SIZE = {
     '2d': { width: 90, height: 90 },
     '3d': { width: 128, height: 111 },
 };
+
+export const NCLOUD_SERVICES = [
+    {
+        title: 'compute',
+        items: [
+            {
+                title: 'Compute Server',
+                desc: 'Compute server instances',
+                type: 'server',
+            },
+            {
+                title: 'Cloud Functions',
+                desc: 'Serverless functions',
+                type: 'cloud-function',
+            },
+        ],
+    },
+];

@@ -1,41 +1,38 @@
-import { useCanvasContext } from '@contexts/CanvasContext';
+import { useSvgContext } from '@contexts/SvgContext';
 import { Point } from '@types';
 import { getSvgPoint } from '@utils';
 import { useState } from 'react';
 
 type Props = {
     initialPoint: Point;
-    updateFn: (newPoint: Point) => void;
+    updateFn: (point: Point) => void;
 };
 
 export default ({ initialPoint, updateFn }: Props) => {
-    const { canvas } = useCanvasContext();
-
+    const { svgRef } = useSvgContext();
     const [isDragging, setIsDragging] = useState(false);
     const [startDragPoint, setStartDragPoint] = useState<Point | null>(null);
 
     const startDrag = (point: Point) => {
+        if (!svgRef.current) return;
+
         setIsDragging(true);
-        const svgPoint = getSvgPoint(canvas, point);
-        setStartDragPoint(svgPoint);
+        const startSvgPoint = getSvgPoint(svgRef.current, point);
+        setStartDragPoint(startSvgPoint);
     };
 
-    const moveDrag = (point: Point) => {
-        requestAnimationFrame(() => {
-            if (!(isDragging && canvas && startDragPoint)) return;
+    const drag = (point: Point) => {
+        if (!(isDragging && startDragPoint && svgRef.current)) return;
 
-            const svgPoint = getSvgPoint(canvas, point);
-            const offset = {
-                x: svgPoint.x - startDragPoint.x,
-                y: svgPoint.y - startDragPoint.y,
-            };
+        const curSvgPoint = getSvgPoint(svgRef.current, point);
+        const offset = {
+            x: curSvgPoint.x - startDragPoint.x,
+            y: curSvgPoint.y - startDragPoint.y,
+        };
 
-            const newPoint = {
-                x: initialPoint.x + offset.x,
-                y: initialPoint.y + offset.y,
-            };
-
-            updateFn(newPoint);
+        updateFn({
+            x: initialPoint.x + offset.x,
+            y: initialPoint.y + offset.y,
         });
     };
 
@@ -47,7 +44,7 @@ export default ({ initialPoint, updateFn }: Props) => {
     return {
         isDragging,
         startDrag,
-        moveDrag,
+        drag,
         stopDrag,
     };
 };

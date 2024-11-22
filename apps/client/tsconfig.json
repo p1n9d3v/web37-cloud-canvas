@@ -10,6 +10,7 @@
         "moduleResolution": "node",
         "baseUrl": ".",
         "paths": {
+            "@helpers/*": ["src/helpers/*"],
             "@cloud-graph/*": ["src/cloud-graph/*"],
             "@cloud-graph": ["src/cloud-graph/index.ts"],
             "@cloudflow": ["src/cloudflow/index.tsx"],

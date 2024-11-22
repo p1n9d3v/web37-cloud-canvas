@@ -1,17 +1,15 @@
 import Graph from '@components/Graph';
 import GridBackground from '@components/GridBackground';
+import Node from '@components/Node';
 import { useCanvasDimensionContext } from '@contexts/CanvasDimensionContext';
 import { useCanvasInstanceContext } from '@contexts/CanvasInstanceContext';
-import useGlobal from '@hooks/useGlobal';
+import { useNodeContext } from '@contexts/NodeContext';
 import { useEffect } from 'react';
 
 export default () => {
-    const { dimension } = useCanvasDimensionContext();
     const {
-        state: { nodes, edges, groups, connection },
-        dispatch,
-    } = useCanvasInstanceContext();
-
+        state: { nodes },
+    } = useNodeContext();
     useEffect(() => {
         const handleContextMenu = (event: MouseEvent) => event.preventDefault();
         document.addEventListener('contextmenu', handleContextMenu);
@@ -26,12 +24,12 @@ export default () => {
             {/* {Object.values(groups).map((group) => ( */}
             {/*     <Group group={group} /> */}
             {/* ))} */}
-            {/* {Object.values(nodes).map((node) => ( */}
-            {/*     <> */}
-            {/*         <Node node={node} /> */}
-            {/*         <Connectors node={node} /> */}
-            {/*     </> */}
-            {/* ))} */}
+            {Object.values(nodes).map((node) => (
+                <>
+                    <Node node={node} />
+                    {/* <Connectors node={node} /> */}
+                </>
+            ))}
             {/* {connection && ( */}
             {/*     <Connection from={connection.from} to={connection.to} /> */}
             {/* )} */}

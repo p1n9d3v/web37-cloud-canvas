@@ -10,7 +10,10 @@ import { alignNodePoint } from '@helpers/node';
 import { nanoid } from 'nanoid';
 
 export default () => {
-    const { state: nodeState, dispatch: nodeDispatch } = useNodeContext();
+    const {
+        state: { nodes },
+        dispatch: nodeDispatch,
+    } = useNodeContext();
     const { state: edgeState, dispatch: edgeDispatch } = useEdgeContext();
     const { state: groupState, dispatch: groupDispatch } = useGroupContext();
     const { dimension } = useDimensionContext();
@@ -26,7 +29,7 @@ export default () => {
 
     const dragNode = (id: string, point: Point) => {
         if (!svgRef.current) return;
-        const node = nodeState[id];
+        const node = nodes[id];
         nodeDispatch({
             type: 'DRAG_NODE',
             payload: { id, point: alignNodePoint(node, point, dimension) },

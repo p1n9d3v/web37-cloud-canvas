@@ -1,4 +1,6 @@
 import { useCanvasDimensionContext } from '@contexts/CanvasDimensionContext';
+import { useDimensionContext } from '@contexts/DimensionContext';
+import { Node } from '@types';
 
 const Node3D = () => {
     return (
@@ -96,7 +98,7 @@ const Node2D = () => {
         </>
     );
 };
-export default () => {
-    const { dimension } = useCanvasDimensionContext();
+export default ({}: Partial<Node>) => {
+    const { dimension } = useDimensionContext();
     return dimension === '2d' ? <Node2D /> : <Node3D />;
 };

@@ -2,23 +2,21 @@ import CloudFunctionNode from '@components/Node/ncloud/CloudFunctionNode';
 import DBMySQLNode from '@components/Node/ncloud/DBMySQLNode';
 import ObjectStorageNode from '@components/Node/ncloud/ObjectStorageNode';
 import ServerNode from '@components/Node/ncloud/ServerNode';
-import { useCanvasDimensionContext } from '@contexts/CanvasDimensionContext';
-import { useCanvasInstanceContext } from '@contexts/CanvasInstanceContext/index';
 import useDrag from '@hooks/useDrag';
 import useGraphActions from '@hooks/useGraphActions';
 import { Node } from '@types';
 import { useEffect } from 'react';
 
-const nodeFactory = (type: Node['type']) => {
-    switch (type) {
+const nodeFactory = (node: Node) => {
+    switch (node.type) {
         case 'server':
-            return <ServerNode />;
+            return <ServerNode {...node} />;
         case 'cloud-function':
-            return <CloudFunctionNode />;
+            return <CloudFunctionNode {...node} />;
         case 'object-storage':
-            return <ObjectStorageNode />;
+            return <ObjectStorageNode {...node} />;
         case 'db-mysql':
-            return <DBMySQLNode />;
+            return <DBMySQLNode {...node} />;
         // case 'pointer':
         //     return <PointerNode />;
         default:
@@ -30,7 +28,6 @@ type Props = {
 };
 export default ({ node }: Props) => {
     const { id, type, point } = node;
-    // const { dimension } = useCanvasDimensionContext();
     // const { dispatch } = useCanvasInstanceContext();
     const { dragNode } = useGraphActions();
     const { isDragging, startDrag, drag, stopDrag } = useDrag({
@@ -72,7 +69,7 @@ export default ({ node }: Props) => {
             transform={`translate(${point.x}, ${point.y})`}
             onMouseDown={handleMouseDown}
         >
-            {nodeFactory(type)}
+            {nodeFactory(node)}
         </g>
     );
 };

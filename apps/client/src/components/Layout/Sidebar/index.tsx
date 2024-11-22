@@ -7,9 +7,8 @@ import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import List from '@mui/material/List';
 
-import { MOCK_SERVICES } from '@/mocks';
-import Service from '@components/Sidebar/Service';
-import SelectPlatform from '@components/Sidebar/SelectPlatform';
+import Service from '@components/Layout/Sidebar/Service';
+import SelectPlatform from '@components/Layout/Sidebar/SelectPlatform';
 import { NCLOUD_SERVICES } from '@constants';
 
 const CLOUD_PLATFORMS = [

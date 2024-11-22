@@ -1,5 +1,5 @@
 import Connector from '@components/Connectors/Connector';
-import { useCanvasDimensionContext } from '@contexts/CanvasDimensionContext';
+import { useDimensionContext } from '@contexts/DimensionContext';
 import { ConnectorType, Node } from '@types';
 import { getConnectorPoints } from '@utils';
 
@@ -11,12 +11,8 @@ type Props = {
 };
 
 export default ({ node }: Props) => {
-    const { dimension } = useCanvasDimensionContext();
+    const { dimension } = useDimensionContext();
     const connectors = getConnectorPoints(node, dimension);
-
-    // const connectedAnchors = edges
-    //     .filter((edge) => edge.source.node.id === node.id)
-    //     .map((edge) => edge.source.anchorType);
 
     return (
         <>

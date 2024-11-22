@@ -20,6 +20,7 @@ export type Node = {
         '3d': Size;
     };
     properties: { [key: string]: any };
+    connectors: { [key: string]: Point };
     groupIds: string[];
 };
 

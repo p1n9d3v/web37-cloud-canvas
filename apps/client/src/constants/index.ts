@@ -22,4 +22,14 @@ export const NCLOUD_SERVICES = [
             },
         ],
     },
+    {
+        title: 'database',
+        items: [
+            {
+                title: 'DB for MySQL',
+                desc: 'Managed MySQL database',
+                type: 'db-mysql',
+            },
+        ],
+    },
 ];

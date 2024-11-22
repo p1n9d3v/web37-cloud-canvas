@@ -50,5 +50,10 @@ export type Group = {
     parentGroupId?: string;
 };
 
-export type ConnectorType = 'top' | 'right' | 'bottom' | 'left';
-export type Connectors = Record<ConnectorType, Point>;
+export type ConnectorType = 'top' | 'right' | 'bottom' | 'left' | 'center';
+export type ConnectorMap = Record<Partial<ConnectorType>, Point>;
+export interface Connector {
+    type: 'node' | 'bend' | string;
+    point: Point;
+    connectorType?: ConnectorType;
+}

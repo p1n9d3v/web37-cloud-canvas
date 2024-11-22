@@ -1,11 +1,23 @@
 import { GRID_2D_SIZE, NODE_BASE_SIZE } from '@constants';
 import { CanvasInstanceState } from '@contexts/CanvasInstanceContext/reducer';
-import { Bounds, Dimension, Group, Node, Point, Size } from '@types';
+import {
+    Bounds,
+    Connector,
+    ConnectorMap,
+    ConnectorType,
+    Dimension,
+    Group,
+    Node,
+    Point,
+    Size,
+} from '@types';
 import {
     alignPoint2d,
     alignPoint3d,
     convert2dTo3dPoint,
     convert3dTo2dPoint,
+    getConnectorPoints,
+    getDistance,
 } from '@utils';
 
 export const computeBounds = (_bounds: Bounds[], dimension: Dimension) => {
@@ -88,7 +100,7 @@ export const getNodeOffsetForConvertDimension = (
     };
 };
 //INFO: 처음이 2d로 시작하기 때문에 nodeSize : 3d , baseSize : 3d로 해야함. 다른 방법은 잘 모르곘음.
-//2d에서 3d로 변환할 때는 3d에서 2d로 변환할 때와 달리 baseSize와 nodeSize가 반대로 들어가야 할 것 같음
+//2d에서 3d로 변환할 때는 3d에서 2d로 변환할 때와 달리 baseSize와 nodeSize가 2d 사이즈 들어가야 할 것 같음
 export const convertNodePointDimension = (node: Node, dimension: Dimension) => {
     const { point, size } = node;
 
@@ -173,4 +185,179 @@ export const getParentGroups = (
     if (!group.parentGroupId) return [];
     const parentGroup = groups[group.parentGroupId];
     return [parentGroup, ...getParentGroups(groups, parentGroup)];
+};
+
+export const findNearestConnectorPair = (
+    movingConnectors: Connector[],
+    connectedConnectors: Connector[],
+): {
+    movingConnector: Connector;
+    connectedConnector: Connector;
+    distance: number;
+} => {
+    let nearestPair: {
+        movingConnector: Connector;
+        connectedConnector: Connector;
+        distance: number;
+    } = {
+        movingConnector: movingConnectors[0],
+        connectedConnector: connectedConnectors[0],
+        distance: Infinity,
+    };
+
+    movingConnectors.forEach((mConnector) => {
+        connectedConnectors.forEach((cConnector) => {
+            const distance = getDistance(mConnector.point, cConnector.point);
+
+            if (distance < nearestPair.distance) {
+                nearestPair = {
+                    movingConnector: mConnector,
+                    connectedConnector: cConnector,
+                    distance,
+                };
+            }
+        });
+    });
+
+    return nearestPair!;
+};
+
+const generateNodeConnectors = (
+    connectors: Omit<ConnectorMap, 'center'>,
+): Connector[] => {
+    return Object.entries(connectors).map(([connectorType, point]) => ({
+        type: 'node',
+        connectorType: connectorType as ConnectorType,
+        point,
+    }));
+};
+
+const generateBendConnector = (bendPoint: Point): Connector => {
+    return {
+        type: 'bend',
+        point: bendPoint,
+        connectorType: 'center',
+    };
+};
+
+export const updateNearestConnectorPair = ({
+    state,
+    node,
+    dimension,
+}: {
+    state: CanvasInstanceState;
+    node: Node;
+    dimension: Dimension;
+}) => {
+    const movingNodeConnectors = getConnectorPoints(node, dimension);
+    const connectedEdges = Object.values(state.edges).filter(
+        (edge) => edge.source.id === node.id || edge.target.id === node.id,
+    );
+
+    const updatedEdges = connectedEdges.reduce((acc, edge) => {
+        const sourceIsDragging = edge.source.id === node.id;
+        const connectedNodeId = sourceIsDragging
+            ? edge.target.id
+            : edge.source.id;
+        const connectedNode = state.nodes[connectedNodeId];
+
+        const connectedNodeConnectors = getConnectorPoints(
+            connectedNode,
+            dimension,
+        );
+
+        const connectedConnectors = generateNodeConnectors(
+            connectedNodeConnectors,
+        );
+
+        const movingConnectors = generateNodeConnectors(movingNodeConnectors);
+
+        let updatedEdge = {};
+        if (edge.bendPoints.length > 0) {
+            if (sourceIsDragging) {
+                const firstBendPoint = edge.bendPoints[0];
+                const bendConnector = generateBendConnector(firstBendPoint);
+                const { movingConnector } = findNearestConnectorPair(
+                    movingConnectors,
+                    [bendConnector],
+                );
+                updatedEdge = {
+                    ...edge,
+                    source: {
+                        ...edge.source,
+                        connectorType: movingConnector.connectorType,
+                    },
+                };
+            } else {
+                const lastBendPoint =
+                    edge.bendPoints[edge.bendPoints.length - 1];
+                const bendConnector = generateBendConnector(lastBendPoint);
+                const { movingConnector } = findNearestConnectorPair(
+                    movingConnectors,
+                    [bendConnector],
+                );
+                updatedEdge = {
+                    ...edge,
+                    target: {
+                        ...edge.target,
+                        connectorType: movingConnector.connectorType,
+                    },
+                };
+            }
+        } else {
+            const { movingConnector, connectedConnector } =
+                findNearestConnectorPair(movingConnectors, connectedConnectors);
+            if (sourceIsDragging) {
+                updatedEdge = {
+                    ...edge,
+                    source: {
+                        ...edge.source,
+                        connectorType: movingConnector.connectorType,
+                    },
+                    target: {
+                        ...edge.target,
+                        connectorType: connectedConnector.connectorType,
+                    },
+                };
+            } else {
+                updatedEdge = {
+                    ...edge,
+                    target: {
+                        ...edge.target,
+                        connectorType: movingConnector.connectorType,
+                    },
+                    source: {
+                        ...edge.source,
+                        connectorType: connectedConnector.connectorType,
+                    },
+                };
+            }
+        }
+
+        return {
+            ...acc,
+            [edge.id]: updatedEdge,
+        };
+    }, {});
+
+    return updatedEdges;
+};
+
+export const findNearestConnectorForBendPoint = (
+    node: Node,
+    point: Point,
+    dimension: Dimension,
+) => {
+    const connectors = getConnectorPoints(node, dimension);
+    const nodeConnectors = generateNodeConnectors(connectors);
+    const bendConnector = generateBendConnector(point);
+
+    const connectorPair = findNearestConnectorPair(
+        [bendConnector],
+        nodeConnectors,
+    );
+    if (!connectorPair) {
+        return null;
+    }
+    return connectorPair.connectedConnector;
 };

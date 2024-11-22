@@ -144,4 +144,5 @@ export const initialState = {
         (acc, group) => ({ ...acc, [group.id]: group }),
         {},
     ),
+    edges: {},
 };

@@ -17,8 +17,6 @@ const nodeFactory = (node: Node) => {
             return <ObjectStorageNode {...node} />;
         case 'db-mysql':
             return <DBMySQLNode {...node} />;
-        // case 'pointer':
-        //     return <PointerNode />;
         default:
             null;
     }
@@ -27,8 +25,8 @@ type Props = {
     node: Node;
 };
 export default ({ node }: Props) => {
-    const { id, type, point } = node;
-    // const { dispatch } = useCanvasInstanceContext();
+    const { id, point } = node;
+
     const { dragNode } = useGraphActions();
     const { isDragging, startDrag, drag, stopDrag } = useDrag({
         initialPoint: point,

@@ -1,4 +1,3 @@
-import { useCanvasDimensionContext } from '@contexts/CanvasDimensionContext';
 import {
     CanvasInstanceAction,
     canvasInstanceReducer,
@@ -9,7 +8,6 @@ import {
     Dispatch,
     ReactNode,
     useContext,
-    useEffect,
     useReducer,
 } from 'react';
 
@@ -29,20 +27,19 @@ export const CanvasInstanceProvider = ({
     children: ReactNode;
     initialState?: CanvasInstanceState;
 }) => {
-    const { dimension, prevDimension } = useCanvasDimensionContext();
     const [state, dispatch] = useReducer(
         canvasInstanceReducer,
         initialState ?? { nodes: {}, edges: {}, groups: {}, connection: null },
     );
 
-    useEffect(() => {
-        if (dimension === prevDimension) return;
-
-        dispatch({
-            type: 'ADJUST_POINT_FOR_DIMENSION',
-            payload: { dimension },
-        });
-    }, [dimension]);
+    // useEffect(() => {
+    //     if (dimension === prevDimension) return;
+    //
+    //     dispatch({
+    //         type: 'ADJUST_POINT_FOR_DIMENSION',
+    //         payload: { dimension },
+    //     });
+    // }, [dimension]);
 
     return (
         <CanvasInstanceContext.Provider value={{ state, dispatch }}>

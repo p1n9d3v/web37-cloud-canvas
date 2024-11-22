@@ -7,6 +7,7 @@ export type NodeState = {
 export type NodeAction =
     | { type: 'ADD_NODE'; payload: Node }
     | { type: 'UPDATE_NODE'; payload: Partial<Node> & { id: string } }
+    | { type: 'UPDATE_NODES'; payload: Record<string, Node> }
     | { type: 'DELETE_NODE'; payload: { id: string } }
     | {
           type: 'DRAG_NODE';
@@ -58,6 +59,15 @@ export const nodeReducer = (
                         ...node,
                         point,
                     },
+                },
+            };
+        }
+        case 'UPDATE_NODES': {
+            return {
+                ...state,
+                nodes: {
+                    ...state.nodes,
+                    ...action.payload,
                 },
             };
         }

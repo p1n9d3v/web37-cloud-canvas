@@ -1,9 +1,12 @@
 import {
     alignNodePoint,
     convertNodePointDimension,
+    findNearestConnectorForBendPoint,
+    findNearestConnectorPair,
     getParentGroups,
     sortNodes,
     updateGroupBounds,
+    updateNearestConnectorPair,
 } from '@contexts/CanvasInstanceContext/helpers';
 import { Dimension, Edge, Group, Node, Point } from '@types';
 import {
@@ -11,6 +14,7 @@ import {
     alignPoint3d,
     convert2dTo3dPoint,
     convert3dTo2dPoint,
+    getConnectorPoints,
 } from '@utils';
 import { nanoid } from 'nanoid';
 
@@ -112,6 +116,15 @@ export const canvasInstanceReducer = (
             const node = state.nodes[id];
             const { groupIds } = node;
 
+            const updatedEdges = {
+                ...state.edges,
+                ...updateNearestConnectorPair({
+                    state,
+                    node,
+                    dimension,
+                }),
+            };
+
             let updatedNodes = {
                 ...state.nodes,
                 [id]: {
@@ -128,6 +141,7 @@ export const canvasInstanceReducer = (
             return {
                 ...state,
                 nodes: updatedNodes,
+                edges: updatedEdges,
                 groups: {
                     ...state.groups,
                     ...updatedGroups,
@@ -145,6 +159,18 @@ export const canvasInstanceReducer = (
                 x: newPoint.x - group.bounds.x,
                 y: newPoint.y - group.bounds.y,
             };
+
+            const innerNodes = nodeIds.map((nodeId) => state.nodes[nodeId]);
+            const updatedEdges = innerNodes.reduce((acc, node) => {
+                return {
+                    ...acc,
+                    ...updateNearestConnectorPair({
+                        state,
+                        node,
+                        dimension,
+                    }),
+                };
+            }, {});
 
             const updatedGroups = {
                 [id]: {
@@ -209,6 +235,10 @@ export const canvasInstanceReducer = (
                     ...state.nodes,
                     ...updatedNodes,
                 },
+                edges: {
+                    ...state.edges,
+                    ...updatedEdges,
+                },
                 groups: {
                     ...state.groups,
                     ...updatedGroups,
@@ -219,7 +249,7 @@ export const canvasInstanceReducer = (
         }
 
         case 'ADJUST_POINT_FOR_DIMENSION': {
-            const { nodes, groups } = state;
+            const { nodes, groups, edges } = state;
             const { dimension } = action.payload;
 
             const converterPoint =
@@ -240,14 +270,14 @@ export const canvasInstanceReducer = (
                         },
                     };
                 }, {}),
-                groups: Object.values(groups).reduce((acc, cur) => {
-                    const { bounds } = cur;
+                groups: Object.values(groups).reduce((acc, group) => {
+                    const { bounds } = group;
                     const point = { x: bounds.x, y: bounds.y };
                     const updatedPoint = converterPoint(point);
                     return {
                         ...acc,
-                        [cur.id]: {
-                            ...cur,
+                        [group.id]: {
+                            ...group,
                             bounds: {
                                 ...bounds,
                                 x: updatedPoint.x,
@@ -256,7 +286,7 @@ export const canvasInstanceReducer = (
                         },
                     };
                 }, {}),
-                edges: Object.values(state.edges).reduce((acc, edge) => {
+                edges: Object.values(edges).reduce((acc, edge) => {
                     const updatedBendPoints = edge.bendPoints.map((point) => {
                         return dimension === '2d'
                             ? convert3dTo2dPoint(point)
@@ -352,6 +382,37 @@ export const canvasInstanceReducer = (
             if (!edge) {
                 return state;
             }
+            const { source, target } = edge;
+
+            let updatedEdge = {};
+
+            const fn = (node: Node) =>
+                findNearestConnectorForBendPoint(node, point, dimension);
+            if (bendPointIdx === 0) {
+                const sourceNode = state.nodes[source.id];
+                const connector = fn(sourceNode);
+                updatedEdge = {
+                    source: {
+                        ...edge.source,
+                        connectorType: connector
+                            ? connector.connectorType
+                            : edge.source.connectorType,
+                    },
+                };
+            }
+            if (bendPointIdx === edge.bendPoints.length - 1) {
+                const targetNode = state.nodes[target.id];
+                const connector = fn(targetNode);
+                updatedEdge = {
+                    ...updatedEdge,
+                    target: {
+                        ...edge.target,
+                        connectorType: connector
+                            ? connector.connectorType
+                            : edge.target.connectorType,
+                    },
+                };
+            }
 
             const updatedBendPoints = [...edge.bendPoints];
             const alignedPoint =
@@ -363,6 +424,7 @@ export const canvasInstanceReducer = (
                     ...state.edges,
                     [edgeId]: {
                         ...edge,
+                        ...updatedEdge,
                         bendPoints: updatedBendPoints,
                     },
                 },

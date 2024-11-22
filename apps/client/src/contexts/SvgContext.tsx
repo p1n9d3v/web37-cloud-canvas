@@ -23,7 +23,7 @@ export const SvgProvider = ({ children }: PropsWithChildren) => {
 export const useSvgContext = () => {
     const context = useContext(SvgContext);
     if (!context) {
-        throw new Error('useSvgContext must be used within a SvgProvider');
+        throw new Error('SvgContext: context is undefined');
     }
     return context;
 };

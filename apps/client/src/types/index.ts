@@ -29,11 +29,11 @@ export type Edge = {
     type: 'arrow' | 'line';
     source: {
         id: string;
-        connectorType: ConnectorType;
+        connectorType: string;
     };
     target: {
         id: string;
-        connectorType: ConnectorType;
+        connectorType: string;
     };
     bendPoints: { x: number; y: number }[];
 };
@@ -49,8 +49,14 @@ export type Group = {
     parentGroupId?: string;
 };
 
+export type Connection = {
+    id: string;
+    point: Point;
+    connectorType: string;
+};
+
 export type ConnectorType = 'top' | 'right' | 'bottom' | 'left' | 'center';
-export type ConnectorMap = Record<Partial<ConnectorType>, Point>;
+export type ConnectorMap = Record<string, Point>;
 export interface Connector {
     type: 'node' | 'bend' | string;
     point: Point;

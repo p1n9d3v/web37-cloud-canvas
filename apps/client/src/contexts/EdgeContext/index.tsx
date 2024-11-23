@@ -14,6 +14,7 @@ const EdgeContext = createContext<EdgeContextProps | undefined>(undefined);
 
 const initialState: EdgeState = {
     edges: {},
+    connection: null,
 };
 
 export const EdgeProvider = ({ children }: { children: ReactNode }) => {

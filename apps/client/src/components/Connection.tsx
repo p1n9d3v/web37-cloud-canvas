@@ -2,17 +2,17 @@ import { useTheme } from '@mui/material';
 import { Point } from '@types';
 
 type Props = {
-    from: Point;
-    to: Point;
+    source: Point;
+    target: Point;
 };
-export default ({ from, to }: Props) => {
+export default ({ source, target }: Props) => {
     const theme = useTheme();
     const color =
         theme.palette.mode === 'dark'
             ? theme.palette.grey[200]
             : theme.palette.grey[800];
 
-    const linePathD = `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
+    const linePathD = `M ${source.x} ${source.y} L ${target.x} ${target.y}`;
 
     return (
         <g>

@@ -20,7 +20,6 @@ const CanvasContext = createContext<GraphContextProps | undefined>(undefined);
 
 const initialState = {
     viewBox: { x: 0, y: 0, width: 1000, height: 1000 },
-    connection: null,
 };
 
 export const GraphProvider = ({ children }: { children: ReactNode }) => {

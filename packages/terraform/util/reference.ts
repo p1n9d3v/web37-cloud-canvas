@@ -12,6 +12,7 @@ export const resolveReference = (
         LOGIN_KEY_NAME_PLACEHOLDER: `ncloud_login_key.${resourceNameMap.get('ncloud_login_key')}.key_name`,
         NIC_ID_PLACEHOLDER: `ncloud_network_interface.${resourceNameMap.get('ncloud_network_interface')}.id`,
         SERVER_ID_PLACEHOLDER: `ncloud_server.${resourceNameMap.get('ncloud_server')}.id`,
+        LOAD_BALANCER_ID_PLACEHOLDER: `ncloud_load_balancer.${resourceNameMap.get('ncloud_load_balancer')}.id`,
     };
 
     return references[placeholder] || placeholder;

@@ -72,4 +72,15 @@ export const sampleNodes: CloudCanvasNode[] = [
         name: 'my-public-ip',
         properties: {},
     },
+    {
+        id: 'lb1',
+        type: 'LoadBalancer',
+        name: 'my-lb',
+        properties: {
+            type: 'APPLICATION',
+            networkType: 'PUBLIC',
+            throughputType: 'SMALL',
+            description: 'My Load Balancer',
+        },
+    },
 ];

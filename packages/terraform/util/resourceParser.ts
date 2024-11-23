@@ -9,6 +9,7 @@ import { NCloudLoginKey } from '../model/NCloudLoginKey';
 import { NCloudNetworkInterface } from '../model/NCloudNetworkInterface';
 import { NCloudServer } from '../model/NCloudServer';
 import { NCloudPublicIP } from '../model/NCloudPublicIP';
+import { NCloudLoadBalancer } from '../model/NCloudLoadBalancer';
 
 export function parseToNCloudModel(resource: CloudCanvasNode): NCloudModel {
     const { type, name, properties } = resource;
@@ -70,6 +71,13 @@ export function parseToNCloudModel(resource: CloudCanvasNode): NCloudModel {
         case 'publicip':
             return new NCloudPublicIP({
                 name: name || 'public-ip',
+            });
+
+        case 'loadbalancer':
+            return new NCloudLoadBalancer({
+                name: name || 'lb',
+                networkType: properties.networkType,
+                throughputType: properties.throughputType,
             });
 
         default:

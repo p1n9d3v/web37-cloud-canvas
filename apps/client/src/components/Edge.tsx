@@ -22,6 +22,11 @@ export default ({
         ? theme.palette.primary.main
         : theme.palette.text.primary;
 
+    const bendPointsString = bendingPoints
+        .map((point) => `${point.x},${point.y}`)
+        .join(' ');
+    const allPoints = `${sourceConnector.x},${sourceConnector.y} ${bendPointsString} ${targetConnector.x},${targetConnector.y}`;
+
     const handleMouseDown = (e: React.MouseEvent) => {
         e.stopPropagation();
         if (e.ctrlKey) {
@@ -39,11 +44,6 @@ export default ({
 
         document.addEventListener('mouseup', handleMouseUp);
     };
-
-    const bendPointsString = bendingPoints
-        .map((point) => `${point.x},${point.y}`)
-        .join(' ');
-    const allPoints = `${sourceConnector.x},${sourceConnector.y} ${bendPointsString} ${targetConnector.x},${targetConnector.y}`;
 
     return (
         <g id={id} data-type="edge" onMouseDown={handleMouseDown}>

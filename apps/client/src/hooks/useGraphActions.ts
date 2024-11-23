@@ -5,9 +5,13 @@ import { useGraphContext } from '@contexts/GraphConetxt';
 import { useGroupContext } from '@contexts/GroupContext';
 import { useNodeContext } from '@contexts/NodeContext';
 import { useSvgContext } from '@contexts/SvgContext';
-import { getClosestSegEdgeIdx } from '@helpers/edge';
+import {
+    findNearestConnectorForBendPoint,
+    getClosestSegEdgeIdx,
+    updateNearestConnectorPair,
+} from '@helpers/edge';
 import { adjustNodePointForDimension, alignNodePoint } from '@helpers/node';
-import { Connection, Node, Point } from '@types';
+import { Connection, Edge, Node, Point } from '@types';
 import {
     alignPoint2d,
     alignPoint3d,
@@ -57,10 +61,19 @@ export default () => {
             { ...node, point: newPoint },
             dimension,
         );
+
         nodeDispatch({
             type: 'MOVE_NODE',
             payload: { id, point: newPoint, connectors },
         });
+
+        const updatedEdges = updateNearestConnectorPair(
+            { ...node, point: newPoint, connectors },
+            nodes,
+            Object.values(edges),
+        );
+
+        updateEdges(updatedEdges);
     };
 
     const updateNodePointForDimension = () => {
@@ -109,6 +122,13 @@ export default () => {
         });
     };
 
+    const updateEdges = (edges: Record<string, Edge>) => {
+        edgeDispatch({
+            type: 'UPDATE_EDGES',
+            payload: edges,
+        });
+    };
+
     const splitEdge = (id: string, point: Point, bendingPoints: Point[]) => {
         if (!svgRef.current) return;
 
@@ -120,7 +140,7 @@ export default () => {
             payload: {
                 id,
                 point: svgPoint,
-                insertAfter: closestSegmentIdx + 1,
+                insertAfter: closestSegmentIdx,
             },
         });
     };
@@ -135,12 +155,52 @@ export default () => {
         const newPoint =
             dimension === '2d' ? alignPoint2d(point) : alignPoint3d(point);
 
+        const edge = edges[edgeId];
+        const { source, target } = edge;
+
+        let connector:
+            | {
+                  [key: string]: {
+                      id: string;
+                      connectorType: string;
+                  };
+              }
+            | undefined;
+
+        if (index === 0) {
+            const sourceNode = nodes[source.id];
+            const connectorType = findNearestConnectorForBendPoint(
+                sourceNode,
+                point,
+            ) as string;
+            connector = {
+                ['source']: {
+                    id: source.id,
+                    connectorType,
+                },
+            };
+        }
+        if (index === edge.bendingPoints.length - 1) {
+            const targetNode = nodes[target.id];
+            const connectorType = findNearestConnectorForBendPoint(
+                targetNode,
+                point,
+            ) as string;
+            connector = {
+                ...connector,
+                ['target']: {
+                    id: target.id,
+                    connectorType,
+                },
+            };
+        }
+
         edgeDispatch({
             type: 'MOVE_BENDING_POINTER',
             payload: {
-                edgeId,
-                index,
-                point: newPoint,
+                id: edgeId,
+                bendingPointer: { index, point: newPoint },
+                connector,
             },
         });
     };

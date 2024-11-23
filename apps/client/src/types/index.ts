@@ -60,5 +60,5 @@ export type ConnectorMap = Record<string, Point>;
 export interface Connector {
     type: 'node' | 'bend' | string;
     point: Point;
-    connectorType?: ConnectorType;
+    connectorType?: string;
 }

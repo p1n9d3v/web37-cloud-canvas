@@ -11,6 +11,8 @@ import { Connection, Node, Point } from '@types';
 import {
     alignPoint2d,
     alignPoint3d,
+    convert2dTo3dPoint,
+    convert3dTo2dPoint,
     getConnectorPoints,
     getDistanceToSegment,
     getSvgPoint,
@@ -23,7 +25,10 @@ export default () => {
         state: { nodes },
         dispatch: nodeDispatch,
     } = useNodeContext();
-    const { state: edgeState, dispatch: edgeDispatch } = useEdgeContext();
+    const {
+        state: { edges },
+        dispatch: edgeDispatch,
+    } = useEdgeContext();
     const { state: groupState, dispatch: groupDispatch } = useGroupContext();
     const { dimension, prevDimension } = useDimensionContext();
     const { svgRef } = useSvgContext();
@@ -140,10 +145,34 @@ export default () => {
         });
     };
 
+    const updateEdgePointForDimension = () => {
+        const updatedEdges = Object.entries(edges).reduce((acc, [id, edge]) => {
+            const adjustedBendingPoints = edge.bendingPoints.map((point) =>
+                dimension === '2d'
+                    ? convert3dTo2dPoint(point)
+                    : convert2dTo3dPoint(point),
+            );
+
+            return {
+                ...acc,
+                [id]: {
+                    ...edge,
+                    bendingPoints: adjustedBendingPoints,
+                },
+            };
+        }, {});
+
+        edgeDispatch({
+            type: 'UPDATE_EDGES',
+            payload: updatedEdges,
+        });
+    };
+
     useEffect(() => {
         if (dimension === prevDimension) return;
 
         updateNodePointForDimension();
+        updateEdgePointForDimension();
     }, [dimension]);
 
     return {

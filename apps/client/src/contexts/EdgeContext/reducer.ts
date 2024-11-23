@@ -1,4 +1,4 @@
-import { Edge, Point, Dimension } from '@types';
+import { Edge, Point } from '@types';
 
 export type EdgeState = {
     edges: Record<string, Edge>;
@@ -8,6 +8,7 @@ export type EdgeState = {
 export type EdgeAction =
     | { type: 'ADD_EDGE'; payload: Omit<Edge, 'bendingPoints'> }
     | { type: 'UPDATE_EDGE'; payload: Partial<Edge> & { id: string } }
+    | { type: 'UPDATE_EDGES'; payload: Record<string, Edge> }
     | { type: 'DELETE_EDGE'; payload: { id: string } }
     | {
           type: 'SPLIT_EDGE';
@@ -49,6 +50,15 @@ export const edgeReducer = (
                     },
                 },
             };
+        case 'UPDATE_EDGES': {
+            return {
+                ...state,
+                edges: {
+                    ...state.edges,
+                    ...action.payload,
+                },
+            };
+        }
         case 'DELETE_EDGE': {
             const { id } = action.payload;
             const { [id]: removedEdge, ...remainingEdges } = state.edges;

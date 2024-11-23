@@ -17,9 +17,17 @@ export type EdgeAction =
     | {
           type: 'MOVE_BENDING_POINTER';
           payload: {
-              edgeId: string;
-              index: number;
-              point: Point;
+              id: string;
+              bendingPointer: {
+                  index: number;
+                  point: Point;
+              };
+              connector?: {
+                  [key: string]: {
+                      id: string;
+                      connectorType: string;
+                  };
+              };
           };
       };
 
@@ -86,20 +94,25 @@ export const edgeReducer = (
             };
         }
         case 'MOVE_BENDING_POINTER': {
-            const { edgeId, index, point } = action.payload;
-            const edge = state.edges[edgeId];
+            const { id, bendingPointer, connector } = action.payload;
+            const edge = state.edges[id];
+            const { index, point } = bendingPointer;
             if (!edge || index < 0 || index >= edge.bendingPoints.length)
                 return state;
 
             const updatedBendPoints = [...edge.bendingPoints];
             updatedBendPoints[index] = point;
+
+            let updatedConnector = {};
+            if (connector) updatedConnector = connector;
             return {
                 ...state,
                 edges: {
                     ...state.edges,
-                    [edgeId]: {
+                    [id]: {
                         ...edge,
                         bendingPoints: updatedBendPoints,
+                        ...updatedConnector,
                     },
                 },
             };

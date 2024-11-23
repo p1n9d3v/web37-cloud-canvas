@@ -1,5 +1,5 @@
 export interface LoginKey {
-    keyName: string;
+    name: string;
     privateKey?: string;
     fingerprint?: string;
 }

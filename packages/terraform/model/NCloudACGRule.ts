@@ -1,12 +1,12 @@
 import { NCloudModel } from '../interface/NCloudModel';
 import { ResourcePriority } from '../enum/ResourcePriority';
+import { ACGRule } from '../interface/ACGRule';
 
-export class NCloudACGRule implements NCloudModel {
+export class NCloudACGRule implements ACGRule, NCloudModel {
     name: string;
     protocol: string;
     ipBlock: string;
     portRange: string;
-    description: string;
     serviceType: string;
     priority: ResourcePriority;
 
@@ -17,7 +17,6 @@ export class NCloudACGRule implements NCloudModel {
         this.protocol = json.protocol;
         this.ipBlock = json.ipBlock;
         this.portRange = json.portRange;
-        this.description = json.description;
     }
 
     getProperties() {
@@ -27,7 +26,6 @@ export class NCloudACGRule implements NCloudModel {
                 protocol: this.protocol,
                 ip_block: this.ipBlock,
                 port_range: this.portRange,
-                description: this.description,
             },
         };
     }

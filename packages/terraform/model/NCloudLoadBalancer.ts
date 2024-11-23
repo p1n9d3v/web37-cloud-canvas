@@ -21,9 +21,6 @@ export class NCloudLoadBalancer implements LoadBalancer, NCloudModel {
         this.networkType = json.networkType || 'PUBLIC';
         this.type = json.type || 'APPLICATION';
         this.subnetNoList = json.subnetNoList || ['SUBNET_ID_PLACEHOLDER'];
-        this.idleTimeout = json.idleTimeout || 60;
-        this.throughputType = json.throughputType || 'SMALL';
-        this.description = json.description;
     }
 
     getProperties() {
@@ -32,9 +29,6 @@ export class NCloudLoadBalancer implements LoadBalancer, NCloudModel {
             type: this.type,
             network_type: this.networkType,
             subnet_no_list: this.subnetNoList,
-            ...(this.type !== 'NETWORK' && { idle_timeout: this.idleTimeout }),
-            throughput_type: this.throughputType,
-            ...(this.description && { description: this.description }),
         };
     }
 }

@@ -2,10 +2,11 @@ import { Edge, Point, Dimension } from '@types';
 
 export type EdgeState = {
     edges: Record<string, Edge>;
+    connection: { from: Point; to: Point } | null;
 };
 
 export type EdgeAction =
-    | { type: 'ADD_EDGE'; payload: Edge }
+    | { type: 'ADD_EDGE'; payload: Omit<Edge, 'bendPoints'> }
     | { type: 'UPDATE_EDGE'; payload: Partial<Edge> & { id: string } }
     | { type: 'DELETE_EDGE'; payload: { id: string } }
     | {
@@ -20,7 +21,10 @@ export type EdgeAction =
               point: Point;
               dimension: Dimension;
           };
-      };
+      }
+    | { type: 'OPEN_CONNECTION'; payload: { point: Point } }
+    | { type: 'CONNECT_CONNECTION'; payload: { to: Point } }
+    | { type: 'CLOSE_CONNECTION' };
 
 export const edgeReducer = (
     state: EdgeState,
@@ -32,7 +36,10 @@ export const edgeReducer = (
                 ...state,
                 edges: {
                     ...state.edges,
-                    [action.payload.id]: action.payload,
+                    [action.payload.id]: {
+                        ...action.payload,
+                        bendPoints: [],
+                    },
                 },
             };
         case 'UPDATE_EDGE':
@@ -93,6 +100,24 @@ export const edgeReducer = (
                 },
             };
         }
+        case 'OPEN_CONNECTION': {
+            const { point } = action.payload;
+            return {
+                ...state,
+                connection: {
+                    from: point,
+                    to: point,
+                },
+            };
+        }
+        case 'CONNECT_CONNECTION':
+            if (!state.connection) return state;
+            return {
+                ...state,
+                connection: { ...state.connection, to: action.payload.to },
+            };
+        case 'CLOSE_CONNECTION':
+            return { ...state, connection: null };
         default:
             return state;
     }

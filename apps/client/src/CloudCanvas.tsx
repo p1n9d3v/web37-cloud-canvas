@@ -1,15 +1,35 @@
+import Connection from '@components/Connection';
+import Connectors from '@components/Connectors';
+import Edge from '@components/Edge';
 import Graph from '@components/Graph';
 import GridBackground from '@components/GridBackground';
 import Node from '@components/Node';
-import { useCanvasDimensionContext } from '@contexts/CanvasDimensionContext';
-import { useCanvasInstanceContext } from '@contexts/CanvasInstanceContext';
+import { useEdgeContext } from '@contexts/EdgeContext';
 import { useNodeContext } from '@contexts/NodeContext';
+import useConnection from '@hooks/useConnection';
+import useGraphActions from '@hooks/useGraphActions';
 import { useEffect } from 'react';
 
 export default () => {
     const {
         state: { nodes },
     } = useNodeContext();
+    const {
+        state: { edges },
+    } = useEdgeContext();
+
+    const { moveNode, addEdge } = useGraphActions();
+
+    const {
+        connection,
+        isConnecting,
+        openConnection,
+        connectConnection,
+        closeConnection,
+    } = useConnection({
+        updateEdgeFn: addEdge,
+    });
+
     useEffect(() => {
         const handleContextMenu = (event: MouseEvent) => event.preventDefault();
         document.addEventListener('contextmenu', handleContextMenu);
@@ -18,6 +38,7 @@ export default () => {
             document.removeEventListener('contextmenu', handleContextMenu);
         };
     }, []);
+
     return (
         <Graph>
             <GridBackground />
@@ -26,18 +47,41 @@ export default () => {
             {/* ))} */}
             {Object.values(nodes).map((node) => (
                 <>
-                    <Node node={node} />
-                    {/* <Connectors node={node} /> */}
+                    <Node node={node} onMove={moveNode} />
+                    <Connectors
+                        node={node}
+                        isConnecting={isConnecting}
+                        onOpenConnection={openConnection}
+                        onConnectConnection={connectConnection}
+                        onCloseConnection={closeConnection}
+                    />
                 </>
             ))}
-            {/* {connection && ( */}
-            {/*     <Connection from={connection.from} to={connection.to} /> */}
-            {/* )} */}
-            {/**/}
-            {/* {edges && */}
-            {/*     Object.values(edges).map((edge) => ( */}
-            {/*         <Edge key={edge.id} edge={edge} isSelected={true} /> */}
-            {/*     ))} */}
+            {connection && (
+                <Connection
+                    source={connection.source}
+                    target={connection.target}
+                />
+            )}
+
+            {edges &&
+                Object.values(edges).map((edge) => (
+                    <Edge
+                        key={edge.id}
+                        edge={edge}
+                        isSelected={false}
+                        sourceConnector={
+                            nodes[edge.source.id].connectors[
+                                edge.source.connectorType
+                            ]
+                        }
+                        targetConnector={
+                            nodes[edge.target.id].connectors[
+                                edge.target.connectorType
+                            ]
+                        }
+                    />
+                ))}
         </Graph>
     );
 };

@@ -1,12 +1,14 @@
 import { NcloudFactory } from '@/src/models/ncloud';
 import { useDimensionContext } from '@contexts/DimensionContext';
 import { useEdgeContext } from '@contexts/EdgeContext';
+import { useGraphContext } from '@contexts/GraphConetxt';
 import { useGroupContext } from '@contexts/GroupContext';
 import { useNodeContext } from '@contexts/NodeContext';
 import { useSvgContext } from '@contexts/SvgContext';
+import { getNearestConnector } from '@helpers/edge';
 import { adjustNodePointForDimension, alignNodePoint } from '@helpers/node';
-import { Node, Point } from '@types';
-import { getConnectorPoints } from '@utils';
+import { Connection, Node, Point } from '@types';
+import { getConnectorPoints, getSvgPoint } from '@utils';
 import { nanoid } from 'nanoid';
 import { useEffect } from 'react';
 
@@ -19,6 +21,8 @@ export default () => {
     const { state: groupState, dispatch: groupDispatch } = useGroupContext();
     const { dimension, prevDimension } = useDimensionContext();
     const { svgRef } = useSvgContext();
+
+    //INFO: Node
 
     const addNode = (type: Node['type']) => {
         const node = NcloudFactory(type);
@@ -34,22 +38,33 @@ export default () => {
         });
     };
 
-    const dragNode = (id: string, point: Point) => {
+    const moveNode = (id: string, point: Point) => {
         if (!svgRef.current) return;
         const node = nodes[id];
+        const newPoint = alignNodePoint(node, point, dimension);
+        const connectors = getConnectorPoints(
+            { ...node, point: newPoint },
+            dimension,
+        );
         nodeDispatch({
-            type: 'DRAG_NODE',
-            payload: { id, point: alignNodePoint(node, point, dimension) },
+            type: 'MOVE_NODE',
+            payload: { id, point: newPoint, connectors },
         });
     };
 
     const updateNodePointForDimension = () => {
         const updatedNodes = Object.entries(nodes).reduce((acc, [id, node]) => {
+            const adjustedPoint = adjustNodePointForDimension(node, dimension);
+            const connectors = getConnectorPoints(
+                { ...node, point: adjustedPoint },
+                dimension,
+            );
             return {
                 ...acc,
                 [id]: {
                     ...node,
-                    point: adjustNodePointForDimension(node, dimension),
+                    point: adjustedPoint,
+                    connectors,
                 },
             };
         }, {});
@@ -57,6 +72,29 @@ export default () => {
         nodeDispatch({
             type: 'UPDATE_NODES',
             payload: updatedNodes,
+        });
+    };
+
+    //INFO: Edge
+
+    const addEdge = (
+        source: Required<Connection>,
+        target: Required<Connection>,
+    ) => {
+        edgeDispatch({
+            type: 'ADD_EDGE',
+            payload: {
+                id: `edge-${nanoid()}`,
+                type: 'arrow',
+                source: {
+                    id: source.id,
+                    connectorType: source.connectorType,
+                },
+                target: {
+                    id: target.id,
+                    connectorType: target.connectorType,
+                },
+            },
         });
     };
 
@@ -68,6 +106,7 @@ export default () => {
 
     return {
         addNode,
-        dragNode,
+        moveNode,
+        addEdge,
     };
 };

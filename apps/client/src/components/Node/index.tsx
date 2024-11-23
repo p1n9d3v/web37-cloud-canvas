@@ -3,8 +3,7 @@ import DBMySQLNode from '@components/Node/ncloud/DBMySQLNode';
 import ObjectStorageNode from '@components/Node/ncloud/ObjectStorageNode';
 import ServerNode from '@components/Node/ncloud/ServerNode';
 import useDrag from '@hooks/useDrag';
-import useGraphActions from '@hooks/useGraphActions';
-import { Node } from '@types';
+import { Node, Point } from '@types';
 import { useEffect } from 'react';
 
 const nodeFactory = (node: Node) => {
@@ -23,14 +22,14 @@ const nodeFactory = (node: Node) => {
 };
 type Props = {
     node: Node;
+    onMove: (id: string, point: Point) => void;
 };
-export default ({ node }: Props) => {
+export default ({ node, onMove }: Props) => {
     const { id, point } = node;
 
-    const { dragNode } = useGraphActions();
     const { isDragging, startDrag, drag, stopDrag } = useDrag({
         initialPoint: point,
-        updateFn: (newPoint) => dragNode(id, newPoint),
+        updateFn: (newPoint) => onMove(id, newPoint),
     });
 
     const handleMouseDown = (e: React.MouseEvent) => {

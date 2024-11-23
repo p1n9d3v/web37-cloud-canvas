@@ -83,4 +83,27 @@ export const sampleNodes: CloudCanvasNode[] = [
             description: 'My Load Balancer',
         },
     },
+    {
+        id: 'lc1',
+        type: 'LaunchConfiguration',
+        name: 'my-lc',
+        properties: {
+            serverImageProductCode: 'SW.VSVR.OS.LNX64.CNTOS.0703.B050',
+            serverProductCode: 'SVR.VSVR.HICPU.C002.M004.NET.SSD.B050.G002',
+            loginKeyName: 'my-key',
+            isEncryptedVolume: false,
+        },
+    },
+    {
+        id: 'mysql1',
+        type: 'MySQL',
+        name: 'my-mysql',
+        properties: {
+            serverNamePrefix: 'mysql',
+            userName: 'admin',
+            userPassword: 'Password1!',
+            hostIp: '192.168.0.1',
+            databaseName: 'mydb',
+        },
+    },
 ];

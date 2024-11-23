@@ -10,6 +10,8 @@ import { NCloudNetworkInterface } from '../model/NCloudNetworkInterface';
 import { NCloudServer } from '../model/NCloudServer';
 import { NCloudPublicIP } from '../model/NCloudPublicIP';
 import { NCloudLoadBalancer } from '../model/NCloudLoadBalancer';
+import { NCloudLaunchConfiguration } from '../model/NCloudLaunchConfiguration';
+import { NCloudMySQL } from '../model/NCloudMySQL';
 
 export function parseToNCloudModel(resource: CloudCanvasNode): NCloudModel {
     const { type, name, properties } = resource;
@@ -71,6 +73,7 @@ export function parseToNCloudModel(resource: CloudCanvasNode): NCloudModel {
         case 'publicip':
             return new NCloudPublicIP({
                 name: name || 'public-ip',
+                description: properties.description,
             });
 
         case 'loadbalancer':
@@ -80,6 +83,33 @@ export function parseToNCloudModel(resource: CloudCanvasNode): NCloudModel {
                 throughputType: properties.throughputType,
             });
 
+        case 'launchconfiguration':
+            return new NCloudLaunchConfiguration({
+                name: name || 'launch-config',
+                serverImageProductCode: properties.serverImageProductCode,
+                serverProductCode: properties.serverProductCode,
+            });
+
+        case 'mysql':
+            if (
+                !properties.serverNamePrefix ||
+                !properties.userName ||
+                !properties.userPassword ||
+                !properties.hostIp ||
+                !properties.databaseName
+            ) {
+                throw new Error(
+                    'userPassword, histIp, databaseName이 필요합니다',
+                );
+            }
+            return new NCloudMySQL({
+                serviceName: name || 'mysql',
+                serverNamePrefix: properties.serverNamePrefix,
+                userName: properties.userName,
+                userPassword: properties.userPassword,
+                hostIp: properties.hostIp,
+                databaseName: properties.databaseName,
+            });
         default:
             throw new Error(`Unsupported resource type: ${type}`);
     }

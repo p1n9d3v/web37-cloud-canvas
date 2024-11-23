@@ -9,4 +9,5 @@ export enum ResourcePriority {
     SERVER = 8,
     PUBLIC_IP = 9,
     LOAD_BALANCER = 10,
+    LAUNCH_CONFIGURATION = 11,
 }

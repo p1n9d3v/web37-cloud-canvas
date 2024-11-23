@@ -1,27 +1,23 @@
-import { Node, Point } from '@types';
-import { getDistance } from '@utils';
+import { Point } from '@types';
+import { getDistanceToSegment } from '@utils';
 
-export const getNearestConnector = (nodes: Node[], point: Point) => {
-    let minDistance = Infinity;
-    let newPoint = point;
-    let target = null;
+export const getClosestSegEdgeIdx = (bendPoints: Point[], point: Point) => {
+    let closestDistance = Infinity;
+    let closestSegmentIndex = -1;
 
-    nodes.forEach((node) => {
-        Object.entries(node.connectors).forEach(
-            ([connectorType, connectorPoint]) => {
-                const distance = getDistance(point, connectorPoint);
-                const threshold = 30;
-                if (distance < threshold && distance < minDistance) {
-                    target = {
-                        id: node.id,
-                        connectorType,
-                    };
-                    newPoint = point;
-                    minDistance = distance;
-                }
-            },
-        );
-    });
+    for (let i = 0; i < bendPoints.length - 1; i++) {
+        const p1 = bendPoints[i];
+        const p2 = bendPoints[i + 1];
+        const distance = getDistanceToSegment(point, p1, p2);
+        if (distance < closestDistance) {
+            closestDistance = distance;
+            closestSegmentIndex = i;
+        }
+    }
 
-    return { target, point: newPoint };
+    if (closestSegmentIndex !== -1) {
+        return closestSegmentIndex;
+    }
+
+    return bendPoints.length - 1;
 };

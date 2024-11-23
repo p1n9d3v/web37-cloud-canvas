@@ -5,10 +5,16 @@ import { useGraphContext } from '@contexts/GraphConetxt';
 import { useGroupContext } from '@contexts/GroupContext';
 import { useNodeContext } from '@contexts/NodeContext';
 import { useSvgContext } from '@contexts/SvgContext';
-import { getNearestConnector } from '@helpers/edge';
+import { getClosestSegEdgeIdx } from '@helpers/edge';
 import { adjustNodePointForDimension, alignNodePoint } from '@helpers/node';
 import { Connection, Node, Point } from '@types';
-import { getConnectorPoints, getSvgPoint } from '@utils';
+import {
+    alignPoint2d,
+    alignPoint3d,
+    getConnectorPoints,
+    getDistanceToSegment,
+    getSvgPoint,
+} from '@utils';
 import { nanoid } from 'nanoid';
 import { useEffect } from 'react';
 
@@ -98,6 +104,42 @@ export default () => {
         });
     };
 
+    const splitEdge = (id: string, point: Point, bendingPoints: Point[]) => {
+        if (!svgRef.current) return;
+
+        const svgPoint = getSvgPoint(svgRef.current, point);
+        const closestSegmentIdx = getClosestSegEdgeIdx(bendingPoints, svgPoint);
+
+        edgeDispatch({
+            type: 'SPLIT_EDGE',
+            payload: {
+                id,
+                point: svgPoint,
+                insertAfter: closestSegmentIdx + 1,
+            },
+        });
+    };
+
+    const moveBendingPointer = (
+        edgeId: string,
+        index: number,
+        point: Point,
+    ) => {
+        if (!svgRef.current) return;
+
+        const newPoint =
+            dimension === '2d' ? alignPoint2d(point) : alignPoint3d(point);
+
+        edgeDispatch({
+            type: 'MOVE_BENDING_POINTER',
+            payload: {
+                edgeId,
+                index,
+                point: newPoint,
+            },
+        });
+    };
+
     useEffect(() => {
         if (dimension === prevDimension) return;
 
@@ -108,5 +150,7 @@ export default () => {
         addNode,
         moveNode,
         addEdge,
+        splitEdge,
+        moveBendingPointer,
     };
 };

@@ -35,7 +35,7 @@ export type Edge = {
         id: string;
         connectorType: string;
     };
-    bendPoints: { x: number; y: number }[];
+    bendingPoints: Point[];
 };
 
 export type Group = {

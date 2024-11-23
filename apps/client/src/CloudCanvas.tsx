@@ -1,3 +1,4 @@
+import BendingPointer from '@components/BendingPointer';
 import Connection from '@components/Connection';
 import Connectors from '@components/Connectors';
 import Edge from '@components/Edge';
@@ -8,6 +9,7 @@ import { useEdgeContext } from '@contexts/EdgeContext';
 import { useNodeContext } from '@contexts/NodeContext';
 import useConnection from '@hooks/useConnection';
 import useGraphActions from '@hooks/useGraphActions';
+import { Point } from '@types';
 import { useEffect } from 'react';
 
 export default () => {
@@ -18,7 +20,8 @@ export default () => {
         state: { edges },
     } = useEdgeContext();
 
-    const { moveNode, addEdge } = useGraphActions();
+    const { moveNode, addEdge, splitEdge, moveBendingPointer } =
+        useGraphActions();
 
     const {
         connection,
@@ -66,21 +69,36 @@ export default () => {
 
             {edges &&
                 Object.values(edges).map((edge) => (
-                    <Edge
-                        key={edge.id}
-                        edge={edge}
-                        isSelected={false}
-                        sourceConnector={
-                            nodes[edge.source.id].connectors[
-                                edge.source.connectorType
-                            ]
-                        }
-                        targetConnector={
-                            nodes[edge.target.id].connectors[
-                                edge.target.connectorType
-                            ]
-                        }
-                    />
+                    <>
+                        <Edge
+                            key={edge.id}
+                            edge={edge}
+                            isSelected={false}
+                            sourceConnector={
+                                nodes[edge.source.id].connectors[
+                                    edge.source.connectorType
+                                ]
+                            }
+                            targetConnector={
+                                nodes[edge.target.id].connectors[
+                                    edge.target.connectorType
+                                ]
+                            }
+                            onSplit={splitEdge}
+                            onMoveBendingPointer={moveBendingPointer}
+                        />
+                        {edge.bendingPoints.map((point, index) => (
+                            <BendingPointer
+                                key={`${edge.id}-${index}`}
+                                edgeId={edge.id}
+                                point={point}
+                                index={index}
+                                onMove={(newPoint) =>
+                                    moveBendingPointer(edge.id, index, newPoint)
+                                }
+                            />
+                        ))}
+                    </>
                 ))}
         </Graph>
     );

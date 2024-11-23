@@ -22,7 +22,7 @@ const nodeFactory = (node: Node) => {
 };
 type Props = {
     node: Node;
-    onMove: (id: string, point: Point) => void;
+    onMove: (id: string, newPoint: Point) => void;
 };
 export default ({ node, onMove }: Props) => {
     const { id, point } = node;

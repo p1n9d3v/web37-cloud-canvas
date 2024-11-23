@@ -1,33 +1,20 @@
-import { useCanvasDimensionContext } from '@contexts/CanvasDimensionContext';
-import { useCanvasInstanceContext } from '@contexts/CanvasInstanceContext';
 import useDrag from '@hooks/useDrag';
 import { useTheme } from '@mui/material';
-import { Dimension, Point } from '@types';
+import { Point } from '@types';
 import { useEffect } from 'react';
 
 type Props = {
     edgeId: string;
     point: Point;
     index: number;
+    onMove: (point: Point) => void;
 };
 
-export default ({ edgeId, point, index }: Props) => {
+export default ({ point, onMove }: Props) => {
     const theme = useTheme();
-    const { dispatch } = useCanvasInstanceContext();
-    const { dimension } = useCanvasDimensionContext();
-    const { isDragging, startDrag, moveDrag, stopDrag } = useDrag({
+    const { isDragging, startDrag, drag, stopDrag } = useDrag({
         initialPoint: point,
-        updateFn: (newPoint) => {
-            dispatch({
-                type: 'MOVE_BENDING_POINT',
-                payload: {
-                    edgeId,
-                    bendPointIdx: index,
-                    point: newPoint,
-                    dimension,
-                },
-            });
-        },
+        updateFn: (newPoint) => onMove(newPoint),
     });
 
     const handleMouseDown = (e: React.MouseEvent) => {
@@ -38,7 +25,7 @@ export default ({ edgeId, point, index }: Props) => {
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-        moveDrag({ x: e.clientX, y: e.clientY });
+        drag({ x: e.clientX, y: e.clientY });
     };
 
     const handleMouseUp = () => {

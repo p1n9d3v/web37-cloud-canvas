@@ -6,25 +6,21 @@ export type EdgeState = {
 };
 
 export type EdgeAction =
-    | { type: 'ADD_EDGE'; payload: Omit<Edge, 'bendPoints'> }
+    | { type: 'ADD_EDGE'; payload: Omit<Edge, 'bendingPoints'> }
     | { type: 'UPDATE_EDGE'; payload: Partial<Edge> & { id: string } }
     | { type: 'DELETE_EDGE'; payload: { id: string } }
     | {
           type: 'SPLIT_EDGE';
-          payload: { edgeId: string; point: Point; insertAfter: number };
+          payload: { id: string; point: Point; insertAfter: number };
       }
     | {
-          type: 'MOVE_BENDING_POINT';
+          type: 'MOVE_BENDING_POINTER';
           payload: {
               edgeId: string;
-              bendPointIdx: number;
+              index: number;
               point: Point;
-              dimension: Dimension;
           };
-      }
-    | { type: 'OPEN_CONNECTION'; payload: { point: Point } }
-    | { type: 'CONNECT_CONNECTION'; payload: { to: Point } }
-    | { type: 'CLOSE_CONNECTION' };
+      };
 
 export const edgeReducer = (
     state: EdgeState,
@@ -38,7 +34,7 @@ export const edgeReducer = (
                     ...state.edges,
                     [action.payload.id]: {
                         ...action.payload,
-                        bendPoints: [],
+                        bendingPoints: [],
                     },
                 },
             };
@@ -62,62 +58,42 @@ export const edgeReducer = (
             };
         }
         case 'SPLIT_EDGE': {
-            const { edgeId, point, insertAfter } = action.payload;
-            const edge = state.edges[edgeId];
+            const { id, point, insertAfter } = action.payload;
+            const edge = state.edges[id];
             if (!edge) return state;
-            const newBendPoints = [...edge.bendPoints];
-            newBendPoints.splice(insertAfter + 1, 0, point);
+
+            const newBendPoints = [...edge.bendingPoints];
+            newBendPoints.splice(insertAfter, 0, point);
             return {
                 ...state,
                 edges: {
                     ...state.edges,
-                    [edgeId]: {
+                    [id]: {
                         ...edge,
-                        bendPoints: newBendPoints,
+                        bendingPoints: newBendPoints,
                     },
                 },
             };
         }
-        case 'MOVE_BENDING_POINT': {
-            const { edgeId, bendPointIdx, point } = action.payload;
+        case 'MOVE_BENDING_POINTER': {
+            const { edgeId, index, point } = action.payload;
             const edge = state.edges[edgeId];
-            if (
-                !edge ||
-                bendPointIdx < 0 ||
-                bendPointIdx >= edge.bendPoints.length
-            )
+            if (!edge || index < 0 || index >= edge.bendingPoints.length)
                 return state;
-            const updatedBendPoints = [...edge.bendPoints];
-            updatedBendPoints[bendPointIdx] = point;
+
+            const updatedBendPoints = [...edge.bendingPoints];
+            updatedBendPoints[index] = point;
             return {
                 ...state,
                 edges: {
                     ...state.edges,
                     [edgeId]: {
                         ...edge,
-                        bendPoints: updatedBendPoints,
+                        bendingPoints: updatedBendPoints,
                     },
                 },
             };
         }
-        case 'OPEN_CONNECTION': {
-            const { point } = action.payload;
-            return {
-                ...state,
-                connection: {
-                    from: point,
-                    to: point,
-                },
-            };
-        }
-        case 'CONNECT_CONNECTION':
-            if (!state.connection) return state;
-            return {
-                ...state,
-                connection: { ...state.connection, to: action.payload.to },
-            };
-        case 'CLOSE_CONNECTION':
-            return { ...state, connection: null };
         default:
             return state;
     }

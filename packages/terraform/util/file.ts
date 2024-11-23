@@ -1,3 +1,4 @@
+import { promises as fs } from 'fs';
 import { FileOption } from '../interface/FileOption';
 
 export const writeFile = async (
@@ -5,7 +6,6 @@ export const writeFile = async (
     content: string,
     options: FileOption = {},
 ): Promise<void> => {
-    const fs = require('fs').promises;
     await fs.writeFile(filePath, content);
 
     if (options.log) {

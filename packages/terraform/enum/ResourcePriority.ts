@@ -8,4 +8,5 @@ export enum ResourcePriority {
     NETWORK_INTERFACE = 7,
     SERVER = 8,
     PUBLIC_IP = 9,
+    LOAD_BALANCER = 10,
 }

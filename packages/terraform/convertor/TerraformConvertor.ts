@@ -18,17 +18,15 @@ export class TerraformConvertor {
     addResourceFromJson(jsonData: { nodes?: CloudCanvasNode[] }): void {
         const regions = this.collectRegions(jsonData.nodes || []);
 
-        let isFirst = true;
         regions.forEach((region) => {
             const provider = new NCloudProvider({
                 accessKey: 'var.access_key',
                 secretKey: 'var.secret_key',
                 region: region,
                 site: 'public',
-                alias: isFirst ? undefined : region.toLowerCase(),
+                alias: region.toLowerCase(),
             });
             this.providers.set(region, provider);
-            isFirst = false;
         });
 
         jsonData.nodes?.forEach((node) => {

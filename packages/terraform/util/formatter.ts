@@ -8,13 +8,22 @@ export const isVariableReference = (value: string): boolean => {
     return varRefPattern.test(value);
 };
 
+export const isProviderReference = (value: string): boolean => {
+    const providerRefPattern = /^ncloud\.[a-zA-Z]+$/;
+    return providerRefPattern.test(value);
+};
+
 export const formatValue = (value: any): string => {
     if (Array.isArray(value)) {
         return `[${value.map((item) => formatValue(item)).join(', ')}]`;
     }
 
     if (typeof value === 'string') {
-        if (isNcloudReference(value) || isVariableReference(value)) {
+        if (
+            isNcloudReference(value) ||
+            isVariableReference(value) ||
+            isProviderReference(value)
+        ) {
             return value;
         }
         return `"${value}"`;

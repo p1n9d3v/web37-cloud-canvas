@@ -5,12 +5,12 @@ export const generateTerraformBlock = (
     version: string,
 ): string => `
 terraform {
- required_providers {
-   ncloud = {
-     source = "${providerSource}"
-   }
- }
- required_version = "${version}"
+  required_providers {
+    ncloud = {
+      source = "${providerSource}"
+    }
+  }
+  required_version = "${version}"
 }`;
 
 export const generateProviderBlock = (

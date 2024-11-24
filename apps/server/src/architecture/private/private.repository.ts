@@ -1,7 +1,9 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdatePrivateDto } from './dto/update-private.dto';
 import { CreatePrivateDto } from './dto/create-private.dto';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class PrivateRepository {
     constructor(private readonly prisma: PrismaService) {}
 

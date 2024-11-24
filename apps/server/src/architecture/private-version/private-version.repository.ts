@@ -1,8 +1,10 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePrivateVersionDto } from './dto/create-private-version.dto';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class PrivateVersionRepository {
-    constructor(private readonly prisma: PrismaClient) {}
+    constructor(private readonly prisma: PrismaService) {}
 
     findByPrivateArchitectureId(id: number) {
         return this.prisma.privateArchitectureVersion.findMany({

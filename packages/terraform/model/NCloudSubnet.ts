@@ -17,7 +17,7 @@ export class NCloudSubnet implements Subnet, NCloudModel {
     constructor(json: any) {
         this.serviceType = 'ncloud_subnet';
         this.priority = ResourcePriority.SUBNET;
-
+        this.id = json.id || `subnet-${Date.now()}`;
         if (!json.subnet) {
             throw new Error('subnet CIDR block is required');
         }

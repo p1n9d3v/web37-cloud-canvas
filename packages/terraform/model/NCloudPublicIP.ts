@@ -14,6 +14,7 @@ export class NCloudPublicIP implements PublicIp, NCloudModel {
     constructor(json: any) {
         this.serviceType = 'ncloud_public_ip';
         this.priority = ResourcePriority.PUBLIC_IP;
+        this.id = json.id || `publicIp-${Date.now()}`;
         this.name = json.name;
     }
 

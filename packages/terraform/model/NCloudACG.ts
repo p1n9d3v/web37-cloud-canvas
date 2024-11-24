@@ -13,7 +13,7 @@ export class NCloudACG implements ACG, NCloudModel {
     constructor(json: any) {
         this.serviceType = 'ncloud_access_control_group';
         this.priority = ResourcePriority.ACG;
-
+        this.id = json.id || `ACG-${Date.now()}`;
         if (json.name) {
             this.name = json.name;
         }

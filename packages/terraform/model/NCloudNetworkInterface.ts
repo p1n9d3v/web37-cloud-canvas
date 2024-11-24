@@ -13,6 +13,12 @@ export class NCloudNetworkInterface implements NetworkInterface, NCloudModel {
     constructor(json: any) {
         this.serviceType = 'ncloud_network_interface';
         this.priority = ResourcePriority.NETWORK_INTERFACE;
+        this.id = json.id || `nic-${Date.now()}`;
+        this.name = json.name || 'nic';
+        this.subnetNo = 'SUBNET_ID_PLACEHOLDER';
+        this.accessControlGroups = json.accessControlGroups || [
+            'ACG_ID_PLACEHOLDER',
+        ];
         Object.assign(this, json);
     }
 

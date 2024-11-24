@@ -17,6 +17,7 @@ export class NCloudLoadBalancer implements LoadBalancer, NCloudModel {
     constructor(json: any) {
         this.serviceType = 'ncloud_lb';
         this.priority = ResourcePriority.LOAD_BALANCER;
+        this.id = json.id || `LoadBalancer-${Date.now()}`;
         this.name = json.name || 'lb';
         this.networkType = json.networkType || 'PUBLIC';
         this.type = json.type || 'APPLICATION';

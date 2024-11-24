@@ -17,6 +17,8 @@ export class NCloudMySQL implements MySQL, NCloudModel {
     constructor(json: any) {
         this.serviceType = 'ncloud_mysql';
 
+        this.priority = ResourcePriority.MYSQL;
+        this.id = json.id || `MySQL-${Date.now()}`;
         if (
             !json.serviceName ||
             json.serviceName.length < 3 ||

@@ -9,35 +9,36 @@ export class NCloudProvider implements Provider {
     serviceType: string;
     requiredVersion: string;
     source: string;
+    alias?: string;
 
     constructor(json: any) {
         this.serviceType = 'provider';
         this.name = 'ncloud';
-        this.accessKey = json.accessKey;
-        this.secretKey = json.secretKey;
+        this.accessKey = json.accessKey || 'var.access_key';
+        this.secretKey = json.secretKey || 'var.secret_key';
         this.region = json.region;
         this.site = json.site || 'public';
         this.requiredVersion = '>= 0.13';
         this.source = 'NaverCloudPlatform/ncloud';
+        this.alias = json.alias;
     }
 
-    getProperties() {
-        return {
-            terraform: {
-                required_providers: {
-                    ncloud: {
-                        source: this.source,
-                    },
-                },
-                required_version: this.requiredVersion,
-            },
-            provider: {
-                access_key: 'var.access_key',
-                secret_key: 'var.secret_key',
-                region: 'var.region',
-                site: this.site,
-                support_vpc: true,
-            },
+    getProperties(): { [key: string]: any } {
+        const providerConfig = {
+            access_key: this.accessKey,
+            secret_key: this.secretKey,
+            region: this.region,
+            site: this.site,
+            support_vpc: true,
         };
+
+        if (this.alias) {
+            return {
+                ...providerConfig,
+                alias: this.alias,
+            };
+        }
+
+        return providerConfig;
     }
 }

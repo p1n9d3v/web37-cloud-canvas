@@ -7,26 +7,64 @@ import { parseToNCloudModel } from '../util/resourceParser';
 export class TerraformConvertor {
     private readonly resourceManager: ResourceManager;
     private readonly codeGenerator: CodeGenerator;
-    private readonly provider: NCloudProvider;
+    private providers: Map<string, NCloudProvider>;
 
-    constructor(provider: NCloudProvider) {
-        this.provider = provider;
+    constructor() {
         this.resourceManager = new ResourceManager();
         this.codeGenerator = new CodeGenerator(this.resourceManager);
+        this.providers = new Map();
     }
 
     addResourceFromJson(jsonData: { nodes?: CloudCanvasNode[] }): void {
+        const regions = this.collectRegions(jsonData.nodes || []);
+
+        let isFirst = true;
+        regions.forEach((region) => {
+            const provider = new NCloudProvider({
+                accessKey: 'var.access_key',
+                secretKey: 'var.secret_key',
+                region: region,
+                site: 'public',
+                alias: isFirst ? undefined : region.toLowerCase(),
+            });
+            this.providers.set(region, provider);
+            isFirst = false;
+        });
+
         jsonData.nodes?.forEach((node) => {
             try {
                 const resource = parseToNCloudModel(node);
-                this.resourceManager.addResource(resource);
+                const region = node.properties?.region;
+                this.resourceManager.addResource(resource, region);
             } catch (error) {
                 console.warn(`Skipping unsupported node type: ${node.type}`);
             }
         });
     }
+    private collectRegions(nodes: CloudCanvasNode[]): Set<string> {
+        const regions = new Set<string>();
+        nodes.forEach((node) => {
+            if (node.properties?.region) {
+                regions.add(node.properties.region);
+            }
+        });
+        return regions;
+    }
+    extractRegion(nodes: CloudCanvasNode[]): string | undefined {
+        for (const node of nodes) {
+            if (node.properties?.region) {
+                return node.properties.region;
+            }
+        }
+        return undefined;
+    }
 
     generate(): string {
-        return this.codeGenerator.generateCode(this.provider);
+        if (this.providers.size === 0) {
+            throw new Error(
+                'No providers initialized. Make sure to add resources with region information first.',
+            );
+        }
+        return this.codeGenerator.generateCode([...this.providers.values()]);
     }
 }

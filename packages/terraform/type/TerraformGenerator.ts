@@ -14,15 +14,17 @@ export class CodeGenerator {
         this.resourceManager = resourceManager;
     }
 
-    generateCode(provider: NCloudProvider): string {
-        const providerProperties = provider.getProperties();
+    generateCode(providers: NCloudProvider[]): string {
+        const terraformBlock = generateTerraformBlock(
+            'NaverCloudPlatform/ncloud',
+            '>= 0.13',
+        );
 
         const blocks = [
-            generateTerraformBlock(
-                providerProperties.terraform.required_providers.ncloud.source,
-                providerProperties.terraform.required_version,
+            terraformBlock,
+            ...providers.map((provider) =>
+                generateProviderBlock(provider.name, provider.getProperties()),
             ),
-            generateProviderBlock(provider.name, providerProperties.provider),
             ...this.generateResourceBlocks(),
         ];
 
@@ -30,18 +32,24 @@ export class CodeGenerator {
     }
 
     private generateResourceBlocks(): string[] {
-        return this.resourceManager.getResources().map((resource) => {
-            const properties = replaceReferences(
-                resource.getProperties(),
-                this.resourceManager.getNameMap(),
-            );
+        return this.resourceManager
+            .getResources()
+            .map(({ resource, region }) => {
+                const properties = replaceReferences(
+                    resource.getProperties(),
+                    this.resourceManager.getNameMap(),
+                );
 
-            const resourceName = resource.name || resource.serviceType;
-            return generateResourceBlock(
-                resource.serviceType,
-                resourceName,
-                properties,
-            );
-        });
+                if (region) {
+                    properties.provider = `ncloud.${region.toLowerCase()}`;
+                }
+
+                const resourceName = resource.name || resource.serviceType;
+                return generateResourceBlock(
+                    resource.serviceType,
+                    resourceName,
+                    properties,
+                );
+            });
     }
 }

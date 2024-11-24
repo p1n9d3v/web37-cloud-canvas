@@ -23,14 +23,13 @@ export class NCloudSubnet implements NCloudModel {
 
     getProperties() {
         return {
-            vpc_no: "VPC_ID_PLACEHOLDER",
+            vpc_no: 'VPC_ID_PLACEHOLDER',
             subnet: this.subnet,
             zone: this.zone,
-            network_acl_no: "VPC_ACL_PLACEHOLDER",
+            network_acl_no: 'VPC_ACL_PLACEHOLDER',
             subnet_type: this.subnetType,
             name: this.name,
-            usage_type: this.usageType
+            usage_type: this.usageType,
         };
     }
 }
-

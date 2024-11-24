@@ -7,5 +7,5 @@ export enum ResourcePriority {
     LOGIN_KEY = 6,
     NETWORK_INTERFACE = 7,
     SERVER = 8,
-    PUBLIC_IP = 9
+    PUBLIC_IP = 9,
 }

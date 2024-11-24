@@ -26,19 +26,18 @@ export class NCloudProvider implements Provider {
             terraform: {
                 required_providers: {
                     ncloud: {
-                        source: this.source
-                    }
+                        source: this.source,
+                    },
                 },
-                required_version: this.requiredVersion
+                required_version: this.requiredVersion,
             },
             provider: {
-                access_key: "var.access_key",
-                secret_key: "var.secret_key",
-                region: "var.region",
+                access_key: 'var.access_key',
+                secret_key: 'var.secret_key',
+                region: 'var.region',
                 site: this.site,
-                support_vpc: true
-            }
+                support_vpc: true,
+            },
         };
     }
-
 }

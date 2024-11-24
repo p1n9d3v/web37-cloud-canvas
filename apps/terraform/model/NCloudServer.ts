@@ -27,16 +27,15 @@ export class NCloudServer implements Server, NCloudModel {
 
     getProperties() {
         return {
-            subnet_no: "SUBNET_ID_PLACEHOLDER",
+            subnet_no: 'SUBNET_ID_PLACEHOLDER',
             name: this.name,
             server_image_product_code: this.serverImageProductCode,
             server_product_code: this.serverProductCode,
-            login_key_name: "LOGIN_KEY_NAME_PLACEHOLDER",
+            login_key_name: 'LOGIN_KEY_NAME_PLACEHOLDER',
             network_interface: {
-                network_interface_no: "NIC_ID_PLACEHOLDER",
-                order: 0
-            }
+                network_interface_no: 'NIC_ID_PLACEHOLDER',
+                order: 0,
+            },
         };
     }
 }
-

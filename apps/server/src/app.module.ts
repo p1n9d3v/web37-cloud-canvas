@@ -1,50 +1,50 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { RouterModule } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { PrismaService } from './prisma/prisma.service';
-import { PublicModule } from './architecture/public/public.module';
-import { PrivateModule } from './architecture/private/private.module';
-import { PublicStarModule } from './architecture/public-star/public-star.module';
-import { PublicImportModule } from './architecture/public-import/public-import.module';
-import { PrivateVersionModule } from './architecture/private-version/private-version.module';
-import { RouterModule } from '@nestjs/core';
-import { UserModule } from './user/user.module';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from 'src/auth/auth.module';
+import { UserModule } from 'src/user/user.module';
+import { PublicArchitectureModule } from 'src/public-architecture/public-architecture.module';
+import { PrivateArchitectureModule } from 'src/private-architecture/private-architecture.module';
+import { StarModule } from 'src/star/star.module';
+import { ImportModule } from 'src/import/import.module';
+import { VersionModule } from 'src/version/version.module';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Module({
     imports: [
         ConfigModule.forRoot(),
         AuthModule,
         UserModule,
-        PublicModule,
-        PrivateModule,
-        PublicStarModule,
-        PublicImportModule,
-        PrivateVersionModule,
+        PublicArchitectureModule,
+        PrivateArchitectureModule,
+        StarModule,
+        ImportModule,
+        VersionModule,
         RouterModule.register([
             {
                 path: 'architectures',
                 children: [
                     {
                         path: 'public',
-                        module: PublicModule,
+                        module: PublicArchitectureModule,
                     },
                     {
                         path: 'public/:architectureId/star',
-                        module: PublicStarModule,
+                        module: StarModule,
                     },
                     {
                         path: 'public/:architectureId/import',
-                        module: PublicImportModule,
+                        module: ImportModule,
                     },
                     {
                         path: 'private',
-                        module: PrivateModule,
+                        module: PrivateArchitectureModule,
                     },
                     {
                         path: 'private/:architectureId/version',
-                        module: PrivateVersionModule,
+                        module: VersionModule,
                     },
                 ],
             },

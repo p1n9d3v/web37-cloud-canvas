@@ -35,8 +35,4 @@ export class ResourceManager {
     getNameMap(): Map<string, string> {
         return this.nameMap;
     }
-
-    getResourceRegions(serviceType: string): Set<string> {
-        return this.regionMap.get(serviceType) || new Set();
-    }
 }

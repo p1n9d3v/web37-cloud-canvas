@@ -48,8 +48,8 @@ export class NCloudSubnet implements Subnet, NCloudModel {
             this.usageType = 'GEN';
         }
 
-        this.vpcNo = 'VPC_ID_PLACEHOLDER';
-        this.networkAclNo = 'VPC_ACL_PLACEHOLDER';
+        this.vpcNo = `ncloud_vpc.${json.vpcName}.id`;
+        this.networkAclNo = `ncloud_vpc.${json.vpcName}.default_network_acl_no`;
     }
 
     getProperties() {

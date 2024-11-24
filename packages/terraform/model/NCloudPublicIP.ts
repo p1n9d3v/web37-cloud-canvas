@@ -16,11 +16,12 @@ export class NCloudPublicIP implements PublicIp, NCloudModel {
         this.priority = ResourcePriority.PUBLIC_IP;
         this.id = json.id || `publicIp-${Date.now()}`;
         this.name = json.name;
+        this.serverInstanceNo = `ncloud_server.${json.serverName}.id`;
     }
 
     getProperties() {
-        const properties: { [key: string]: any } = {};
-        properties.server_instance_no = 'SERVER_ID_PLACEHOLDER';
-        return properties;
+        return {
+            server_instance_no: this.serverInstanceNo,
+        };
     }
 }

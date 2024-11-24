@@ -14,12 +14,12 @@ export class NCloudNetworkACL implements NetworkACL, NCloudModel {
         this.priority = ResourcePriority.NETWORK_ACL;
         this.id = json.id;
         this.name = json.name || 'nacl';
-        this.vpcNo = json.vpcNo;
+        this.vpcNo = `ncloud_vpc.${json.vpcName}.id`;
     }
 
     getProperties() {
         return {
-            vpc_no: 'VPC_ID_PLACEHOLDER',
+            vpc_no: this.vpcNo,
         };
     }
 }

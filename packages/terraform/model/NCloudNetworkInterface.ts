@@ -15,18 +15,17 @@ export class NCloudNetworkInterface implements NetworkInterface, NCloudModel {
         this.priority = ResourcePriority.NETWORK_INTERFACE;
         this.id = json.id || `nic-${Date.now()}`;
         this.name = json.name || 'nic';
-        this.subnetNo = 'SUBNET_ID_PLACEHOLDER';
-        this.accessControlGroups = json.accessControlGroups || [
-            'ACG_ID_PLACEHOLDER',
+        this.subnetNo = `ncloud_subnet.${json.subnetName}.id`;
+        this.accessControlGroups = [
+            `ncloud_access_control_group.${json.acgName}.id`,
         ];
-        Object.assign(this, json);
     }
 
     getProperties() {
         return {
-            subnet_no: 'SUBNET_ID_PLACEHOLDER',
+            subnet_no: this.subnetNo,
             name: this.name,
-            access_control_groups: ['ACG_ID_PLACEHOLDER'],
+            access_control_groups: this.accessControlGroups,
         };
     }
 }

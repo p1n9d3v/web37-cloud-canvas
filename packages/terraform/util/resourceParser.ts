@@ -30,6 +30,7 @@ export function parseToNCloudModel(resource: CloudCanvasNode): NCloudModel {
             });
 
         case 'subnet':
+            console.log('subnet properties', properties);
             return new NCloudSubnet({
                 name: name || 'subnet',
                 subnet: properties.subnet,
@@ -52,8 +53,8 @@ export function parseToNCloudModel(resource: CloudCanvasNode): NCloudModel {
         case 'accesscontrolgrouprule':
             return new NCloudACGRule({
                 protocol: properties.protocol,
-                ipBlock: properties.ipBlock,
-                portRange: properties.portRange,
+                ipBlock: properties.ip_block,
+                portRange: properties.port_range,
                 description: properties.description,
                 acgName: properties.acgName,
             });

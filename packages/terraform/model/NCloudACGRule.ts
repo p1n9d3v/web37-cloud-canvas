@@ -16,8 +16,8 @@ export class NCloudACGRule implements ACGRule, NCloudModel {
         this.priority = ResourcePriority.ACG_RULE;
         this.name = json.name || 'acg-rule';
         this.protocol = json.protocol;
-        this.ipBlock = json.ip_block;
-        this.portRange = json.port_range;
+        this.ipBlock = json.ipBlock;
+        this.portRange = json.portRange;
         this.accessControlGroupNo = `ncloud_access_control_group.${json.acgName}.id`;
     }
 

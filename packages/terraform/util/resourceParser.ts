@@ -26,6 +26,7 @@ export function parseToNCloudModel(resource: CloudCanvasNode): NCloudModel {
         case 'networkacl':
             return new NCloudNetworkACL({
                 name: name || 'nacl',
+                vpcName: properties.vpcName,
             });
 
         case 'subnet':
@@ -35,6 +36,8 @@ export function parseToNCloudModel(resource: CloudCanvasNode): NCloudModel {
                 zone: properties.zone,
                 subnetType: properties.subnetType,
                 usageType: properties.usageType,
+                vpcName: properties.vpcName,
+                networkAclNo: properties.networkAclNo,
             });
 
         case 'acg':
@@ -42,6 +45,7 @@ export function parseToNCloudModel(resource: CloudCanvasNode): NCloudModel {
             return new NCloudACG({
                 name: name || 'acg',
                 description: properties.description,
+                vpcName: properties.vpcName,
             });
 
         case 'acgrule':
@@ -51,6 +55,7 @@ export function parseToNCloudModel(resource: CloudCanvasNode): NCloudModel {
                 ipBlock: properties.ipBlock,
                 portRange: properties.portRange,
                 description: properties.description,
+                acgName: properties.acgName,
             });
 
         case 'loginkey':
@@ -61,19 +66,25 @@ export function parseToNCloudModel(resource: CloudCanvasNode): NCloudModel {
         case 'networkinterface':
             return new NCloudNetworkInterface({
                 name: name || 'nic',
+                subnetName: properties.subnetName,
+                acgName: properties.acgName,
             });
 
         case 'server':
             return new NCloudServer({
                 name: name || 'server',
-                serverImageProductCode: properties.serverImageProductCode,
-                serverProductCode: properties.serverProductCode,
+                serverImageProductCode: properties.server_image_product_code,
+                serverProductCode: properties.server_product_code,
+                subnetName: properties.subnetName,
+                loginKeyName: properties.loginKeyName,
+                nicName: properties.nicName,
             });
 
         case 'publicip':
             return new NCloudPublicIP({
                 name: name || 'public-ip',
                 description: properties.description,
+                serverName: properties.serverName,
             });
 
         case 'loadbalancer':

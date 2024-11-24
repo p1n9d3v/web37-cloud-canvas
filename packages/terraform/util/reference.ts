@@ -1,21 +1,33 @@
 type ReferenceMap = Map<string, string>;
 
-export const resolveReference = (
-    placeholder: string,
-    resourceNameMap: ReferenceMap,
-): string => {
-    const references: { [key: string]: string } = {
-        VPC_ID_PLACEHOLDER: `ncloud_vpc.${resourceNameMap.get('ncloud_vpc')}.id`,
-        VPC_ACL_PLACEHOLDER: `ncloud_vpc.${resourceNameMap.get('ncloud_vpc')}.default_network_acl_no`,
-        SUBNET_ID_PLACEHOLDER: `ncloud_subnet.${resourceNameMap.get('ncloud_subnet')}.id`,
-        ACG_ID_PLACEHOLDER: `ncloud_access_control_group.${resourceNameMap.get('ncloud_access_control_group')}.id`,
-        LOGIN_KEY_NAME_PLACEHOLDER: `ncloud_login_key.${resourceNameMap.get('ncloud_login_key')}.key_name`,
-        NIC_ID_PLACEHOLDER: `ncloud_network_interface.${resourceNameMap.get('ncloud_network_interface')}.id`,
-        SERVER_ID_PLACEHOLDER: `ncloud_server.${resourceNameMap.get('ncloud_server')}.id`,
-        LOAD_BALANCER_ID_PLACEHOLDER: `ncloud_load_balancer.${resourceNameMap.get('ncloud_load_balancer')}.id`,
+export const resolveReference = (resourceId: string): string => {
+    if (resourceId.startsWith('ncloud_')) {
+        return resourceId;
+    }
+
+    const resourceTypeMap: { [key: string]: string } = {
+        vpc: 'ncloud_vpc',
+        subnet: 'ncloud_subnet',
+        acg: 'ncloud_access_control_group',
+        nic: 'ncloud_network_interface',
+        server: 'ncloud_server',
+        loginkey: 'ncloud_login_key',
+        nacl: 'ncloud_network_acl',
+        publicip: 'ncloud_public_ip',
     };
 
-    return references[placeholder] || placeholder;
+    if (resourceId.endsWith('.default_network_acl_no')) {
+        const resourceName = resourceId.split('.')[0];
+        return `${resourceTypeMap['vpc']}.${resourceName}.default_network_acl_no`;
+    }
+
+    if (resourceId.endsWith('.id')) {
+        const resourceName = resourceId.split('.')[0];
+        const resourceType = resourceTypeMap[resourceName.split('-')[0]];
+        return `${resourceType}.${resourceName}.id`;
+    }
+
+    return resourceId;
 };
 
 export const replaceReferences = (
@@ -23,14 +35,13 @@ export const replaceReferences = (
     resourceNameMap: ReferenceMap,
 ): { [key: string]: any } => {
     const result = { ...properties };
-
     for (const [key, value] of Object.entries(result)) {
         if (typeof value === 'string') {
-            result[key] = resolveReference(value, resourceNameMap);
+            result[key] = resolveReference(value);
         } else if (Array.isArray(value)) {
             result[key] = value.map((item) =>
                 typeof item === 'string'
-                    ? resolveReference(item, resourceNameMap)
+                    ? resolveReference(item)
                     : replaceReferences({ value: item }, resourceNameMap).value,
             );
         } else if (typeof value === 'object' && value !== null) {

@@ -35,6 +35,7 @@ export class CodeGenerator {
         return this.resourceManager
             .getResources()
             .map(({ resource, region }) => {
+                console.log('resource', resource.getProperties());
                 const properties = replaceReferences(
                     resource.getProperties(),
                     this.resourceManager.getNameMap(),

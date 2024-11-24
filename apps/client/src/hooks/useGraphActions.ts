@@ -262,32 +262,25 @@ export default () => {
 
     const getGroupBounds = (groupId: string) => {
         const group = groups[groupId];
-        const childGroup = group.childGroupId
-            ? groups[group.childGroupId]
-            : null;
 
-        let childGroupBounds;
-        let innerNodeIds = new Set<string>([
-            ...group.nodeIds,
-            ...(childGroup ? childGroup.nodeIds : []),
-        ]);
+        const childGroupNodeIds = group.childGroupIds.map((groupId) => {
+            const childGroup = groups[groupId];
+            return childGroup.nodeIds;
+        });
 
-        if (childGroup) {
-            const innerNodeBounds = childGroup.nodeIds.map((nodeId) =>
+        const childGroupsBounds = childGroupNodeIds.map((nodeIds) => {
+            const childGroupNodeBounds = nodeIds.map((nodeId) =>
                 getNodeBounds(nodes[nodeId], dimension),
             );
-            childGroupBounds = computeBounds(innerNodeBounds, dimension);
-        }
+            return computeBounds(childGroupNodeBounds, dimension);
+        });
 
-        const innerNodeBounds = Array.from(innerNodeIds).map((nodeId) =>
-            getNodeBounds(nodes[nodeId], dimension),
-        );
+        const currentGroupNodeBounds = group.nodeIds.map((nodeId) => {
+            return getNodeBounds(nodes[nodeId], dimension);
+        });
 
-        console.log(childGroupBounds);
         return computeBounds(
-            childGroupBounds
-                ? [...innerNodeBounds, childGroupBounds]
-                : innerNodeBounds,
+            [...childGroupsBounds, ...currentGroupNodeBounds],
             dimension,
         );
     };

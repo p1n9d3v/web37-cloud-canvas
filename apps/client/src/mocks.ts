@@ -1,7 +1,7 @@
-import { Group } from '@types';
+import { Group, Node } from '@types';
 import { nanoid } from 'nanoid';
 
-const CloudFunctionNode = {
+const CloudFunctionNode: Node = {
     id: `node-${nanoid()}`,
     type: 'cloud-function',
     name: 'CloudFunction1',
@@ -15,10 +15,9 @@ const CloudFunctionNode = {
         subnet: 'subnet1',
         spec: 's2-g2-s50',
     },
-    groupIds: ['region1', 'vpc1'],
-    connectors: [],
+    connectors: {},
 };
-const ObjectStorageNode = {
+const ObjectStorageNode: Node = {
     id: `node-${nanoid()}`,
     type: 'object-storage',
     name: 'ObjectStorage1',
@@ -32,10 +31,9 @@ const ObjectStorageNode = {
         subnet: 'subnet1',
         spec: 's2-g2-s50',
     },
-    groupIds: ['sg1', 'subnet1', 'region1'],
-    connectors: [],
+    connectors: {},
 };
-const MySQLDBNode = {
+const MySQLDBNode: Node = {
     id: `node-${nanoid()}`,
     type: 'db-mysql',
     name: 'MySQLDB1',
@@ -49,10 +47,9 @@ const MySQLDBNode = {
         subnet: 'subnet1',
         spec: 's2-g2-s50',
     },
-    groupIds: ['region1', 'subnet1'],
-    connectors: [],
+    connectors: {},
 };
-const ServerNode = {
+const ServerNode: Node = {
     id: `node-${nanoid()}`,
     type: 'server',
     name: 'WebServer1',
@@ -68,15 +65,55 @@ const ServerNode = {
         spec: 's2-g2-s50',
         ip: '192.168.0.2',
     },
-    connectors: [],
-    groupIds: ['subnet1', 'region1', 'vpc1'],
+    connectors: {},
 };
 
-const regionGroup: Group = {
+const ServerNode2: Node = {
+    id: `node-${nanoid()}`,
+    type: 'server',
+    name: 'WebServer2',
+    point: { x: 90, y: 90 },
+    size: {
+        '2d': { width: 90, height: 90 },
+        '3d': { width: 128, height: 111 },
+    },
+    properties: {
+        os: 'Ubuntu 20.04',
+        vpc: 'vpc1',
+        subnet: 'subnet1',
+        spec: 's2-g2-s50',
+    },
+    connectors: {},
+};
+
+const SubnetGroup: Group = {
+    id: 'subnet1',
+    type: 'subnet',
+    name: 'Subnet-1',
+    nodeIds: [MySQLDBNode.id, ObjectStorageNode.id],
+    properties: {
+        cidr: '',
+    },
+    childGroupIds: [],
+};
+
+const VpcGroup: Group = {
+    id: 'vpc1',
+    type: 'vpc',
+    name: 'VPC-1',
+    nodeIds: [CloudFunctionNode.id, ServerNode.id],
+    properties: {
+        cidr: '',
+    },
+    childGroupIds: [],
+};
+
+const RegionGroup: Group = {
     id: 'region1',
     type: 'region',
     name: 'KR-1',
     nodeIds: [
+        ServerNode2.id,
         MySQLDBNode.id,
         CloudFunctionNode.id,
         ServerNode.id,
@@ -85,40 +122,11 @@ const regionGroup: Group = {
     properties: {
         regionCode: 'KR-1',
     },
-};
-
-const vpcGroup: Group = {
-    id: 'vpc1',
-    type: 'vpc',
-    name: 'VPC-1',
-    nodeIds: [CloudFunctionNode.id, ServerNode.id],
-    properties: {
-        cidr: '',
-    },
-    parentGroupId: 'region1',
-};
-
-const subnetGroup: Group = {
-    id: 'subnet1',
-    type: 'subnet',
-    name: 'Subnet-1',
-    nodeIds: [MySQLDBNode.id, ObjectStorageNode.id],
-    properties: {
-        cidr: '',
-    },
-};
-
-const securityGroup: Group = {
-    id: 'sg1',
-    type: 'security-group',
-    name: 'SG-1',
-    nodeIds: [ObjectStorageNode.id],
-    properties: {
-        cidr: '',
-    },
+    childGroupIds: [VpcGroup.id, SubnetGroup.id],
 };
 
 const mockNodes = [
+    ServerNode2,
     CloudFunctionNode,
     ObjectStorageNode,
     MySQLDBNode,
@@ -126,9 +134,9 @@ const mockNodes = [
     ServerNode,
 ];
 
-const mockGroups = [regionGroup, vpcGroup, subnetGroup, securityGroup];
+const mockGroups = [RegionGroup, VpcGroup, SubnetGroup];
 
-export const initialState = {
+export const mockInitialState = {
     nodes: mockNodes.reduce((acc, node) => ({ ...acc, [node.id]: node }), {}),
     groups: mockGroups.reduce(
         (acc, group) => ({ ...acc, [group.id]: group }),

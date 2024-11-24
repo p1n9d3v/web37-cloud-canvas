@@ -83,4 +83,5 @@ const Region: Group = {
     properties: {
         regionCode: '',
     },
+    childGroupIds: [],
 };

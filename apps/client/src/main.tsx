@@ -1,4 +1,3 @@
-import { initialState } from '@/src/mocks.ts';
 import { CanvasProvider } from '@contexts/CanvasContext.tsx';
 import { CanvasDimensionProvider } from '@contexts/CanvasDimensionContext.tsx';
 import { CanvasInstanceProvider } from '@contexts/CanvasInstanceContext';
@@ -28,9 +27,7 @@ createRoot(document.getElementById('root')!).render(
                                     <SelectionProvider>
                                         <CanvasDimensionProvider>
                                             <CanvasProvider>
-                                                <CanvasInstanceProvider
-                                                    initialState={initialState}
-                                                >
+                                                <CanvasInstanceProvider>
                                                     <App />
                                                 </CanvasInstanceProvider>
                                             </CanvasProvider>

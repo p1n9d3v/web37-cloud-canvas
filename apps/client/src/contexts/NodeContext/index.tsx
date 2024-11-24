@@ -1,3 +1,4 @@
+import { mockInitialState } from '@/src/mocks';
 import {
     NodeAction,
     nodeReducer,
@@ -19,7 +20,7 @@ type NodeContextProps = {
 const NodeContext = createContext<NodeContextProps | undefined>(undefined);
 
 const initialState: NodeState = {
-    nodes: {},
+    nodes: mockInitialState.nodes,
 };
 
 export const NodeProvider = ({ children }: { children: ReactNode }) => {

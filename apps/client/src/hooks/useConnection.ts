@@ -91,7 +91,11 @@ export default ({ updateEdgeFn }: Props) => {
     const closeConnection = () => {
         setIsConnecting(false);
         setConnection(null);
-        if (sourceRef.current && targetRef.current) {
+        if (
+            sourceRef.current &&
+            targetRef.current &&
+            targetRef.current.id !== sourceRef.current.id
+        ) {
             updateEdgeFn(sourceRef.current, targetRef.current);
         }
     };

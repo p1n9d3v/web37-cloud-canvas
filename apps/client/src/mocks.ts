@@ -82,11 +82,9 @@ const regionGroup: Group = {
         ServerNode.id,
         ObjectStorageNode.id,
     ],
-    bounds: { x: 0, y: 0, width: 600, height: 450 },
     properties: {
         regionCode: 'KR-1',
     },
-    childGroupIds: ['subnet1', 'vpc1', 'sg1'], // 아직 VPC 그룹이 없음
 };
 
 const vpcGroup: Group = {
@@ -94,11 +92,9 @@ const vpcGroup: Group = {
     type: 'vpc',
     name: 'VPC-1',
     nodeIds: [CloudFunctionNode.id, ServerNode.id],
-    bounds: { x: 200, y: 200, width: 600, height: 450 },
     properties: {
         cidr: '',
     },
-    childGroupIds: [],
     parentGroupId: 'region1',
 };
 
@@ -107,12 +103,9 @@ const subnetGroup: Group = {
     type: 'subnet',
     name: 'Subnet-1',
     nodeIds: [MySQLDBNode.id, ObjectStorageNode.id],
-    bounds: { x: 400, y: 200, width: 600, height: 450 },
     properties: {
         cidr: '',
     },
-    childGroupIds: ['sg1'],
-    parentGroupId: 'region1',
 };
 
 const securityGroup: Group = {
@@ -120,12 +113,9 @@ const securityGroup: Group = {
     type: 'security-group',
     name: 'SG-1',
     nodeIds: [ObjectStorageNode.id],
-    bounds: { x: 300, y: 200, width: 200, height: 200 },
     properties: {
         cidr: '',
     },
-    childGroupIds: [],
-    parentGroupId: 'subnet1',
 };
 
 const mockNodes = [

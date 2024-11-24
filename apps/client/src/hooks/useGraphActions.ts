@@ -1,7 +1,6 @@
-import { NcloudFactory } from '@/src/models/ncloud';
+import { NcloudGroupFactory, NcloudNodeFactory } from '@/src/models/ncloud';
 import { useDimensionContext } from '@contexts/DimensionContext';
 import { useEdgeContext } from '@contexts/EdgeContext';
-import { useGraphContext } from '@contexts/GraphConetxt';
 import { useGroupContext } from '@contexts/GroupContext';
 import { useNodeContext } from '@contexts/NodeContext';
 import { useSvgContext } from '@contexts/SvgContext';
@@ -10,15 +9,19 @@ import {
     getClosestSegEdgeIdx,
     updateNearestConnectorPair,
 } from '@helpers/edge';
-import { adjustNodePointForDimension, alignNodePoint } from '@helpers/node';
-import { Connection, Edge, Node, Point } from '@types';
+import { computeBounds } from '@helpers/group';
+import {
+    adjustNodePointForDimension,
+    alignNodePoint,
+    getNodeBounds,
+} from '@helpers/node';
+import { Connection, Edge, Point } from '@types';
 import {
     alignPoint2d,
     alignPoint3d,
     convert2dTo3dPoint,
     convert3dTo2dPoint,
     getConnectorPoints,
-    getDistanceToSegment,
     getSvgPoint,
 } from '@utils';
 import { nanoid } from 'nanoid';
@@ -33,14 +36,18 @@ export default () => {
         state: { edges },
         dispatch: edgeDispatch,
     } = useEdgeContext();
-    const { state: groupState, dispatch: groupDispatch } = useGroupContext();
+    const {
+        state: { groups },
+        dispatch: groupDispatch,
+    } = useGroupContext();
+
     const { dimension, prevDimension } = useDimensionContext();
     const { svgRef } = useSvgContext();
 
     //INFO: Node
 
-    const addNode = (type: Node['type']) => {
-        const node = NcloudFactory(type);
+    const addNode = (type: string) => {
+        const node = NcloudNodeFactory(type);
         //TODO: Focus 된 그룹에 추가하도록 수정해야함
         nodeDispatch({
             type: 'ADD_NODE',
@@ -228,6 +235,59 @@ export default () => {
         });
     };
 
+    //INFO: Group
+
+    const addGroup = (type: string, groupId: string, nodeId: string) => {};
+
+    const updateGroup = (type: string, groupId: string, nodeId: string) => {};
+
+    //INFO: Node만 움직여도 자동으로 그룹이 움직여짐, 따라서 Offset을 받아서 처리함
+    const moveGroup = (groupId: string, offset: Point) => {
+        const group = groups[groupId];
+        if (!group) return;
+
+        group.nodeIds.forEach((nodeId) => {
+            const node = nodes[nodeId];
+            const newPoint = {
+                x: node.point.x + offset.x,
+                y: node.point.y + offset.y,
+            };
+            moveNode(nodeId, newPoint);
+        });
+    };
+
+    const getGroupBounds = (groupId: string) => {
+        const group = groups[groupId];
+        const childGroup = group.childGroupId
+            ? groups[group.childGroupId]
+            : null;
+
+        let childGroupBounds;
+        let innerNodeIds = new Set<string>([
+            ...group.nodeIds,
+            ...(childGroup ? childGroup.nodeIds : []),
+        ]);
+
+        if (childGroup) {
+            const innerNodeBounds = childGroup.nodeIds.map((nodeId) =>
+                getNodeBounds(nodes[nodeId], dimension),
+            );
+            childGroupBounds = computeBounds(innerNodeBounds, dimension);
+        }
+
+        const innerNodeBounds = Array.from(innerNodeIds).map((nodeId) =>
+            getNodeBounds(nodes[nodeId], dimension),
+        );
+
+        console.log(childGroupBounds);
+        return computeBounds(
+            childGroupBounds
+                ? [...innerNodeBounds, childGroupBounds]
+                : innerNodeBounds,
+            dimension,
+        );
+    };
+
     useEffect(() => {
         if (dimension === prevDimension) return;
 
@@ -241,5 +301,8 @@ export default () => {
         addEdge,
         splitEdge,
         moveBendingPointer,
+        updateGroup,
+        getGroupBounds,
+        moveGroup,
     };
 };

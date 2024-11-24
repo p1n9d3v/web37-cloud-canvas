@@ -71,7 +71,7 @@ export const updateGroupBounds = (
             (groupId) => state.groups[groupId].bounds,
         );
 
-        const nodeBounds = group.nodeIds.map((nodeId) =>
+        const nodeBounds = group.nodes.map((nodeId) =>
             getNodeBounds(state.nodes[nodeId], dimension),
         );
 

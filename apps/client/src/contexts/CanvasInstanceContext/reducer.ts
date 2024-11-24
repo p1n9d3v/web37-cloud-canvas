@@ -2,7 +2,6 @@ import {
     alignNodePoint,
     convertNodePointDimension,
     findNearestConnectorForBendPoint,
-    findNearestConnectorPair,
     getParentGroups,
     sortNodes,
     updateGroupBounds,
@@ -14,7 +13,6 @@ import {
     alignPoint3d,
     convert2dTo3dPoint,
     convert3dTo2dPoint,
-    getConnectorPoints,
 } from '@utils';
 import { nanoid } from 'nanoid';
 
@@ -152,7 +150,7 @@ export const canvasInstanceReducer = (
         case 'MOVE_GROUP': {
             const { id, point, dimension } = action.payload;
             const group = state.groups[id];
-            const { nodeIds } = group;
+            const { nodeIds: nodeIds } = group;
             const newPoint =
                 dimension === '2d' ? alignPoint2d(point) : alignPoint3d(point);
             const offset = {

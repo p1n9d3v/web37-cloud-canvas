@@ -65,3 +65,12 @@ export const alignNodePoint = (
 
     return result;
 };
+
+export const getNodeBounds = (node: Node, dimension: Dimension) => {
+    return {
+        x: node.point.x,
+        y: node.point.y,
+        width: node.size[dimension].width,
+        height: node.size[dimension].height,
+    };
+};

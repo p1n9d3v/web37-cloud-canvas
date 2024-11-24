@@ -13,6 +13,7 @@ import theme from '@theme';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
+import { SelectionProvider } from '@contexts/SelectionContext.tsx';
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
@@ -24,15 +25,17 @@ createRoot(document.getElementById('root')!).render(
                         <GroupProvider>
                             <NodeProvider>
                                 <EdgeProvider>
-                                    <CanvasDimensionProvider>
-                                        <CanvasProvider>
-                                            <CanvasInstanceProvider
-                                                initialState={initialState}
-                                            >
-                                                <App />
-                                            </CanvasInstanceProvider>
-                                        </CanvasProvider>
-                                    </CanvasDimensionProvider>
+                                    <SelectionProvider>
+                                        <CanvasDimensionProvider>
+                                            <CanvasProvider>
+                                                <CanvasInstanceProvider
+                                                    initialState={initialState}
+                                                >
+                                                    <App />
+                                                </CanvasInstanceProvider>
+                                            </CanvasProvider>
+                                        </CanvasDimensionProvider>
+                                    </SelectionProvider>
                                 </EdgeProvider>
                             </NodeProvider>
                         </GroupProvider>

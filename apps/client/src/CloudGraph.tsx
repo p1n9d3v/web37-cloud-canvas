@@ -9,10 +9,10 @@ import Node from '@components/Node';
 import { useEdgeContext } from '@contexts/EdgeContext';
 import { useGroupContext } from '@contexts/GroupContext';
 import { useNodeContext } from '@contexts/NodeContext';
-import { useSelectionContext } from '@contexts/SelectionContext/index';
 import { useSvgContext } from '@contexts/SvgContext';
 import useConnection from '@hooks/useConnection';
 import useGraphActions from '@hooks/useGraphActions';
+import useSelection from '@hooks/useSelection';
 import { useEffect } from 'react';
 
 export default () => {
@@ -28,13 +28,13 @@ export default () => {
     } = useGroupContext();
     const {
         selectedNodeId,
-        selectedEdgeId,
+        selectedEdge,
         selectedGroupId,
-        selectedEdgeSegment,
         clearSelection,
         selectNode,
-        selectEdge,
-    } = useSelectionContext();
+        selectSegEdge,
+        selectEntireEdge,
+    } = useSelection();
 
     const {
         moveNode,
@@ -111,7 +111,7 @@ export default () => {
                         <Edge
                             key={edge.id}
                             edge={edge}
-                            isSelected={selectedEdgeId === edge.id}
+                            selectedEdge={selectedEdge}
                             sourceConnector={
                                 nodes[edge.source.id].connectors[
                                     edge.source.connectorType
@@ -122,7 +122,8 @@ export default () => {
                                     edge.target.connectorType
                                 ]
                             }
-                            onSelect={selectEdge}
+                            onSelectEntire={selectEntireEdge}
+                            onSelectSegment={selectSegEdge}
                             onSplit={splitEdge}
                             onRemove={removeEdge}
                         />

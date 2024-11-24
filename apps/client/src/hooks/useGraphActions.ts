@@ -104,6 +104,15 @@ export default () => {
                 removeNodeFromGroup(groupId, id);
             });
         }
+
+        const connectedEdgeIds = Object.values(edges)
+            .filter((edge) => edge.source.id === id || edge.target.id === id)
+            .map((edge) => edge.id);
+
+        edgeDispatch({
+            type: 'REMOVE_EDGES',
+            payload: connectedEdgeIds,
+        });
     };
 
     const updateNodePointForDimension = () => {
@@ -152,12 +161,14 @@ export default () => {
         });
     };
 
-    const removeEdge = (id: string) => {
+    const removeEdge = (id: string, segmentIdxes: number[]) =>
         edgeDispatch({
             type: 'REMOVE_EDGE',
-            payload: { id },
+            payload: {
+                id,
+                segmentIdxes,
+            },
         });
-    };
 
     const updateEdges = (edges: Record<string, Edge>) => {
         edgeDispatch({

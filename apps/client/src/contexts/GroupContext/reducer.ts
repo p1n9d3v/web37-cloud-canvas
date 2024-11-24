@@ -47,9 +47,6 @@ export const groupReducer = (
         }
         case 'REMOVE_NODE_FROM_GROUP': {
             const { groupId, nodeId } = action.payload;
-
-            console.log(groupId, nodeId);
-            console.log(state.groups[groupId]);
             return {
                 ...state,
                 groups: {

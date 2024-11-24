@@ -10,4 +10,5 @@ export enum ResourcePriority {
     PUBLIC_IP = 9,
     LOAD_BALANCER = 10,
     LAUNCH_CONFIGURATION = 11,
+    MYSQL = 12,
 }

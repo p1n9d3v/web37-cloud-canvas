@@ -4,45 +4,46 @@ import { useEffect } from 'react';
 
 type Props = {
     edge: Edge;
-    isSelected: boolean;
+    selectedEdge?: { id: string; segmentIdxes: number[] };
     sourceConnector: Point;
     targetConnector: Point;
     onSplit: (id: string, point: Point, bendingPoints: Point[]) => void;
-    onSelect: (id: string) => void;
-    onRemove: (id: string) => void;
+    onSelectEntire: (id: string, segmentIdxes: number[]) => void;
+    onSelectSegment: (id: string, bendingPoint: Point[], point: Point) => void;
+    onRemove: (id: string, segmentIdxes: number[]) => void;
 };
 
 export default ({
     edge,
-    isSelected,
+    selectedEdge,
     sourceConnector,
     targetConnector,
     onSplit,
-    onSelect,
+    onSelectEntire,
+    onSelectSegment,
     onRemove,
 }: Props) => {
     const { id, type, bendingPoints } = edge;
     const theme = useTheme();
-    const color = isSelected
-        ? theme.palette.primary.main
-        : theme.palette.text.primary;
 
-    const bendPointsString = bendingPoints
-        .map((point) => `${point.x},${point.y}`)
-        .join(' ');
-    const allPoints = `${sourceConnector.x},${sourceConnector.y} ${bendPointsString} ${targetConnector.x},${targetConnector.y}`;
+    const points = [sourceConnector, ...bendingPoints, targetConnector];
+    const isSelectedEdge = selectedEdge?.id === id;
+
+    const handleDoubleClick = () => {
+        onSelectEntire(
+            id,
+            Array.from({ length: points.length - 1 }, (_, i) => i),
+        );
+    };
 
     const handleMouseDown = (e: React.MouseEvent) => {
         e.stopPropagation();
         if (e.ctrlKey) {
             const { clientX, clientY } = e;
-            onSplit(edge.id, { x: clientX, y: clientY }, [
-                sourceConnector,
-                ...bendingPoints,
-                targetConnector,
-            ]);
+            onSplit(edge.id, { x: clientX, y: clientY }, points);
         } else {
-            onSelect(id);
+            const { clientX, clientY } = e;
+            onSelectSegment(id, points, { x: clientX, y: clientY });
         }
 
         const handleMouseUp = () => {
@@ -53,42 +54,70 @@ export default ({
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Backspace') {
-            onRemove(id);
+        if (selectedEdge && e.key === 'Backspace') {
+            onRemove(id, selectedEdge.segmentIdxes);
         }
     };
 
     useEffect(() => {
-        if (isSelected) {
+        if (isSelectedEdge) {
             document.addEventListener('keydown', handleKeyDown);
         }
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
         };
-    }, [isSelected]);
+    }, [selectedEdge]);
 
     return (
-        <g id={id} data-type="edge" onMouseDown={handleMouseDown}>
+        <g
+            id={id}
+            data-type="edge"
+            onMouseDown={handleMouseDown}
+            onDoubleClick={handleDoubleClick}
+        >
             <defs>
                 <marker
                     id="arrowhead"
                     markerWidth="5"
                     markerHeight="5"
-                    refX="5"
+                    refX="4"
                     refY="2.5"
                     orient="auto"
                 >
-                    <path d="M 0 0 L 5 2.5 L 0 5 Z" fill={color} />
+                    <path
+                        d="M 0 0 L 5 2.5 L 0 5 Z"
+                        fill={theme.palette.text.primary}
+                    />
                 </marker>
             </defs>
-            <polyline
-                points={allPoints}
-                stroke={color}
-                strokeWidth={3}
-                fill="none"
-                markerEnd={type === 'arrow' ? 'url(#arrowhead)' : ''}
-                cursor="pointer"
-            />
+            {points.slice(0, -1).map((point, idx) => {
+                const nextPoint = points[idx + 1];
+                const isLastPoint = idx === points.length - 2;
+                const isSelectedSegment =
+                    isSelectedEdge && selectedEdge.segmentIdxes.includes(idx);
+
+                return (
+                    <line
+                        key={idx}
+                        x1={point.x}
+                        y1={point.y}
+                        x2={nextPoint.x}
+                        y2={nextPoint.y}
+                        stroke={
+                            isSelectedSegment
+                                ? theme.palette.primary.main
+                                : theme.palette.text.primary
+                        }
+                        strokeWidth={3}
+                        markerEnd={
+                            type === 'arrow' && isLastPoint
+                                ? 'url(#arrowhead)'
+                                : ''
+                        }
+                        cursor="pointer"
+                    />
+                );
+            })}
         </g>
     );
 };

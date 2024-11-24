@@ -58,10 +58,6 @@ export default ({ node, isSelected, onMove, onSelect, onRemove }: Props) => {
         }
     };
 
-    // useEffect(() => {
-    //     document.addEventListener('keydown', handleKeyDown);
-    // }, []);
-
     useEffect(() => {
         if (isDragging) {
             document.addEventListener('mousemove', handleMouseMove);

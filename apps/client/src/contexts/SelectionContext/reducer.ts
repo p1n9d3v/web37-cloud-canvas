@@ -1,13 +1,15 @@
 export type SelectionState = {
     selectedNodeId?: string;
-    selectedEdgeId?: string;
-    selectedEdgeSegment?: number;
+    selectedEdge?: {
+        id: string;
+        segmentIdxes: number[];
+    };
     selectedGroupId?: string;
 };
 
 export type SelectionAction =
     | { type: 'SELECT_NODE'; payload: { id: string } }
-    | { type: 'SELECT_EDGE'; payload: { id: string; segmentIndex?: number } }
+    | { type: 'SELECT_EDGE'; payload: { id: string; segmentIdxes: number[] } }
     | { type: 'SELECT_GROUP'; payload: { id: string } }
     | { type: 'DESELECT_NODE' }
     | { type: 'DESELECT_EDGE' }
@@ -23,22 +25,22 @@ export const selectionReducer = (
             return {
                 ...state,
                 selectedNodeId: action.payload.id,
-                selectedEdgeId: undefined,
-                selectedEdgeSegment: undefined,
+                selectedEdge: undefined,
             };
         case 'SELECT_EDGE':
             return {
                 ...state,
-                selectedEdgeId: action.payload.id,
-                selectedEdgeSegment: action.payload.segmentIndex,
+                selectedEdge: {
+                    id: action.payload.id,
+                    segmentIdxes: [...action.payload.segmentIdxes],
+                },
                 selectedNodeId: undefined,
             };
         case 'SELECT_GROUP':
             return {
                 ...state,
                 selectedGroupId: action.payload.id,
-                selectedEdgeId: undefined,
-                selectedEdgeSegment: undefined,
+                selectedEdge: undefined,
             };
         case 'DESELECT_NODE':
             return {
@@ -48,8 +50,7 @@ export const selectionReducer = (
         case 'DESELECT_EDGE':
             return {
                 ...state,
-                selectedEdgeId: undefined,
-                selectedEdgeSegment: undefined,
+                selectedEdge: undefined,
             };
         case 'DESELECT_GROUP':
             return {
@@ -59,8 +60,7 @@ export const selectionReducer = (
         case 'CLEAR_SELECTION':
             return {
                 selectedNodeId: undefined,
-                selectedEdgeId: undefined,
-                selectedEdgeSegment: undefined,
+                selectedEdge: undefined,
                 selectedGroupId: undefined,
             };
         default:

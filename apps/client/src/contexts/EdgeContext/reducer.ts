@@ -1,3 +1,4 @@
+import { getClosestSegEdgeIdx } from '@helpers/edge';
 import { Edge, Point } from '@types';
 
 export type EdgeState = {
@@ -9,11 +10,15 @@ export type EdgeAction =
     | { type: 'ADD_EDGE'; payload: Omit<Edge, 'bendingPoints'> }
     | { type: 'UPDATE_EDGE'; payload: Partial<Edge> & { id: string } }
     | { type: 'UPDATE_EDGES'; payload: Record<string, Edge> }
-    | { type: 'REMOVE_EDGE'; payload: { id: string } }
+    | {
+          type: 'REMOVE_EDGE';
+          payload: { id: string; segmentIdxes: number[] };
+      }
     | {
           type: 'SPLIT_EDGE';
           payload: { id: string; point: Point; insertAfter: number };
       }
+    | { type: 'REMOVE_EDGES'; payload: string[] }
     | {
           type: 'MOVE_BENDING_POINTER';
           payload: {
@@ -67,12 +72,66 @@ export const edgeReducer = (
                 },
             };
         }
-        case 'REMOVE_EDGE': {
-            const { id } = action.payload;
-            const { [id]: removedEdge, ...remainingEdges } = state.edges;
+        case 'REMOVE_EDGES': {
+            const removedEdge = action.payload;
+            const remainingEdges = Object.values(state.edges).reduce(
+                (acc, edge) => {
+                    if (removedEdge.includes(edge.id)) return acc;
+                    return {
+                        [edge.id]: {
+                            ...edge,
+                        },
+                    };
+                },
+                {},
+            );
             return {
                 ...state,
-                edges: remainingEdges,
+                edges: {
+                    ...remainingEdges,
+                },
+            };
+        }
+        case 'REMOVE_EDGE': {
+            const { id, segmentIdxes } = action.payload;
+            const { [id]: removedEdge, ...remainingEdges } = state.edges;
+            let updatedEdges = {};
+            if (
+                removedEdge.bendingPoints.length >= segmentIdxes.length &&
+                removedEdge.bendingPoints.length > 0
+            ) {
+                const newBendPoints = removedEdge.bendingPoints.filter(
+                    (_, idx) => {
+                        //INFO: bendingPoints와 segmentIdxes의 수가 동일시 되지 않아 조정이 필요
+                        //마지막 선분이 아닌 첫번째 선분을 따로 처리하게 되면 선분이 삭제되고 다음 선분으로 선택됨
+                        //따라서 첫번째 선분이 아닌 마지막 선분을 따로 처리하는 방안으로 변경
+                        if (
+                            segmentIdxes.includes(
+                                removedEdge.bendingPoints.length,
+                            ) &&
+                            idx === removedEdge.bendingPoints.length - 1
+                        ) {
+                            return false;
+                        }
+
+                        return !segmentIdxes.includes(idx);
+                    },
+                );
+
+                updatedEdges = {
+                    [id]: {
+                        ...removedEdge,
+                        bendingPoints: newBendPoints,
+                    },
+                };
+            }
+
+            return {
+                ...state,
+                edges: {
+                    ...remainingEdges,
+                    ...updatedEdges,
+                },
             };
         }
         case 'SPLIT_EDGE': {

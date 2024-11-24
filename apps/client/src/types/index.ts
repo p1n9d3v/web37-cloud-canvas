@@ -43,7 +43,7 @@ export type Group = {
     name: string;
     nodeIds: string[];
     properties: { [key: string]: any };
-    childGroupId?: string;
+    childGroupIds: string[];
 };
 
 export type Connection = {

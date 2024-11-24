@@ -1,4 +1,4 @@
-import { NcloudGroupFactory, NcloudNodeFactory } from '@/src/models/ncloud';
+import { NcloudNodeFactory } from '@/src/models/ncloud';
 import { GROUP_TYPES } from '@constants';
 import { useDimensionContext } from '@contexts/DimensionContext';
 import { useEdgeContext } from '@contexts/EdgeContext';

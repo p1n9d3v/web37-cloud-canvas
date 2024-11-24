@@ -51,16 +51,32 @@ export const nodeReducer = (
             const node = state.nodes[id];
             if (!node) return state;
 
+            const updatedNodes = Object.values({
+                ...state.nodes,
+                [id]: {
+                    ...node,
+                    point,
+                    connectors,
+                },
+            })
+                .sort((a, b) => {
+                    if (a.point.y === b.point.y) {
+                        return a.point.x - b.point.x;
+                    }
+                    return a.point.y - b.point.y;
+                })
+                .reduce((acc, cur) => {
+                    return {
+                        ...acc,
+                        [cur.id]: {
+                            ...cur,
+                        },
+                    };
+                }, {});
+
             return {
                 ...state,
-                nodes: {
-                    ...state.nodes,
-                    [id]: {
-                        ...node,
-                        point,
-                        connectors,
-                    },
-                },
+                nodes: updatedNodes,
             };
         }
         case 'UPDATE_NODES': {

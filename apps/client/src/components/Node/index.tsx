@@ -23,8 +23,9 @@ const nodeFactory = (node: Node) => {
 type Props = {
     node: Node;
     onMove: (id: string, newPoint: Point) => void;
+    onSelect: (id: string) => void;
 };
-export default ({ node, onMove }: Props) => {
+export default ({ node, onMove, onSelect }: Props) => {
     const { id, point } = node;
 
     const { isDragging, startDrag, drag, stopDrag } = useDrag({
@@ -36,6 +37,7 @@ export default ({ node, onMove }: Props) => {
         e.stopPropagation();
         const { clientX, clientY } = e;
         startDrag({ x: clientX, y: clientY });
+        onSelect(id);
         document.body.style.cursor = 'move';
     };
 

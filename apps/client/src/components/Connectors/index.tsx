@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 
 type Props = {
     node: Node;
+    isSelected: boolean;
     isConnecting: boolean;
     onOpenConnection: (from: Connection) => void;
     onConnectConnection: (point: Point) => void;
@@ -12,6 +13,7 @@ type Props = {
 
 export default ({
     node,
+    isSelected,
     isConnecting,
     onOpenConnection,
     onConnectConnection,
@@ -59,7 +61,7 @@ export default ({
                 <Connector
                     key={`${node.id}-${type}`}
                     point={point}
-                    visible={true}
+                    visible={isSelected}
                     onMouseDown={(e) => handleMouseDown(e, type, point)}
                 />
             ))}

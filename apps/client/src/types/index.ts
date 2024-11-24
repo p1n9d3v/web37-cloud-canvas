@@ -21,7 +21,6 @@ export type Node = {
     };
     properties: { [key: string]: any };
     connectors: { [key: string]: Point };
-    groupIds: string[];
 };
 
 export type Edge = {
@@ -43,10 +42,8 @@ export type Group = {
     type: string;
     name: string;
     nodeIds: string[];
-    bounds: Bounds;
     properties: { [key: string]: any };
-    childGroupIds: string[];
-    parentGroupId?: string;
+    childGroupId?: string;
 };
 
 export type Connection = {

@@ -1,4 +1,6 @@
-export const NcloudFactory = (type: string) => {
+import { Group, Node } from '@types';
+
+export const NcloudNodeFactory = (type: string) => {
     switch (type) {
         case 'server':
             return Server;
@@ -12,7 +14,17 @@ export const NcloudFactory = (type: string) => {
     }
 };
 
-const Server = {
+export const NcloudGroupFactory = (type: string) => {
+    switch (type) {
+        case 'region':
+            return Region;
+        default: {
+            throw new Error(`Unknown type: ${type}`);
+        }
+    }
+};
+
+const Server: Node = {
     id: '',
     name: '',
     type: 'server',
@@ -22,17 +34,14 @@ const Server = {
         '3d': { width: 128, height: 111 },
     },
     properties: {
-        os: '',
-        vpc: '',
+        region: '',
         subnet: '',
-        spec: '',
-        ip: '',
+        vpc: '',
     },
     connectors: {},
-    groupIds: [],
 };
 
-const CloudFunction = {
+const CloudFunction: Node = {
     id: '',
     type: 'cloud-function',
     name: '',
@@ -42,15 +51,14 @@ const CloudFunction = {
         '3d': { width: 96, height: 113.438, offset: 10 },
     },
     properties: {
-        vpc: '',
+        region: '',
         subnet: '',
-        spec: '',
+        vpc: '',
     },
-    groupIds: [],
     connectors: {},
 };
 
-const MySQLDB = {
+const MySQLDB: Node = {
     id: '',
     type: 'db-mysql',
     name: '',
@@ -62,8 +70,17 @@ const MySQLDB = {
     properties: {
         vpc: '',
         subnet: '',
-        spec: '',
+        region: '',
     },
-    groupIds: [],
     connectors: {},
+};
+
+const Region: Group = {
+    id: 'region1',
+    type: 'region',
+    name: 'KR-1',
+    nodeIds: [],
+    properties: {
+        regionCode: '',
+    },
 };

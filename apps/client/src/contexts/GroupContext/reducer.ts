@@ -1,4 +1,4 @@
-import { Group, Point, Dimension } from '@types';
+import { Group } from '@types';
 
 export type GroupState = {
     groups: Record<string, Group>;
@@ -7,11 +7,7 @@ export type GroupState = {
 export type GroupAction =
     | { type: 'ADD_GROUP'; payload: Group }
     | { type: 'UPDATE_GROUP'; payload: Partial<Group> & { id: string } }
-    | { type: 'DELETE_GROUP'; payload: { id: string } }
-    | {
-          type: 'MOVE_GROUP';
-          payload: { id: string; point: Point; dimension: Dimension };
-      };
+    | { type: 'DELETE_GROUP'; payload: { id: string } };
 
 export const groupReducer = (
     state: GroupState,
@@ -43,25 +39,6 @@ export const groupReducer = (
             return {
                 ...state,
                 groups: remainingGroups,
-            };
-        }
-        case 'MOVE_GROUP': {
-            const { id, point } = action.payload;
-            const group = state.groups[id];
-            if (!group) return state;
-            return {
-                ...state,
-                groups: {
-                    ...state.groups,
-                    [id]: {
-                        ...group,
-                        bounds: {
-                            ...group.bounds,
-                            x: point.x,
-                            y: point.y,
-                        },
-                    },
-                },
             };
         }
         default:

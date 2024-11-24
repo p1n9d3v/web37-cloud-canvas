@@ -1,11 +1,9 @@
 import RegionGroup from '@components/Group/ncloud/RegionGroup';
-import { useCanvasDimensionContext } from '@contexts/CanvasDimensionContext';
-import { useCanvasInstanceContext } from '@contexts/CanvasInstanceContext/index';
 import useDrag from '@hooks/useDrag';
-import { Group } from '@types';
+import { Bounds, Group, Point } from '@types';
 import { useEffect } from 'react';
 
-const GroupFacctory = (group: Group) => {
+const GroupFacctory = (group: Group & { bounds: Bounds }) => {
     switch (group.type) {
         case 'region':
             return <RegionGroup {...group} />;
@@ -20,23 +18,22 @@ const GroupFacctory = (group: Group) => {
 
 type Props = {
     group: Group;
+    bounds: Bounds;
+    onMove: (id: string, offset: Point) => void;
 };
 
-export default ({ group }: Props) => {
-    const { id, bounds } = group;
-    const { dimension } = useCanvasDimensionContext();
-    const { dispatch } = useCanvasInstanceContext();
-    const { isDragging, startDrag, moveDrag, stopDrag } = useDrag({
+export default ({ group, bounds, onMove }: Props) => {
+    const { id } = group;
+    const { isDragging, startDrag, drag, stopDrag } = useDrag({
         initialPoint: { x: bounds.x, y: bounds.y },
-        updateFn: (point) =>
-            dispatch({
-                type: 'MOVE_GROUP',
-                payload: {
-                    id,
-                    point,
-                    dimension,
-                },
-            }),
+        updateFn: (point) => {
+            const offset = {
+                x: point.x - bounds.x,
+                y: point.y - bounds.y,
+            };
+
+            onMove(id, offset);
+        },
     });
 
     const handleMouseDown = (e: React.MouseEvent) => {
@@ -47,7 +44,7 @@ export default ({ group }: Props) => {
     };
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
-        moveDrag({ x: moveEvent.clientX, y: moveEvent.clientY });
+        drag({ x: moveEvent.clientX, y: moveEvent.clientY });
     };
 
     const handleMouseUp = () => {
@@ -73,7 +70,7 @@ export default ({ group }: Props) => {
             transform={`translate(${bounds.x} ${bounds.y})`}
             onMouseDown={handleMouseDown}
         >
-            {GroupFacctory(group)}
+            {GroupFacctory({ ...group, bounds })}
         </g>
     );
 };

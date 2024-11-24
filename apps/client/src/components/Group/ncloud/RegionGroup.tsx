@@ -1,4 +1,4 @@
-import { useCanvasDimensionContext } from '@contexts/CanvasDimensionContext';
+import { useDimensionContext } from '@contexts/DimensionContext';
 import { Bounds } from '@types';
 import { generateRandomRGB, gridToScreen3d, screenToGrid2d } from '@utils';
 import { useMemo } from 'react';
@@ -63,8 +63,9 @@ const Region2D = ({ bounds, stroke }: Props) => {
 };
 
 export default ({ bounds }: Pick<Props, 'bounds'>) => {
-    const { dimension } = useCanvasDimensionContext();
+    const { dimension } = useDimensionContext();
     const stroke = useMemo(() => generateRandomRGB(), []);
+
     return dimension === '2d' ? (
         <Region2D bounds={bounds} stroke={stroke} />
     ) : (

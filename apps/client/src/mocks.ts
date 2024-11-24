@@ -11,9 +11,9 @@ const CloudFunctionNode: Node = {
         '3d': { width: 96, height: 113.438, offset: 10 },
     },
     properties: {
-        vpc: 'vpc1',
-        subnet: 'subnet1',
-        spec: 's2-g2-s50',
+        vpc: '',
+        subnet: '',
+        region: '',
     },
     connectors: {},
 };
@@ -27,9 +27,9 @@ const ObjectStorageNode: Node = {
         '3d': { width: 100.626, height: 115.695, offset: 20 },
     },
     properties: {
-        vpc: 'vpc1',
-        subnet: 'subnet1',
-        spec: 's2-g2-s50',
+        vpc: '',
+        subnet: '',
+        region: '',
     },
     connectors: {},
 };
@@ -43,9 +43,9 @@ const MySQLDBNode: Node = {
         '3d': { width: 128, height: 137.5 },
     },
     properties: {
-        vpc: 'vpc1',
-        subnet: 'subnet1',
-        spec: 's2-g2-s50',
+        vpc: '',
+        subnet: '',
+        region: '',
     },
     connectors: {},
 };
@@ -59,11 +59,9 @@ const ServerNode: Node = {
         '3d': { width: 128, height: 111 },
     },
     properties: {
-        os: 'Ubuntu 20.04',
-        vpc: 'vpc1',
-        subnet: 'subnet1',
-        spec: 's2-g2-s50',
-        ip: '192.168.0.2',
+        vpc: '',
+        subnet: '',
+        region: '',
     },
     connectors: {},
 };
@@ -78,10 +76,9 @@ const ServerNode2: Node = {
         '3d': { width: 128, height: 111 },
     },
     properties: {
-        os: 'Ubuntu 20.04',
-        vpc: 'vpc1',
-        subnet: 'subnet1',
-        spec: 's2-g2-s50',
+        vpc: '',
+        subnet: '',
+        region: '',
     },
     connectors: {},
 };
@@ -109,7 +106,7 @@ const VpcGroup: Group = {
 };
 
 const RegionGroup: Group = {
-    id: 'region1',
+    id: 'seoul',
     type: 'region',
     name: 'KR-1',
     nodeIds: [
@@ -135,6 +132,18 @@ const mockNodes = [
 ];
 
 const mockGroups = [RegionGroup, VpcGroup, SubnetGroup];
+
+mockGroups.forEach((group) => {
+    // set properties for each group
+    group.nodeIds.forEach((nodeId) => {
+        const node = mockNodes.find((n) => n.id === nodeId);
+        if (node) {
+            node.properties[group.type] = group.id;
+        }
+    });
+});
+
+console.log(mockNodes);
 
 export const mockInitialState = {
     nodes: mockNodes.reduce((acc, node) => ({ ...acc, [node.id]: node }), {}),

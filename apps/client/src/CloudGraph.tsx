@@ -9,7 +9,7 @@ import Node from '@components/Node';
 import { useEdgeContext } from '@contexts/EdgeContext';
 import { useGroupContext } from '@contexts/GroupContext';
 import { useNodeContext } from '@contexts/NodeContext';
-import { useSelectionContext } from '@contexts/SelectionContext';
+import { useSelectionContext } from '@contexts/SelectionContext/index';
 import { useSvgContext } from '@contexts/SvgContext';
 import useConnection from '@hooks/useConnection';
 import useGraphActions from '@hooks/useGraphActions';
@@ -26,6 +26,15 @@ export default () => {
     const {
         state: { groups },
     } = useGroupContext();
+    const {
+        selectedNodeId,
+        selectedEdgeId,
+        selectedGroupId,
+        selectedEdgeSegment,
+        clearSelection,
+        selectNode,
+        selectEdge,
+    } = useSelectionContext();
 
     const {
         moveNode,
@@ -34,9 +43,9 @@ export default () => {
         moveBendingPointer,
         getGroupBounds,
         moveGroup,
+        removeNode,
+        removeEdge,
     } = useGraphActions();
-
-    const { selectedId, select, clearSelect } = useSelectionContext();
 
     const {
         connection,
@@ -49,10 +58,10 @@ export default () => {
     });
 
     useEffect(() => {
-        const handleContextMenu = (event: MouseEvent) => event.preventDefault();
-        const handleMouseDown = () => clearSelect();
+        const handleContextMenu = (e: MouseEvent) => e.preventDefault();
+        const handleMouseDown = () => clearSelection();
         document.addEventListener('contextmenu', handleContextMenu);
-        svgRef.current?.addEventListener('mousedown', handleMouseDown);
+        document.addEventListener('mousedown', handleMouseDown);
 
         return () => {
             document.removeEventListener('contextmenu', handleContextMenu);
@@ -60,7 +69,6 @@ export default () => {
         };
     }, []);
 
-    console.log(groups);
     return (
         <Graph>
             <GridBackground />
@@ -73,10 +81,16 @@ export default () => {
             ))}
             {Object.values(nodes).map((node) => (
                 <>
-                    <Node node={node} onMove={moveNode} onSelect={select} />
+                    <Node
+                        node={node}
+                        isSelected={selectedNodeId === node.id}
+                        onMove={moveNode}
+                        onSelect={selectNode}
+                        onRemove={removeNode}
+                    />
                     <Connectors
                         node={node}
-                        isSelected={selectedId === node.id}
+                        isSelected={selectedNodeId === node.id}
                         isConnecting={isConnecting}
                         onOpenConnection={openConnection}
                         onConnectConnection={connectConnection}
@@ -97,7 +111,7 @@ export default () => {
                         <Edge
                             key={edge.id}
                             edge={edge}
-                            isSelected={false}
+                            isSelected={selectedEdgeId === edge.id}
                             sourceConnector={
                                 nodes[edge.source.id].connectors[
                                     edge.source.connectorType
@@ -108,7 +122,9 @@ export default () => {
                                     edge.target.connectorType
                                 ]
                             }
+                            onSelect={selectEdge}
                             onSplit={splitEdge}
+                            onRemove={removeEdge}
                         />
                         {edge.bendingPoints.map((point, index) => (
                             <BendingPointer

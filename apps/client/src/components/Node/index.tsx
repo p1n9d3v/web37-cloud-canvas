@@ -22,10 +22,12 @@ const nodeFactory = (node: Node) => {
 };
 type Props = {
     node: Node;
+    isSelected: boolean;
     onMove: (id: string, newPoint: Point) => void;
     onSelect: (id: string) => void;
+    onRemove: (id: string) => void;
 };
-export default ({ node, onMove, onSelect }: Props) => {
+export default ({ node, isSelected, onMove, onSelect, onRemove }: Props) => {
     const { id, point } = node;
 
     const { isDragging, startDrag, drag, stopDrag } = useDrag({
@@ -50,6 +52,16 @@ export default ({ node, onMove, onSelect }: Props) => {
         document.body.style.cursor = 'default';
     };
 
+    const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Backspace') {
+            onRemove(id);
+        }
+    };
+
+    // useEffect(() => {
+    //     document.addEventListener('keydown', handleKeyDown);
+    // }, []);
+
     useEffect(() => {
         if (isDragging) {
             document.addEventListener('mousemove', handleMouseMove);
@@ -61,6 +73,15 @@ export default ({ node, onMove, onSelect }: Props) => {
             document.removeEventListener('mouseup', handleMouseUp);
         };
     }, [isDragging]);
+
+    useEffect(() => {
+        if (isSelected) {
+            document.addEventListener('keydown', handleKeyDown);
+        }
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [isSelected]);
 
     return (
         <g

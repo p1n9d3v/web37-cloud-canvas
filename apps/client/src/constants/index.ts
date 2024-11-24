@@ -33,3 +33,5 @@ export const NCLOUD_SERVICES = [
         ],
     },
 ];
+
+export const GROUP_TYPES = ['region', 'vpc', 'subnet', 'security'];

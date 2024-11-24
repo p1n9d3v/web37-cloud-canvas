@@ -1,4 +1,5 @@
 import { NcloudGroupFactory, NcloudNodeFactory } from '@/src/models/ncloud';
+import { GROUP_TYPES } from '@constants';
 import { useDimensionContext } from '@contexts/DimensionContext';
 import { useEdgeContext } from '@contexts/EdgeContext';
 import { useGroupContext } from '@contexts/GroupContext';
@@ -87,6 +88,24 @@ export default () => {
         updateEdges(updatedEdges);
     };
 
+    const removeNode = (id: string) => {
+        const node = nodes[id];
+        nodeDispatch({
+            type: 'REMOVE_NODE',
+            payload: { id },
+        });
+
+        const groupIds = GROUP_TYPES.map(
+            (type) => node.properties[type],
+        ).filter(Boolean);
+
+        if (groupIds.length > 0) {
+            groupIds.forEach((groupId) => {
+                removeNodeFromGroup(groupId, id);
+            });
+        }
+    };
+
     const updateNodePointForDimension = () => {
         const updatedNodes = Object.entries(nodes).reduce((acc, [id, node]) => {
             const adjustedPoint = adjustNodePointForDimension(node, dimension);
@@ -130,6 +149,13 @@ export default () => {
                     connectorType: target.connectorType,
                 },
             },
+        });
+    };
+
+    const removeEdge = (id: string) => {
+        edgeDispatch({
+            type: 'REMOVE_EDGE',
+            payload: { id },
         });
     };
 
@@ -245,6 +271,13 @@ export default () => {
 
     const updateGroup = (type: string, groupId: string, nodeId: string) => {};
 
+    const removeNodeFromGroup = (groupId: string, nodeId: string) => {
+        groupDispatch({
+            type: 'REMOVE_NODE_FROM_GROUP',
+            payload: { groupId, nodeId },
+        });
+    };
+
     //INFO: Node만 움직여도 자동으로 그룹이 움직여짐, 따라서 Offset을 받아서 처리함
     const moveGroup = (groupId: string, offset: Point) => {
         const group = groups[groupId];
@@ -295,10 +328,13 @@ export default () => {
     return {
         addNode,
         moveNode,
+        removeNode,
         addEdge,
+        removeEdge,
         splitEdge,
         moveBendingPointer,
         updateGroup,
+        removeNodeFromGroup,
         getGroupBounds,
         moveGroup,
     };

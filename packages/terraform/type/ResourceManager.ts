@@ -11,7 +11,8 @@ export class ResourceManager {
 
     addResource(resource: NCloudModel): void {
         this.resources.push(resource);
-        this.nameMap.set(resource.serviceType, resource.name);
+        const resourceName = resource.name || resource.serviceType;
+        this.nameMap.set(resource.serviceType, resourceName);
     }
 
     getResources(): NCloudModel[] {

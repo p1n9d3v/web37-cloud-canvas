@@ -36,9 +36,10 @@ export class CodeGenerator {
                 this.resourceManager.getNameMap(),
             );
 
+            const resourceName = resource.name || resource.serviceType;
             return generateResourceBlock(
                 resource.serviceType,
-                resource.name,
+                resourceName,
                 properties,
             );
         });

@@ -1,4 +1,3 @@
-import { useCanvasDimensionContext } from '@contexts/CanvasDimensionContext';
 import { useDimensionContext } from '@contexts/DimensionContext';
 import { Node } from '@types';
 

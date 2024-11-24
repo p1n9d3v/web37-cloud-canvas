@@ -19,8 +19,8 @@ export class NCloudACG implements ACG, NCloudModel {
     getProperties() {
         return {
             name: this.name,
-            vpc_no: "VPC_ID_PLACEHOLDER",
-            description: this.description
+            vpc_no: 'VPC_ID_PLACEHOLDER',
+            description: this.description,
         };
     }
 }

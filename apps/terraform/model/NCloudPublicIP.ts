@@ -14,7 +14,7 @@ export class NCloudPublicIP implements NCloudModel {
 
     getProperties() {
         return {
-            server_instance_no: "SERVER_ID_PLACEHOLDER"
+            server_instance_no: 'SERVER_ID_PLACEHOLDER',
         };
     }
 }

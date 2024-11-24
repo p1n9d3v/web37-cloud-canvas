@@ -10,7 +10,7 @@ export const isVariableReference = (value: string): boolean => {
 
 export const formatValue = (value: any): string => {
     if (Array.isArray(value)) {
-        return `[${value.map(item => formatValue(item)).join(', ')}]`;
+        return `[${value.map((item) => formatValue(item)).join(', ')}]`;
     }
 
     if (typeof value === 'string') {
@@ -25,16 +25,22 @@ export const formatValue = (value: any): string => {
 
 export const formatProperties = (
     properties: { [key: string]: any },
-    indentLevel: number = 1
+    indentLevel: number = 1,
 ): string => {
     const indent = '  '.repeat(indentLevel);
-    const maxKeyLength = Math.max(...Object.keys(properties).map(key => key.length));
+    const maxKeyLength = Math.max(
+        ...Object.keys(properties).map((key) => key.length),
+    );
 
     return Object.entries(properties)
         .map(([key, value]) => {
             const padding = ' '.repeat(maxKeyLength - key.length);
 
-            if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+            if (
+                typeof value === 'object' &&
+                value !== null &&
+                !Array.isArray(value)
+            ) {
                 return `${indent}${key} {
 ${formatProperties(value, indentLevel + 1)}
 ${indent}}`;

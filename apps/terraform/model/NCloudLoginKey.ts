@@ -14,7 +14,7 @@ export class NCloudLoginKey implements NCloudModel {
 
     getProperties() {
         return {
-            key_name: this.name
+            key_name: this.name,
         };
     }
 }

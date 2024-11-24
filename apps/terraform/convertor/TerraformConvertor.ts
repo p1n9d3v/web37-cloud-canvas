@@ -16,7 +16,7 @@ export class TerraformConvertor {
     }
 
     addResourceFromJson(jsonData: { nodes?: CloudCanvasNode[] }): void {
-        jsonData.nodes?.forEach(node => {
+        jsonData.nodes?.forEach((node) => {
             try {
                 const resource = parseToNCloudModel(node);
                 this.resourceManager.addResource(resource);

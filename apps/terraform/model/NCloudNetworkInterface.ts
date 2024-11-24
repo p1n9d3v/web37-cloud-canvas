@@ -20,8 +20,7 @@ export class NCloudNetworkInterface implements NetworkInterface, NCloudModel {
         return {
             subnet_no: 'SUBNET_ID_PLACEHOLDER',
             name: this.name,
-            access_control_groups: ['ACG_ID_PLACEHOLDER']
+            access_control_groups: ['ACG_ID_PLACEHOLDER'],
         };
     }
 }
-

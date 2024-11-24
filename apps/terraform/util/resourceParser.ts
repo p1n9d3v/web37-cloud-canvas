@@ -10,20 +10,19 @@ import { NCloudNetworkInterface } from '../model/NCloudNetworkInterface';
 import { NCloudServer } from '../model/NCloudServer';
 import { NCloudPublicIP } from '../model/NCloudPublicIP';
 
-
-export function parseToNCloudModel(resource: CloudCanvasNode ): NCloudModel {
+export function parseToNCloudModel(resource: CloudCanvasNode): NCloudModel {
     const { type, name, properties } = resource;
 
     switch (type.toLowerCase()) {
         case 'vpc':
             return new NCloudVPC({
                 name: name || 'vpc',
-                ipv4CidrBlock: properties.cidrBlock
+                ipv4CidrBlock: properties.cidrBlock,
             });
 
         case 'networkacl':
             return new NCloudNetworkACL({
-                name: name || 'nacl'
+                name: name || 'nacl',
             });
 
         case 'subnet':
@@ -32,14 +31,14 @@ export function parseToNCloudModel(resource: CloudCanvasNode ): NCloudModel {
                 subnet: properties.subnet,
                 zone: properties.zone,
                 subnetType: properties.subnetType,
-                usageType: properties.usageType
+                usageType: properties.usageType,
             });
 
         case 'acg':
         case 'accesscontrolgroup':
             return new NCloudACG({
                 name: name || 'acg',
-                description: properties.description
+                description: properties.description,
             });
 
         case 'acgrule':
@@ -48,29 +47,29 @@ export function parseToNCloudModel(resource: CloudCanvasNode ): NCloudModel {
                 protocol: properties.protocol,
                 ipBlock: properties.ipBlock,
                 portRange: properties.portRange,
-                description: properties.description
+                description: properties.description,
             });
 
         case 'loginkey':
             return new NCloudLoginKey({
-                name: name || 'login-key'
+                name: name || 'login-key',
             });
 
         case 'networkinterface':
             return new NCloudNetworkInterface({
-                name: name || 'nic'
+                name: name || 'nic',
             });
 
         case 'server':
             return new NCloudServer({
                 name: name || 'server',
                 serverImageProductCode: properties.serverImageProductCode,
-                serverProductCode: properties.serverProductCode
+                serverProductCode: properties.serverProductCode,
             });
 
         case 'publicip':
             return new NCloudPublicIP({
-                name: name || 'public-ip'
+                name: name || 'public-ip',
             });
 
         default:

@@ -14,7 +14,6 @@ export class NCloudVPC implements VPC, NCloudModel {
     serviceType: string;
     priority: ResourcePriority;
 
-
     constructor(json: any) {
         this.serviceType = 'ncloud_vpc';
         this.priority = ResourcePriority.VPC;
@@ -31,7 +30,7 @@ export class NCloudVPC implements VPC, NCloudModel {
     getProperties() {
         return {
             name: this.name,
-            ipv4_cidr_block: this.ipv4CidrBlock
+            ipv4_cidr_block: this.ipv4CidrBlock,
         };
     }
 }

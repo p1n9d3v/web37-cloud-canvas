@@ -3,7 +3,7 @@ import { FileOption } from '../interface/FileOption';
 export const writeFile = async (
     filePath: string,
     content: string,
-    options: FileOption = {}
+    options: FileOption = {},
 ): Promise<void> => {
     const fs = require('fs').promises;
     await fs.writeFile(filePath, content);
@@ -37,7 +37,7 @@ region = "KR"`;
 
 export const saveTerraformFiles = async (
     terraformCode: string,
-    options: FileOption = {}
+    options: FileOption = {},
 ): Promise<void> => {
     try {
         await writeFile('main.tf', terraformCode, options);
@@ -50,8 +50,9 @@ export const saveTerraformFiles = async (
 
         console.log('\n테라폼 파일 생성 완료');
         console.log('terraform.tfvars 파일을 생성하고 key를 넣어주세요');
-
     } catch (error) {
-        throw new Error(`Failed to save Terraform files: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw new Error(
+            `Failed to save Terraform files: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        );
     }
 };

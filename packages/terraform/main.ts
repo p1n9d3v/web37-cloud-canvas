@@ -1,4 +1,3 @@
-import { CloudCanvasNode } from './interface/CloudCanvasNode';
 import { NCloudProvider } from './model/NCloudProvider';
 import { TerraformConvertor } from './convertor/TerraformConvertor';
 import { sampleNodes } from './sample/sampleData';

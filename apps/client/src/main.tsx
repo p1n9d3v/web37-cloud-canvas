@@ -12,7 +12,7 @@ import theme from '@theme';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
-import { SelectionProvider } from '@contexts/SelectionContext.tsx';
+import { SelectionProvider } from '@contexts/SelectionContext/index.tsx';
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>

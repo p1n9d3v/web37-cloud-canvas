@@ -1,4 +1,4 @@
-import { Node, Point, Dimension, ConnectorMap } from '@types';
+import { ConnectorMap, Node, Point } from '@types';
 
 export type NodeState = {
     nodes: Record<string, Node>;
@@ -8,7 +8,7 @@ export type NodeAction =
     | { type: 'ADD_NODE'; payload: Node }
     | { type: 'UPDATE_NODE'; payload: Partial<Node> & { id: string } }
     | { type: 'UPDATE_NODES'; payload: Record<string, Node> }
-    | { type: 'DELETE_NODE'; payload: { id: string } }
+    | { type: 'REMOVE_NODE'; payload: { id: string } }
     | {
           type: 'MOVE_NODE';
           payload: { id: string; point: Point; connectors: ConnectorMap };
@@ -38,7 +38,7 @@ export const nodeReducer = (
                     },
                 },
             };
-        case 'DELETE_NODE': {
+        case 'REMOVE_NODE': {
             const { id } = action.payload;
             const { [id]: removedNode, ...remainingNodes } = state.nodes;
             return {

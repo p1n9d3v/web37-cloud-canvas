@@ -1,5 +1,6 @@
 import { useTheme } from '@mui/material';
 import { Edge, Point } from '@types';
+import { useEffect } from 'react';
 
 type Props = {
     edge: Edge;
@@ -7,6 +8,8 @@ type Props = {
     sourceConnector: Point;
     targetConnector: Point;
     onSplit: (id: string, point: Point, bendingPoints: Point[]) => void;
+    onSelect: (id: string) => void;
+    onRemove: (id: string) => void;
 };
 
 export default ({
@@ -15,6 +18,8 @@ export default ({
     sourceConnector,
     targetConnector,
     onSplit,
+    onSelect,
+    onRemove,
 }: Props) => {
     const { id, type, bendingPoints } = edge;
     const theme = useTheme();
@@ -36,6 +41,8 @@ export default ({
                 ...bendingPoints,
                 targetConnector,
             ]);
+        } else {
+            onSelect(id);
         }
 
         const handleMouseUp = () => {
@@ -44,6 +51,21 @@ export default ({
 
         document.addEventListener('mouseup', handleMouseUp);
     };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Backspace') {
+            onRemove(id);
+        }
+    };
+
+    useEffect(() => {
+        if (isSelected) {
+            document.addEventListener('keydown', handleKeyDown);
+        }
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [isSelected]);
 
     return (
         <g id={id} data-type="edge" onMouseDown={handleMouseDown}>

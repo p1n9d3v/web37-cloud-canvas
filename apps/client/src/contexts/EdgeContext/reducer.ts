@@ -9,7 +9,7 @@ export type EdgeAction =
     | { type: 'ADD_EDGE'; payload: Omit<Edge, 'bendingPoints'> }
     | { type: 'UPDATE_EDGE'; payload: Partial<Edge> & { id: string } }
     | { type: 'UPDATE_EDGES'; payload: Record<string, Edge> }
-    | { type: 'DELETE_EDGE'; payload: { id: string } }
+    | { type: 'REMOVE_EDGE'; payload: { id: string } }
     | {
           type: 'SPLIT_EDGE';
           payload: { id: string; point: Point; insertAfter: number };
@@ -67,7 +67,7 @@ export const edgeReducer = (
                 },
             };
         }
-        case 'DELETE_EDGE': {
+        case 'REMOVE_EDGE': {
             const { id } = action.payload;
             const { [id]: removedEdge, ...remainingEdges } = state.edges;
             return {

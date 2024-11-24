@@ -74,10 +74,14 @@ export default () => {
             payload: { id, point: newPoint, connectors },
         });
 
+        const connectedEdges = Object.values(edges).filter(
+            (edge) => edge.source.id === id || edge.target.id === id,
+        );
+
         const updatedEdges = updateNearestConnectorPair(
             { ...node, point: newPoint, connectors },
             nodes,
-            Object.values(edges),
+            connectedEdges,
         );
 
         updateEdges(updatedEdges);

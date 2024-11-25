@@ -104,7 +104,7 @@ export class VpcApi {
      *
      */
     async getVpcDetail(
-        params: GetVpcDetailRequest
+        params: GetVpcDetailRequest,
     ): Promise<GetVpcDetailResponse> {
         return await this.client.request({
             method: 'GET',

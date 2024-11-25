@@ -3,22 +3,21 @@ import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class PublicImportRepository {
-    constructor(private readonly prisma: PrismaService) {
-    }
+    constructor(private readonly prisma: PrismaService) {}
 
     create(userId: number, architectureId: number) {
         return this.prisma.publicArchitectureImport.create({
             data: {
                 userId,
-                publicArchitectureId: architectureId
-            }
+                publicArchitectureId: architectureId,
+            },
         });
     }
 
     architectureExists(architectureId: number) {
         return this.prisma.publicArchitecture
             .count({
-                where: { id: architectureId }
+                where: { id: architectureId },
             })
             .then(Boolean);
     }

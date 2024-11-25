@@ -7,7 +7,6 @@ import { PublicStarRepository } from './public-star.repository';
 @Module({
     imports: [PrismaModule],
     controllers: [PublicStarController],
-    providers: [PublicStarService, PublicStarRepository]
+    providers: [PublicStarService, PublicStarRepository],
 })
-export class PublicStarModule {
-}
+export class PublicStarModule {}

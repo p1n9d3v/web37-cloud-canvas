@@ -86,15 +86,17 @@ export const nodeReducer = (
         }
         case 'ADD_GROUP_TO_NODE': {
             const { id, groupId } = action.payload;
-            if (!state.nodes[id]) return state;
+            const node = state.nodes[id];
+            if (!node) return state;
 
+            const groupIds = new Set([...node.groupIds, groupId]);
             return {
                 ...state,
                 nodes: {
                     ...state.nodes,
                     [id]: {
                         ...state.nodes[id],
-                        groupIds: [...state.nodes[id].groupIds, groupId],
+                        groupIds: Array.from(groupIds),
                     },
                 },
             };

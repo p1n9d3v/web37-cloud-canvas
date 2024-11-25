@@ -12,6 +12,7 @@ const PropertiesBar = () => {
     return (
         <AppBar
             position="absolute"
+            className="graph-ignore-select"
             color="default"
             sx={{
                 top: 80,

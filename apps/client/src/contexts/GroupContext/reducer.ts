@@ -51,6 +51,8 @@ export const groupReducer = (
         }
         case 'ADD_NODE_TO_GROUP': {
             const { id, nodeId } = action.payload;
+            const group = state.groups[id];
+            if (!group) return state;
             return {
                 ...state,
                 groups: {
@@ -66,6 +68,8 @@ export const groupReducer = (
             const { id, nodeId } = action.payload;
             const group = state.groups[id];
             if (!group) return state;
+
+            console.log(group.nodeIds);
 
             if (group.nodeIds.length === 1) {
                 const { [id]: removedGroup, ...remainingGroups } = state.groups;

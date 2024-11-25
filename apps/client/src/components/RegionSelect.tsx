@@ -9,7 +9,6 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Popover from '@mui/material/Popover';
 import { useState } from 'react';
-import { useNCloudContext } from '@contexts/NCloudContext';
 
 const REGION_OPTIONS = [
     {
@@ -42,6 +41,7 @@ export default () => {
         changeRegion(value);
         setAnchorEl(null);
     };
+
     const open = Boolean(anchorEl);
     const id = open ? 'region' : undefined;
 
@@ -64,6 +64,7 @@ export default () => {
 
             <Popover
                 id={id}
+                className="graph-ignore-select"
                 open={open}
                 anchorEl={anchorEl}
                 onClose={handlePopoverClose}

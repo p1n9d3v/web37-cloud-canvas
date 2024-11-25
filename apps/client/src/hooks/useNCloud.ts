@@ -34,7 +34,7 @@ export default () => {
         }
     }, [selectedNodeId]);
 
-    const addCloud = (type: string) => {
+    const addResource = (type: string) => {
         if (!svgRef.current) return;
 
         const node = NcloudNodeFactory(type);
@@ -47,18 +47,17 @@ export default () => {
                 ...node.properties,
                 region,
             },
-            groupIds: [region],
+            groupIds: [],
             point: getInitPoint(svgRef.current!),
         });
 
-        if (isExistGroup(region)) {
-            addNodeToGroup(region, id);
-        } else {
-            addRegion(id, region);
+        if (!isExistGroup(region)) {
+            addRegion(region);
         }
+        addNodeToGroup(region, id);
     };
 
-    const addRegion = (id: string, region: string) => {
+    const addRegion = (region: string) => {
         const group = NcloudGroupFactory('region');
         addGroup({
             ...group,
@@ -66,24 +65,25 @@ export default () => {
             name: Regions[region].toUpperCase(),
             nodeIds: [],
         });
-        addNodeToGroup(region, id);
     };
 
     const changeRegion = (newRegion: Region) => {
-        setRegion(newRegion);
         if (selectedNodeId) {
-            if (isExistGroup(newRegion)) {
+            if (isExistGroup(region)) {
                 removeNodeFromGroup(region, selectedNodeId);
-                addNodeToGroup(newRegion, selectedNodeId);
-            } else {
-                removeNodeFromGroup(region, selectedNodeId);
-                addRegion(selectedNodeId, newRegion);
             }
+
+            if (!isExistGroup(newRegion)) {
+                addRegion(newRegion);
+            }
+
+            addNodeToGroup(newRegion, selectedNodeId);
             //INFO: 추후 Cloud와 그래프랑 분리 예정이라 따로 처리
             updateProperties(selectedNodeId, {
                 region: newRegion,
             });
         }
+        setRegion(newRegion);
     };
 
     const updateProperties = (id: string, properties: any) => {
@@ -96,7 +96,7 @@ export default () => {
 
     return {
         region,
-        addCloud,
+        addResource,
         addRegion,
         changeRegion,
     };

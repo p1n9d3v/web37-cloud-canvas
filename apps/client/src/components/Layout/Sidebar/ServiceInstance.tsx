@@ -25,10 +25,10 @@ export default ({
     desc,
     ...props
 }: { title: string; desc: string; type: string } & ListItemProps) => {
-    const { addCloud } = useNCloud();
+    const { addResource } = useNCloud();
 
     return (
-        <StyledServiceInstance {...props} onClick={() => addCloud(type)}>
+        <StyledServiceInstance {...props} onClick={() => addResource(type)}>
             <StyledServiceInstanceText primary={title} secondary={desc} />
         </StyledServiceInstance>
     );

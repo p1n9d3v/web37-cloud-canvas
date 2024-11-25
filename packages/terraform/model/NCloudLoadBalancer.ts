@@ -21,7 +21,7 @@ export class NCloudLoadBalancer implements LoadBalancer, NCloudModel {
         this.name = json.name || 'lb';
         this.networkType = json.networkType || 'PUBLIC';
         this.type = json.type || 'APPLICATION';
-        this.subnetNoList = json.subnetNoList || ['SUBNET_ID_PLACEHOLDER'];
+        this.subnetNoList = [`ncloud_subnet.${json.subnetName}.id`];
     }
 
     getProperties() {

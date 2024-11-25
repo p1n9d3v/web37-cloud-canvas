@@ -1,5 +1,5 @@
 export const isNcloudReference = (value: string): boolean => {
-    const ncloudRefPattern = /^ncloud_[a-zA-Z_]+\.[a-zA-Z_-]+\.[a-zA-Z_]+$/;
+    const ncloudRefPattern = /^ncloud_[a-zA-Z_]+\.[a-zA-Z0-9_-]+\.[a-zA-Z_]+$/;
     return ncloudRefPattern.test(value);
 };
 

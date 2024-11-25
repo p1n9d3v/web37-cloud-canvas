@@ -1,15 +1,15 @@
 import { IsNotEmpty, IsNumber, IsObject, IsString } from 'class-validator';
 
-export class CreatePrivateDto {
+export class CreatePrivateArchiectureDto {
     @IsString()
     @IsNotEmpty()
     title: string;
 
-    @IsNumber()
-    @IsNotEmpty()
-    authorId: number;
-
     @IsObject()
     @IsNotEmpty()
     architecture: Record<string, any>;
+
+    @IsNumber()
+    @IsNotEmpty()
+    cost: number;
 }

@@ -1,49 +1,205 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { UpdatePrivateDto } from './dto/update-private.dto';
-import { CreatePrivateDto } from './dto/create-private.dto';
-import { PrivateArchitectureRepository } from './private-architecture.repository';
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { FindArchitectureDto } from './dto/find-architecture.dto';
+import { FindVersionDto } from './dto/find-version.dto';
+import { FindVersionsDto } from './dto/find-versions.dto';
+import { ModifyArchitectureDto } from './dto/modify-architecture.dto';
+import { RemoveArchitectureDto } from './dto/remove-architecture.dto';
+import { RemoveVersionDto } from './dto/remove-version.dto';
+import { SaveArchitectureDto } from './dto/save-architecture.dto';
+import { SaveVersionDto } from './dto/save-version.dto';
 
 @Injectable()
 export class PrivateArchitectureService {
-    constructor(private readonly repository: PrivateArchitectureRepository) {}
+    constructor(private readonly prisma: PrismaService) {}
 
-    getPrivateArchitectures(userId: number) {
-        return this.repository.findAll(userId);
+    saveArchitecture({
+        title,
+        userId: authorId,
+        architecture,
+        cost,
+    }: SaveArchitectureDto) {
+        return this.prisma.privateArchitecture.create({
+            data: {
+                title,
+                authorId,
+                architecture,
+                cost,
+            },
+        });
     }
 
-    createPrivateArchitecture(
-        userId: number,
-        createPrivateDto: CreatePrivateDto,
-    ) {
-        return this.repository.create(userId, createPrivateDto);
-    }
-
-    async getPrivateArchitecture(id: number) {
-        const privateArchitecture = await this.repository.findById(id);
-
-        if (!privateArchitecture) {
-            throw new NotFoundException('Private architecture not found');
-        }
-
+    async findArchitecture({ id, userId: authorId }: FindArchitectureDto) {
+        const privateArchitecture =
+            await this.prisma.privateArchitecture.findUnique({
+                select: {
+                    title: true,
+                    architecture: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    cost: true,
+                },
+                where: {
+                    id,
+                    authorId,
+                },
+            });
+        if (!privateArchitecture) throw new ForbiddenException();
         return privateArchitecture;
     }
 
-    async updatePrivateArchitecture(
-        id: number,
-        updatePrivateDto: UpdatePrivateDto,
-    ) {
-        try {
-            return await this.repository.update(id, updatePrivateDto);
-        } catch (error) {
-            throw new NotFoundException('Private architecture not found');
-        }
+    async modifyArchitecture({
+        id,
+        userId: authorId,
+        title,
+        architecture,
+        cost,
+    }: ModifyArchitectureDto) {
+        const privateArchitecture =
+            await this.prisma.privateArchitecture.findUnique({
+                where: {
+                    id,
+                    authorId,
+                },
+            });
+        if (!privateArchitecture) throw new ForbiddenException();
+        return this.prisma.privateArchitecture.update({
+            where: {
+                id,
+                authorId,
+            },
+            data: {
+                title,
+                architecture,
+                cost,
+            },
+        });
     }
 
-    async deletePrivateArchitecture(id: number) {
-        try {
-            return await this.repository.delete(id);
-        } catch (error) {
-            throw new NotFoundException('Private architecture not found');
-        }
+    async removeArchitecture({ id, userId: authorId }: RemoveArchitectureDto) {
+        return await this.prisma.$transaction(async (tx) => {
+            const privateArchitecture = await tx.privateArchitecture.findUnique(
+                {
+                    where: {
+                        id,
+                        authorId,
+                    },
+                },
+            );
+            if (!privateArchitecture) throw new ForbiddenException();
+            await tx.version.deleteMany({
+                where: {
+                    privateArchitectureId: id,
+                },
+            });
+            return tx.privateArchitecture.delete({
+                where: {
+                    id,
+                    authorId,
+                },
+            });
+        });
+    }
+
+    async findVersions({ id, userId: authorId }: FindVersionsDto) {
+        const privateArchitecture =
+            await this.prisma.privateArchitecture.findUnique({
+                where: {
+                    id,
+                    authorId,
+                },
+            });
+        if (!privateArchitecture) throw new ForbiddenException();
+        return await this.prisma.version.findMany({
+            select: {
+                id: true,
+                title: true,
+                createdAt: true,
+            },
+            where: {
+                privateArchitectureId: id,
+            },
+        });
+    }
+
+    async saveVersion({
+        id,
+        userId: authorId,
+        title,
+        architecture,
+        cost,
+    }: SaveVersionDto) {
+        const privateArchitecture =
+            await this.prisma.privateArchitecture.findUnique({
+                select: {
+                    id: true,
+                },
+                where: {
+                    id,
+                    authorId,
+                },
+            });
+        if (!privateArchitecture) throw new ForbiddenException();
+        return this.prisma.version.create({
+            data: {
+                privateArchitectureId: privateArchitecture.id,
+                title,
+                architecture,
+                cost,
+            },
+        });
+    }
+
+    async removeVersion({ userId: authorId, id, versionId }: RemoveVersionDto) {
+        const privateArchitecture =
+            await this.prisma.privateArchitecture.findUnique({
+                select: {
+                    id: true,
+                },
+                where: {
+                    id,
+                    authorId,
+                },
+            });
+        if (!privateArchitecture) throw new ForbiddenException();
+        const privateArchitectureVersion = await this.prisma.version.findUnique(
+            {
+                where: {
+                    id: versionId,
+                },
+            },
+        );
+        if (!privateArchitectureVersion) throw new ForbiddenException();
+        return this.prisma.version.delete({
+            where: {
+                id: versionId,
+            },
+        });
+    }
+
+    async findVersion({ userId: authorId, id, versionId }: FindVersionDto) {
+        const privateArchitecture =
+            await this.prisma.privateArchitecture.findUnique({
+                select: {
+                    id: true,
+                },
+                where: {
+                    id,
+                    authorId,
+                },
+            });
+        if (!privateArchitecture) throw new ForbiddenException();
+        const privateArchitectureVersion = await this.prisma.version.findUnique(
+            {
+                select: {
+                    architecture: true,
+                },
+                where: {
+                    id: versionId,
+                },
+            },
+        );
+        if (!privateArchitectureVersion) throw new ForbiddenException();
+        return privateArchitectureVersion;
     }
 }

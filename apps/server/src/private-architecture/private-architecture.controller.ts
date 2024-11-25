@@ -10,54 +10,96 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import { PrivateArchitectureService } from './private-architecture.service';
-import { CreatePrivateDto } from './dto/create-private.dto';
-import { UpdatePrivateDto } from './dto/update-private.dto';
+import { CreatePrivateArchiectureDto } from './dto/create-private-architecture.dto';
+import { UpdatePrivateArchiectureDto } from './dto/update-private-architecture.dto';
+import { CreateVersionDto } from './dto/create-version.dto';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { User } from 'src/decorators/user.decorator';
 
-@Controller()
+@Controller('private-architectures')
 export class PrivateArchitectureController {
-    constructor(private readonly privateService: PrivateArchitectureService) {}
-
-    @Get()
-    @UseGuards(JwtAuthGuard)
-    getPrivateArchitectures(@User('id') userId: number) {
-        return this.privateService.getPrivateArchitectures(userId);
-    }
+    constructor(private readonly service: PrivateArchitectureService) {}
 
     @Post()
     @UseGuards(JwtAuthGuard)
-    createPrivateArchitecture(
+    postPrivateArchitecture(
         @User('id') userId: number,
-        @Body() createPrivateDto: CreatePrivateDto,
+        @Body() createPrivateArchitectureDto: CreatePrivateArchiectureDto,
     ) {
-        return this.privateService.createPrivateArchitecture(
+        return this.service.saveArchitecture({
             userId,
-            createPrivateDto,
-        );
+            ...createPrivateArchitectureDto,
+        });
     }
 
-    @Get(':id') // #TODO: userId로 조회하려는 데이터가 해당 유저의 것인지 확인
+    @Get(':id')
     @UseGuards(JwtAuthGuard)
-    getPrivateArchitecture(@Param('id', ParseIntPipe) id: number) {
-        return this.privateService.getPrivateArchitecture(id);
-    }
-
-    @Patch(':id') // #TODO: userId로 조회하려는 데이터가 해당 유저의 것인지 확인
-    @UseGuards(JwtAuthGuard)
-    updatePrivateArchitecture(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updatePrivateDto: UpdatePrivateDto,
+    getPrivateArchitecture(
+        @User('id') userId: number,
+        @Param('id') id: number,
     ) {
-        return this.privateService.updatePrivateArchitecture(
-            id,
-            updatePrivateDto,
-        );
+        return this.service.findArchitecture({ userId, id });
     }
 
-    @Delete(':id') // #TODO: userId로 조회하려는 데이터가 해당 유저의 것인지 확인
+    @Patch(':id')
     @UseGuards(JwtAuthGuard)
-    deletePrivateArchitecture(@Param('id', ParseIntPipe) id: number) {
-        return this.privateService.deletePrivateArchitecture(id);
+    patchPrivateArchitecture(
+        @User('id') userId: number,
+        @Param('id') id: number,
+        @Body() updatePrivateArchiectureDto: UpdatePrivateArchiectureDto,
+    ) {
+        return this.service.modifyArchitecture({
+            userId,
+            id,
+            ...updatePrivateArchiectureDto,
+        });
+    }
+
+    @Delete(':id')
+    @UseGuards(JwtAuthGuard)
+    deletePrivateArchitecture(
+        @User('id') userId: number,
+        @Param('id') id: number,
+    ) {
+        return this.service.removeArchitecture({ userId, id });
+    }
+
+    @Get(':id/versions')
+    @UseGuards(JwtAuthGuard)
+    getVersions(
+        @User('id') userId: number,
+        @Param('id', ParseIntPipe) id: number,
+    ) {
+        return this.service.findVersions({ userId, id });
+    }
+
+    @Post(':id/versions')
+    @UseGuards(JwtAuthGuard)
+    postVersion(
+        @User('id') userId: number,
+        @Param('id', ParseIntPipe) id: number,
+        @Body() createVersionDto: CreateVersionDto,
+    ) {
+        return this.service.saveVersion({ userId, id, ...createVersionDto });
+    }
+
+    @Delete(':id/versions/:versionId')
+    @UseGuards(JwtAuthGuard)
+    deleteVersion(
+        @User('id') userId: number,
+        @Param('id', ParseIntPipe) id: number,
+        @Param('versionId', ParseIntPipe) versionId: number,
+    ) {
+        return this.service.removeVersion({ userId, id, versionId });
+    }
+
+    @Get(':id/versions/:versionId')
+    @UseGuards(JwtAuthGuard)
+    getVersion(
+        @User('id') userId: number,
+        @Param('id') id: number,
+        @Param('versionid') versionId: number,
+    ) {
+        return this.service.findVersion({ userId, id, versionId });
     }
 }

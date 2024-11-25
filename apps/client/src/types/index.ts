@@ -59,3 +59,7 @@ export interface Connector {
     point: Point;
     connectorType?: string;
 }
+
+// NCloud
+
+export type Region = 'kr' | 'jp' | 'sg';

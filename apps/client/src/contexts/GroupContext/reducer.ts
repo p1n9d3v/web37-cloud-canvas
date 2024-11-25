@@ -10,7 +10,11 @@ export type GroupAction =
     | { type: 'REMOVE_GROUP'; payload: { id: string } }
     | {
           type: 'REMOVE_NODE_FROM_GROUP';
-          payload: { groupId: string; nodeId: string };
+          payload: { id: string; nodeId: string };
+      }
+    | {
+          type: 'ADD_NODE_TO_GROUP';
+          payload: { id: string; nodeId: string };
       };
 
 export const groupReducer = (
@@ -45,15 +49,28 @@ export const groupReducer = (
                 groups: remainingGroups,
             };
         }
-        case 'REMOVE_NODE_FROM_GROUP': {
-            const { groupId, nodeId } = action.payload;
+        case 'ADD_NODE_TO_GROUP': {
+            const { id, nodeId } = action.payload;
             return {
                 ...state,
                 groups: {
                     ...state.groups,
-                    [groupId]: {
-                        ...state.groups[groupId],
-                        nodeIds: state.groups[groupId].nodeIds.filter(
+                    [id]: {
+                        ...state.groups[id],
+                        nodeIds: [...state.groups[id].nodeIds, nodeId],
+                    },
+                },
+            };
+        }
+        case 'REMOVE_NODE_FROM_GROUP': {
+            const { id, nodeId } = action.payload;
+            return {
+                ...state,
+                groups: {
+                    ...state.groups,
+                    [id]: {
+                        ...state.groups[id],
+                        nodeIds: state.groups[id].nodeIds.filter(
                             (id) => id !== nodeId,
                         ),
                     },

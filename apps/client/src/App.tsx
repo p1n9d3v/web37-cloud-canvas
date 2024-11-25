@@ -63,14 +63,8 @@ function App() {
                 }}
             >
                 <Header />
-                <Box
-                    sx={{
-                        position: 'relative',
-                    }}
-                >
-                    <PropertiesBar />
-                    <CloudGraph />
-                </Box>
+                <CloudGraph />
+                <PropertiesBar />
             </Box>
         </Box>
     );

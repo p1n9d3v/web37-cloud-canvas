@@ -11,7 +11,7 @@ import { useGroupContext } from '@contexts/GroupContext';
 import { useNodeContext } from '@contexts/NodeContext';
 import { useSvgContext } from '@contexts/SvgContext';
 import useConnection from '@hooks/useConnection';
-import useGraphActions from '@hooks/useGraphActions';
+import useGraph from '@hooks/useGraph';
 import useSelection from '@hooks/useSelection';
 import { useEffect } from 'react';
 
@@ -45,7 +45,7 @@ export default () => {
         moveGroup,
         removeNode,
         removeEdge,
-    } = useGraphActions();
+    } = useGraph();
 
     const {
         connection,

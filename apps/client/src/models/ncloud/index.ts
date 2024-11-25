@@ -76,12 +76,16 @@ const MySQLDB: Node = {
 };
 
 const Region: Group = {
-    id: 'region1',
+    id: '',
     type: 'region',
-    name: 'KR-1',
+    name: '',
     nodeIds: [],
-    properties: {
-        regionCode: '',
-    },
+    properties: {},
     childGroupIds: [],
+};
+
+export const Regions: { [key: string]: string } = {
+    kr: 'korea',
+    jp: 'japan',
+    sg: 'singapore',
 };

@@ -1,4 +1,3 @@
-import { NcloudNodeFactory } from '@/src/models/ncloud';
 import { GROUP_TYPES } from '@constants';
 import { useDimensionContext } from '@contexts/DimensionContext';
 import { useEdgeContext } from '@contexts/EdgeContext';
@@ -16,7 +15,7 @@ import {
     alignNodePoint,
     getNodeBounds,
 } from '@helpers/node';
-import { Connection, Edge, Point } from '@types';
+import { Connection, Edge, Group, Node, Point } from '@types';
 import {
     alignPoint2d,
     alignPoint3d,
@@ -47,15 +46,11 @@ export default () => {
 
     //INFO: Node
 
-    const addNode = (type: string) => {
-        const node = NcloudNodeFactory(type);
-        //TODO: Focus 된 그룹에 추가하도록 수정해야함
+    const addNode = (node: Node) => {
         nodeDispatch({
             type: 'ADD_NODE',
             payload: {
                 ...node,
-                id: `node-${nanoid()}`,
-                point: { x: 0, y: 0 },
                 connectors: getConnectorPoints(node, dimension),
             },
         });
@@ -278,14 +273,36 @@ export default () => {
 
     //INFO: Group
 
-    const addGroup = (type: string, groupId: string, nodeId: string) => {};
+    const addGroup = (group: Group) => {
+        groupDispatch({
+            type: 'ADD_GROUP',
+            payload: group,
+        });
+    };
 
-    const updateGroup = (type: string, groupId: string, nodeId: string) => {};
+    const updateGroup = (id: string, payload: Partial<Group>) => {
+        groupDispatch({
+            type: 'UPDATE_GROUP',
+            payload: {
+                id,
+                ...payload,
+            },
+        });
+    };
+
+    const addNodeToGroup = (groupId: string, nodeId: string) => {
+        groupDispatch({
+            type: 'ADD_NODE_TO_GROUP',
+            payload: { id: groupId, nodeId },
+        });
+    };
+
+    const isExistGroup = (groupId: string) => Boolean(groups[groupId]);
 
     const removeNodeFromGroup = (groupId: string, nodeId: string) => {
         groupDispatch({
             type: 'REMOVE_NODE_FROM_GROUP',
-            payload: { groupId, nodeId },
+            payload: { id: groupId, nodeId },
         });
     };
 
@@ -323,10 +340,12 @@ export default () => {
             return getNodeBounds(nodes[nodeId], dimension);
         });
 
-        return computeBounds(
+        const bounds = computeBounds(
             [...childGroupsBounds, ...currentGroupNodeBounds],
             dimension,
         );
+
+        return bounds;
     };
 
     useEffect(() => {
@@ -344,7 +363,10 @@ export default () => {
         removeEdge,
         splitEdge,
         moveBendingPointer,
+        addGroup,
         updateGroup,
+        addNodeToGroup,
+        isExistGroup,
         removeNodeFromGroup,
         getGroupBounds,
         moveGroup,

@@ -10,7 +10,7 @@ import {
 export const processDependencies = (
     node: CloudCanvasNode,
 ): CloudCanvasNode[] => {
-    if (!['server', 'loadbalancer'].includes(node.type.toLowerCase()))
+    if (!['server', 'loadbalancer', 'mysql'].includes(node.type.toLowerCase()))
         return [];
 
     const dependencies: CloudCanvasNode[] = [];
@@ -20,7 +20,7 @@ export const processDependencies = (
         dependencies.push(createVpcDependency(properties));
     }
     if (properties.subnetName) {
-        dependencies.push(createSubnetDependency(properties));
+        dependencies.push(createSubnetDependency(properties, node.type));
     }
     if (properties.acgName) {
         dependencies.push(...createAcgDependencies(properties, node.name));

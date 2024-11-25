@@ -1,25 +1,12 @@
-import { NCloudProvider } from './model/NCloudProvider';
 import { TerraformConvertor } from './convertor/TerraformConvertor';
 import { sampleNodes } from './sample/sampleData';
 import { saveTerraformFiles } from './util/file';
 
-async function generateTerraformCode(): Promise<string> {
-    const provider = new NCloudProvider({
-        accessKey: 'var.access_key',
-        secretKey: 'var.secret_key',
-        region: 'var.region',
-        site: 'public',
-    });
-
-    const converter = new TerraformConvertor(provider);
-    converter.addResourceFromJson({ nodes: sampleNodes });
-
-    return converter.generate();
-}
-
 async function main() {
     try {
-        const terraformCode = await generateTerraformCode();
+        const converter = new TerraformConvertor();
+        converter.addResourceFromJson({ nodes: sampleNodes });
+        const terraformCode = converter.generate();
         await saveTerraformFiles(terraformCode, { log: true });
     } catch (error) {
         if (error instanceof Error) {
@@ -34,4 +21,6 @@ async function main() {
     }
 }
 
-main().catch(console.error);
+if (require.main === module) {
+    main().catch(console.error);
+}

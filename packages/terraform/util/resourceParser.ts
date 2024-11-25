@@ -93,6 +93,9 @@ export function parseToNCloudModel(resource: CloudCanvasNode): NCloudModel {
                 name: name || 'lb',
                 networkType: properties.networkType,
                 throughputType: properties.throughputType,
+                subnetName: properties.subnetName,
+                vpcName: properties.vpcName,
+                acgName: properties.acgName,
             });
 
         case 'launchconfiguration':

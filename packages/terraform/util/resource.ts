@@ -10,7 +10,8 @@ import {
 export const processDependencies = (
     node: CloudCanvasNode,
 ): CloudCanvasNode[] => {
-    if (node.type.toLowerCase() !== 'server') return [];
+    if (!['server', 'loadbalancer'].includes(node.type.toLowerCase()))
+        return [];
 
     const dependencies: CloudCanvasNode[] = [];
     const { properties } = node;
@@ -24,11 +25,14 @@ export const processDependencies = (
     if (properties.acgName) {
         dependencies.push(...createAcgDependencies(properties, node.name));
     }
-    if (properties.nicName) {
-        dependencies.push(createNicDependency(properties));
-    }
-    if (properties.loginKeyName) {
-        dependencies.push(createLoginKeyDependency(properties));
+
+    if (node.type.toLowerCase() === 'server') {
+        if (properties.nicName) {
+            dependencies.push(createNicDependency(properties));
+        }
+        if (properties.loginKeyName) {
+            dependencies.push(createLoginKeyDependency(properties));
+        }
     }
 
     return dependencies;

@@ -1,62 +1,44 @@
 import CloudGraph from '@/src/CloudGraph';
 import Header from '@components/Layout/Header';
 import Sidebar from '@components/Layout/Sidebar';
-import { useSelectionContext } from '@contexts/SelectionContext';
-import useGraphActions from '@hooks/useGraphActions';
-import {
-    AppBar,
-    InputLabel,
-    MenuItem,
-    Select,
-    SelectChangeEvent,
-    Toolbar,
-    Typography,
-} from '@mui/material';
+import RegionSelect from '@components/RegionSelect';
+import { Divider } from '@mui/material';
+import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import { useState } from 'react';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 
 const PropertiesBar = () => {
     return (
         <AppBar
             position="absolute"
             color="default"
-            sx={{ top: 0, left: 0, right: 0, padding: '20px 0' }}
+            sx={{
+                top: 10,
+                left: 10,
+                right: 0,
+                borderRadius: '20px',
+                maxWidth: 'min-content',
+            }}
         >
             <Toolbar
                 sx={{
                     display: 'flex',
                     gap: 2,
+                    paddingY: 2,
                 }}
             >
-                <Typography variant="h6">Properties</Typography>
+                {' '}
+                <Typography
+                    variant="h6"
+                    component="div"
+                    sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+                >
+                    Server
+                </Typography>
+                <Divider orientation="vertical" flexItem />
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    {/* {selectedCloud.properties && */}
-                    {/*     Object.entries(selectedCloud.properties).map( */}
-                    {/*         ([key, value]) => { */}
-                    {/*             return ( */}
-                    {/*                 <Select */}
-                    {/*                     id={key} */}
-                    {/*                     value={groups[key]} */}
-                    {/*                     displayEmpty */}
-                    {/*                     onChange={(e: SelectChangeEvent) => */}
-                    {/*                         handleChange(e, key) */}
-                    {/*                     } */}
-                    {/*                     sx={{ width: 200 }} */}
-                    {/*                 > */}
-                    {/*                     <MenuItem value="">None</MenuItem> */}
-                    {/*                     <MenuItem value={'seoul'}> */}
-                    {/*                         Seoul */}
-                    {/*                     </MenuItem> */}
-                    {/*                     <MenuItem value={'china'}> */}
-                    {/*                         China */}
-                    {/*                     </MenuItem> */}
-                    {/*                     <MenuItem value={'japan'}> */}
-                    {/*                         Japan */}
-                    {/*                     </MenuItem> */}
-                    {/*                 </Select> */}
-                    {/*             ); */}
-                    {/*         }, */}
-                    {/*     )} */}
+                    <RegionSelect value="" />
                 </Box>
             </Toolbar>
         </AppBar>

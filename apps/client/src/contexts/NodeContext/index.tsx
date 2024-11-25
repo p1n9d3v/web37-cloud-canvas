@@ -20,7 +20,7 @@ type NodeContextProps = {
 const NodeContext = createContext<NodeContextProps | undefined>(undefined);
 
 const initialState: NodeState = {
-    nodes: mockInitialState.nodes,
+    nodes: {},
 };
 
 export const NodeProvider = ({ children }: { children: ReactNode }) => {

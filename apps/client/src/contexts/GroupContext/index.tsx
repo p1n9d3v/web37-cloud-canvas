@@ -19,7 +19,7 @@ type GroupContextProps = {
 const GroupContext = createContext<GroupContextProps | undefined>(undefined);
 
 const initialState: GroupState = {
-    groups: mockInitialState.groups,
+    groups: {},
 };
 
 export const GroupProvider = ({ children }: PropsWithChildren) => {

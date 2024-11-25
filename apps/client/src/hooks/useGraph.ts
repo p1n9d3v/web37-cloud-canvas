@@ -1,4 +1,3 @@
-import { GROUP_TYPES } from '@constants';
 import { useDimensionContext } from '@contexts/DimensionContext';
 import { useEdgeContext } from '@contexts/EdgeContext';
 import { useGroupContext } from '@contexts/GroupContext';
@@ -83,20 +82,26 @@ export default () => {
         updateEdges(updatedEdges);
     };
 
+    const updateNode = (id: string, payload: Partial<Node>) => {
+        nodeDispatch({
+            type: 'UPDATE_NODE',
+            payload: {
+                id,
+                ...payload,
+            },
+        });
+    };
+
     const removeNode = (id: string) => {
         const node = nodes[id];
-        nodeDispatch({
-            type: 'REMOVE_NODE',
-            payload: { id },
-        });
 
-        const groupIds = GROUP_TYPES.map(
-            (type) => node.properties[type],
-        ).filter(Boolean);
-
+        const groupIds = node.groupIds;
         if (groupIds.length > 0) {
             groupIds.forEach((groupId) => {
-                removeNodeFromGroup(groupId, id);
+                groupDispatch({
+                    type: 'REMOVE_NODE_FROM_GROUP',
+                    payload: { id: groupId, nodeId: id },
+                });
             });
         }
 
@@ -107,6 +112,11 @@ export default () => {
         edgeDispatch({
             type: 'REMOVE_EDGES',
             payload: connectedEdgeIds,
+        });
+
+        nodeDispatch({
+            type: 'REMOVE_NODE',
+            payload: { id },
         });
     };
 
@@ -280,6 +290,20 @@ export default () => {
         });
     };
 
+    const removeGroup = (id: string) => {
+        groupDispatch({
+            type: 'REMOVE_GROUP',
+            payload: { id },
+        });
+        const group = groups[id];
+        group.nodeIds.forEach((nodeId) => {
+            nodeDispatch({
+                type: 'REMOVE_GROUP_FROM_NODE',
+                payload: { id: nodeId, groupId: id },
+            });
+        });
+    };
+
     const updateGroup = (id: string, payload: Partial<Group>) => {
         groupDispatch({
             type: 'UPDATE_GROUP',
@@ -295,6 +319,10 @@ export default () => {
             type: 'ADD_NODE_TO_GROUP',
             payload: { id: groupId, nodeId },
         });
+        nodeDispatch({
+            type: 'ADD_GROUP_TO_NODE',
+            payload: { id: nodeId, groupId },
+        });
     };
 
     const isExistGroup = (groupId: string) => Boolean(groups[groupId]);
@@ -303,6 +331,10 @@ export default () => {
         groupDispatch({
             type: 'REMOVE_NODE_FROM_GROUP',
             payload: { id: groupId, nodeId },
+        });
+        nodeDispatch({
+            type: 'REMOVE_GROUP_FROM_NODE',
+            payload: { id: nodeId, groupId },
         });
     };
 
@@ -324,10 +356,12 @@ export default () => {
     const getGroupBounds = (groupId: string) => {
         const group = groups[groupId];
 
-        const childGroupNodeIds = group.childGroupIds.map((groupId) => {
-            const childGroup = groups[groupId];
-            return childGroup.nodeIds;
-        });
+        const childGroupNodeIds = Object.keys(group.childGroups).map(
+            (groupId) => {
+                const childGroup = groups[groupId];
+                return childGroup.nodeIds;
+            },
+        );
 
         const childGroupsBounds = childGroupNodeIds.map((nodeIds) => {
             const childGroupNodeBounds = nodeIds.map((nodeId) =>
@@ -356,9 +390,14 @@ export default () => {
     }, [dimension]);
 
     return {
+        svgRef,
+        nodes,
+        groups,
+        dimension,
         addNode,
         moveNode,
         removeNode,
+        updateNode,
         addEdge,
         removeEdge,
         splitEdge,

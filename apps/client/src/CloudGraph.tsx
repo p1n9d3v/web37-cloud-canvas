@@ -59,13 +59,33 @@ export default () => {
 
     useEffect(() => {
         const handleContextMenu = (e: MouseEvent) => e.preventDefault();
-        const handleMouseDown = () => clearSelection();
+        const handleMouseDown = (e: MouseEvent) => {
+            if (svgRef.current && svgRef.current.contains(e.target as Node)) {
+                clearSelection();
+            }
+        };
+        const handleMouseMove = (e: MouseEvent) => {
+            // svg 밖으로 나가면 선택 해제
+            const bbox = svgRef.current?.getBoundingClientRect();
+
+            if (
+                bbox &&
+                (e.clientX < bbox.left ||
+                    e.clientX > bbox.right ||
+                    e.clientY < bbox.top ||
+                    e.clientY > bbox.bottom)
+            ) {
+                clearSelection();
+            }
+        };
         document.addEventListener('contextmenu', handleContextMenu);
         document.addEventListener('mousedown', handleMouseDown);
+        document.addEventListener('mousemove', handleMouseMove);
 
         return () => {
             document.removeEventListener('contextmenu', handleContextMenu);
-            svgRef.current?.removeEventListener('mousedown', handleMouseDown);
+            document.removeEventListener('mousedown', handleMouseDown);
+            document.removeEventListener('mousemove', handleMouseMove);
         };
     }, []);
 

@@ -14,8 +14,8 @@ const PropertiesBar = () => {
             position="absolute"
             color="default"
             sx={{
-                top: 10,
-                left: 10,
+                top: 80,
+                left: 320,
                 right: 0,
                 borderRadius: '20px',
                 maxWidth: 'min-content',
@@ -38,7 +38,7 @@ const PropertiesBar = () => {
                 </Typography>
                 <Divider orientation="vertical" flexItem />
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <RegionSelect value="" />
+                    <RegionSelect />
                 </Box>
             </Toolbar>
         </AppBar>

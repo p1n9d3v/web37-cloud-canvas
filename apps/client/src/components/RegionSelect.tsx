@@ -1,3 +1,6 @@
+import { Region } from '@types';
+import { Regions } from '@/src/models/ncloud';
+import useNCloud from '@hooks/useNCloud';
 import { ListItemIcon, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -6,10 +9,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Popover from '@mui/material/Popover';
 import { useState } from 'react';
-
-type Props = {
-    value: string;
-};
+import { useNCloudContext } from '@contexts/NCloudContext';
 
 const REGION_OPTIONS = [
     {
@@ -26,10 +26,10 @@ const REGION_OPTIONS = [
     },
 ];
 
-export default ({ value }: Props) => {
+export default () => {
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-    const [region, setRegion] = useState(value || 'NONE');
 
+    const { region, changeRegion } = useNCloud();
     const handlePopoverOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
@@ -38,10 +38,8 @@ export default ({ value }: Props) => {
         setAnchorEl(null);
     };
 
-    const handleListItemClick = (value: string) => {
-        setRegion(
-            REGION_OPTIONS.find((option) => option.value === value)!.label,
-        );
+    const handleListItemClick = (value: Region) => {
+        changeRegion(value);
         setAnchorEl(null);
     };
     const open = Boolean(anchorEl);
@@ -60,7 +58,7 @@ export default ({ value }: Props) => {
                     Region
                 </Typography>
                 <Button onClick={handlePopoverOpen} variant="text">
-                    {region}
+                    {Regions[region]}
                 </Button>
             </Box>
 
@@ -83,7 +81,9 @@ export default ({ value }: Props) => {
                         <ListItemButton
                             key={option.value}
                             selected={region === option.value}
-                            onClick={() => handleListItemClick(option.value)}
+                            onClick={() =>
+                                handleListItemClick(option.value as Region)
+                            }
                         >
                             <ListItemIcon>
                                 <img

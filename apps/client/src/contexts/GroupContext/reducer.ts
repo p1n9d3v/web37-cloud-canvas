@@ -64,15 +64,23 @@ export const groupReducer = (
         }
         case 'REMOVE_NODE_FROM_GROUP': {
             const { id, nodeId } = action.payload;
+            const group = state.groups[id];
+            if (!group) return state;
+
+            if (group.nodeIds.length === 1) {
+                const { [id]: removedGroup, ...remainingGroups } = state.groups;
+                return {
+                    ...state,
+                    groups: remainingGroups,
+                };
+            }
             return {
                 ...state,
                 groups: {
                     ...state.groups,
                     [id]: {
-                        ...state.groups[id],
-                        nodeIds: state.groups[id].nodeIds.filter(
-                            (id) => id !== nodeId,
-                        ),
+                        ...group,
+                        nodeIds: group.nodeIds.filter((id) => id !== nodeId),
                     },
                 },
             };

@@ -12,6 +12,11 @@ export type NodeAction =
     | {
           type: 'MOVE_NODE';
           payload: { id: string; point: Point; connectors: ConnectorMap };
+      }
+    | { type: 'ADD_GROUP_TO_NODE'; payload: { id: string; groupId: string } }
+    | {
+          type: 'REMOVE_GROUP_FROM_NODE';
+          payload: { id: string; groupId: string };
       };
 
 export const nodeReducer = (
@@ -79,6 +84,40 @@ export const nodeReducer = (
                 nodes: updatedNodes,
             };
         }
+        case 'ADD_GROUP_TO_NODE': {
+            const { id, groupId } = action.payload;
+            if (!state.nodes[id]) return state;
+
+            return {
+                ...state,
+                nodes: {
+                    ...state.nodes,
+                    [id]: {
+                        ...state.nodes[id],
+                        groupIds: [...state.nodes[id].groupIds, groupId],
+                    },
+                },
+            };
+        }
+
+        case 'REMOVE_GROUP_FROM_NODE': {
+            const { id, groupId } = action.payload;
+            if (!state.nodes[id]) return state;
+
+            return {
+                ...state,
+                nodes: {
+                    ...state.nodes,
+                    [id]: {
+                        ...state.nodes[id],
+                        groupIds: state.nodes[id].groupIds.filter(
+                            (id) => id !== groupId,
+                        ),
+                    },
+                },
+            };
+        }
+
         case 'UPDATE_NODES': {
             return {
                 ...state,

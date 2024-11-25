@@ -10,6 +10,6 @@ export const getInitPoint = (svg: SVGSVGElement) => {
 
     return {
         x: leftCenterSvg.x + 200,
-        y: svgRect.height / 2,
+        y: svgRect.height / 3,
     };
 };

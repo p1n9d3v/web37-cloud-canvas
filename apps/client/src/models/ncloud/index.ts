@@ -38,6 +38,7 @@ const Server: Node = {
         subnet: '',
         vpc: '',
     },
+    groupIds: [],
     connectors: {},
 };
 
@@ -55,6 +56,7 @@ const CloudFunction: Node = {
         subnet: '',
         vpc: '',
     },
+    groupIds: [],
     connectors: {},
 };
 
@@ -72,6 +74,7 @@ const MySQLDB: Node = {
         subnet: '',
         region: '',
     },
+    groupIds: [],
     connectors: {},
 };
 
@@ -81,7 +84,7 @@ const Region: Group = {
     name: '',
     nodeIds: [],
     properties: {},
-    childGroupIds: [],
+    childGroups: {},
 };
 
 export const Regions: { [key: string]: string } = {

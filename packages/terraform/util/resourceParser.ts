@@ -57,6 +57,7 @@ export function parseToNCloudModel(resource: CloudCanvasNode): NCloudModel {
                 portRange: properties.port_range,
                 description: properties.description,
                 acgName: properties.acgName,
+                name: name,
             });
 
         case 'loginkey':

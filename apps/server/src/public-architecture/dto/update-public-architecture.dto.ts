@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class UpdatePublicDto {
+export class UpdatePublicArchitectureDto {
     @IsString()
     @IsNotEmpty()
     title: string;

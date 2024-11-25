@@ -3,10 +3,11 @@ import {
     IsNotEmpty,
     IsNumber,
     IsObject,
+    IsOptional,
     IsString,
 } from 'class-validator';
 
-export class CreatePublicDto {
+export class CreatePublicArchitectureDto {
     @IsString()
     @IsNotEmpty()
     title: string;
@@ -19,8 +20,8 @@ export class CreatePublicDto {
     @IsNotEmpty()
     cost: number;
 
+    @IsOptional()
     @IsArray()
     @IsString({ each: true })
-    @IsNotEmpty({ each: true })
-    tag: string[];
+    tag?: string[];
 }

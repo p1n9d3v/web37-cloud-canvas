@@ -2,16 +2,20 @@ import CloudGraph from '@/src/CloudGraph';
 import Header from '@components/Layout/Header';
 import Sidebar from '@components/Layout/Sidebar';
 import RegionSelect from '@components/RegionSelect';
+import VpcSelect from '@components/VpcSelect';
 import { Divider } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import Stack from '@mui/material/Stack';
+import useNCloud from '@hooks/useNCloud';
 
 const PropertiesBar = () => {
+    const { openCloudAppbar } = useNCloud();
     return (
         <AppBar
-            position="absolute"
+            position="fixed"
             className="graph-ignore-select"
             color="default"
             sx={{
@@ -20,6 +24,7 @@ const PropertiesBar = () => {
                 right: 0,
                 borderRadius: '20px',
                 maxWidth: 'min-content',
+                display: openCloudAppbar ? 'block' : 'none',
             }}
         >
             <Toolbar
@@ -38,9 +43,14 @@ const PropertiesBar = () => {
                     Server
                 </Typography>
                 <Divider orientation="vertical" flexItem />
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Stack
+                    direction="row"
+                    divider={<Divider orientation="vertical" flexItem />}
+                    spacing={2}
+                >
                     <RegionSelect />
-                </Box>
+                    <VpcSelect />
+                </Stack>
             </Toolbar>
         </AppBar>
     );
@@ -48,26 +58,29 @@ const PropertiesBar = () => {
 
 function App() {
     return (
-        <Box
-            sx={{
-                height: '100%',
-                display: 'flex',
-            }}
-        >
-            <Sidebar />
+        <>
             <Box
                 sx={{
-                    width: '100%',
+                    height: '100%',
                     display: 'flex',
-                    flexDirection: 'column',
-                    overflow: 'hidden',
                 }}
             >
-                <Header />
-                <CloudGraph />
-                <PropertiesBar />
+                <Sidebar />
+                <Box
+                    sx={{
+                        width: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        overflow: 'hidden',
+                    }}
+                >
+                    <Header />
+                    <CloudGraph />
+                </Box>
             </Box>
-        </Box>
+
+            <PropertiesBar />
+        </>
     );
 }
 

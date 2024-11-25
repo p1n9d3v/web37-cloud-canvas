@@ -382,18 +382,17 @@ export default () => {
         return bounds;
     };
 
-    useEffect(() => {
-        if (dimension === prevDimension) return;
-
+    const updatedPointForDimension = () => {
         updateNodePointForDimension();
         updateEdgePointForDimension();
-    }, [dimension]);
+    };
 
     return {
+        prevDimension,
+        dimension,
         svgRef,
         nodes,
         groups,
-        dimension,
         addNode,
         moveNode,
         removeNode,
@@ -409,5 +408,6 @@ export default () => {
         removeNodeFromGroup,
         getGroupBounds,
         moveGroup,
+        updatedPointForDimension,
     };
 };

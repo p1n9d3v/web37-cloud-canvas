@@ -6,6 +6,7 @@ import Graph from '@components/Graph';
 import GridBackground from '@components/GridBackground';
 import Group from '@components/Group';
 import Node from '@components/Node';
+import { useDimensionContext } from '@contexts/DimensionContext';
 import { useEdgeContext } from '@contexts/EdgeContext';
 import { useGroupContext } from '@contexts/GroupContext';
 import { useNodeContext } from '@contexts/NodeContext';
@@ -16,7 +17,6 @@ import useSelection from '@hooks/useSelection';
 import { useEffect } from 'react';
 
 export default () => {
-    const { svgRef } = useSvgContext();
     const {
         state: { nodes },
     } = useNodeContext();
@@ -37,9 +37,13 @@ export default () => {
     } = useSelection();
 
     const {
+        svgRef,
+        prevDimension,
+        dimension,
         moveNode,
         addEdge,
         splitEdge,
+        updatedPointForDimension,
         moveBendingPointer,
         getGroupBounds,
         moveGroup,
@@ -72,6 +76,11 @@ export default () => {
         };
     }, []);
 
+    useEffect(() => {
+        if (dimension === prevDimension) return;
+
+        updatedPointForDimension();
+    }, [dimension]);
     return (
         <Graph>
             <GridBackground />

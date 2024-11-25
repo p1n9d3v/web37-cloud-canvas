@@ -9,11 +9,12 @@ import useGraph from '@hooks/useGraph';
 import useSelection from '@hooks/useSelection';
 import { Region } from '@types';
 import { nanoid } from 'nanoid';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default () => {
     const { selectedNodeId, selectedGroupId } = useSelection();
-    const { region, setRegion } = useNCloudContext();
+    const { region, vpc, vpcList, setRegion, setVPC } = useNCloudContext();
+    const [openCloudAppbar, setOpenCloudAppbar] = useState(false);
 
     const {
         nodes,
@@ -31,6 +32,9 @@ export default () => {
         if (selectedNodeId) {
             const node = nodes[selectedNodeId];
             setRegion(node.properties.region);
+            setOpenCloudAppbar(true);
+        } else {
+            setOpenCloudAppbar(false);
         }
     }, [selectedNodeId]);
 
@@ -86,16 +90,26 @@ export default () => {
         setRegion(newRegion);
     };
 
-    const updateProperties = (id: string, properties: any) => {
-        updateNode(id, { ...nodes[id].properties, ...properties });
-    };
-
     const addVPC = (id: string) => {};
 
+    const changeVPC = (vpc: string) => {};
     const addSubnet = (id: string) => {};
 
+    const updateProperties = (id: string, properties: any) => {
+        updateNode(id, {
+            properties: {
+                ...nodes[id].properties,
+                ...properties,
+            },
+        });
+    };
+
     return {
+        openCloudAppbar,
         region,
+        vpc,
+        vpcList,
+        changeVPC,
         addResource,
         addRegion,
         changeRegion,

@@ -72,10 +72,6 @@ export default () => {
                     vertical: 'bottom',
                     horizontal: 'left',
                 }}
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                }}
             >
                 <List component="nav">
                     {REGION_OPTIONS.map((option) => (

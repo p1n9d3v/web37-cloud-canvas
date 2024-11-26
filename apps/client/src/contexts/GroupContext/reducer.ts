@@ -9,11 +9,22 @@ export type GroupAction =
     | { type: 'UPDATE_GROUP'; payload: Partial<Group> & { id: string } }
     | { type: 'REMOVE_GROUP'; payload: { id: string } }
     | {
-          type: 'REMOVE_NODE_FROM_GROUP';
-          payload: { id: string; nodeId: string };
+          type: 'CHANGE_NODE_GROUP';
+          paylod: {
+              id: string;
+              nodeId: string;
+          };
+      }
+    | {
+          type: 'CHANGE_GROUP';
+          payload: { fromId: string; toId: string };
       }
     | {
           type: 'ADD_NODE_TO_GROUP';
+          payload: { id: string; nodeId: string };
+      }
+    | {
+          type: 'REMOVE_NODE_FROM_GROUP';
           payload: { id: string; nodeId: string };
       };
 
@@ -44,6 +55,19 @@ export const groupReducer = (
         case 'REMOVE_GROUP': {
             const { id } = action.payload;
             const { [id]: removedGroup, ...remainingGroups } = state.groups;
+            const findParentGroup = Object.values(remainingGroups).find(
+                (group) => group.childGroupIds.includes(id),
+            );
+            if (findParentGroup) {
+                const childGroupsIds = findParentGroup.childGroupIds.filter(
+                    (childGroupId) => childGroupId !== id,
+                );
+                remainingGroups[findParentGroup.id] = {
+                    ...findParentGroup,
+                    childGroupIds: childGroupsIds,
+                };
+            }
+
             return {
                 ...state,
                 groups: remainingGroups,
@@ -53,13 +77,14 @@ export const groupReducer = (
             const { id, nodeId } = action.payload;
             const group = state.groups[id];
             if (!group) return state;
+            const nodeIds = new Set([...group.nodeIds, nodeId]);
             return {
                 ...state,
                 groups: {
                     ...state.groups,
                     [id]: {
-                        ...state.groups[id],
-                        nodeIds: [...state.groups[id].nodeIds, nodeId],
+                        ...group,
+                        nodeIds: Array.from(nodeIds),
                     },
                 },
             };
@@ -71,18 +96,37 @@ export const groupReducer = (
 
             if (group.nodeIds.length === 1) {
                 const { [id]: removedGroup, ...remainingGroups } = state.groups;
+                const findParentGroups = Object.values(remainingGroups).filter(
+                    (group) => group.childGroupIds.includes(id),
+                );
+
+                const updatedGroups = findParentGroups.reduce((acc, cur) => {
+                    return {
+                        ...acc,
+                        [cur.id]: {
+                            ...cur,
+                            childGroupIds: cur.childGroupIds.filter(
+                                (childGroupId) => childGroupId !== id,
+                            ),
+                        },
+                    };
+                }, {});
+
                 return {
                     ...state,
-                    groups: remainingGroups,
+                    groups: updatedGroups,
                 };
             }
+
             return {
                 ...state,
                 groups: {
                     ...state.groups,
                     [id]: {
                         ...group,
-                        nodeIds: group.nodeIds.filter((id) => id !== nodeId),
+                        nodeIds: group.nodeIds.filter(
+                            (_nodeId) => _nodeId !== nodeId,
+                        ),
                     },
                 },
             };

@@ -93,18 +93,6 @@ export default () => {
     };
 
     const removeNode = (id: string) => {
-        const node = nodes[id];
-
-        const groupIds = node.groupIds;
-        if (groupIds.length > 0) {
-            groupIds.forEach((groupId) => {
-                groupDispatch({
-                    type: 'REMOVE_NODE_FROM_GROUP',
-                    payload: { id: groupId, nodeId: id },
-                });
-            });
-        }
-
         const connectedEdgeIds = Object.values(edges)
             .filter((edge) => edge.source.id === id || edge.target.id === id)
             .map((edge) => edge.id);
@@ -113,6 +101,19 @@ export default () => {
             type: 'REMOVE_EDGES',
             payload: connectedEdgeIds,
         });
+
+        const relatedGroupIds = Object.values(groups)
+            .filter((group) => group.nodeIds.includes(id))
+            .map((group) => group.id);
+        relatedGroupIds.forEach((groupId) =>
+            groupDispatch({
+                type: 'REMOVE_NODE_FROM_GROUP',
+                payload: {
+                    id: groupId,
+                    nodeId: id,
+                },
+            }),
+        );
 
         nodeDispatch({
             type: 'REMOVE_NODE',
@@ -290,20 +291,6 @@ export default () => {
         });
     };
 
-    const removeGroup = (id: string) => {
-        groupDispatch({
-            type: 'REMOVE_GROUP',
-            payload: { id },
-        });
-        const group = groups[id];
-        group.nodeIds.forEach((nodeId) => {
-            nodeDispatch({
-                type: 'REMOVE_GROUP_FROM_NODE',
-                payload: { id: nodeId, groupId: id },
-            });
-        });
-    };
-
     const updateGroup = (id: string, payload: Partial<Group>) => {
         groupDispatch({
             type: 'UPDATE_GROUP',
@@ -314,28 +301,12 @@ export default () => {
         });
     };
 
-    const addNodeToGroup = (groupId: string, nodeId: string) => {
-        groupDispatch({
-            type: 'ADD_NODE_TO_GROUP',
-            payload: { id: groupId, nodeId },
-        });
-        nodeDispatch({
-            type: 'ADD_GROUP_TO_NODE',
-            payload: { id: nodeId, groupId },
-        });
-    };
-
     const isExistGroup = (groupId: string) => Boolean(groups[groupId]);
 
-    const removeNodeFromGroup = (groupId: string, nodeId: string) => {
-        groupDispatch({
-            type: 'REMOVE_NODE_FROM_GROUP',
-            payload: { id: groupId, nodeId },
-        });
-        nodeDispatch({
-            type: 'REMOVE_GROUP_FROM_NODE',
-            payload: { id: nodeId, groupId },
-        });
+    const isExistSameTypeGroup = (groupId: string, type: string) => {
+        const group = groups[groupId];
+        if (!group) return false;
+        return group.type === type;
     };
 
     //INFO: Node만 움직여도 자동으로 그룹이 움직여짐, 따라서 Offset을 받아서 처리함
@@ -351,23 +322,29 @@ export default () => {
             };
             moveNode(nodeId, newPoint);
         });
+
+        group.childGroupIds.forEach((childGroupId) =>
+            moveGroup(childGroupId, offset),
+        );
+    };
+
+    const addNodeToGroup = (groupId: string, nodeId: string) => {
+        groupDispatch({
+            type: 'ADD_NODE_TO_GROUP',
+            payload: { groupId, nodeId },
+        });
     };
 
     const getGroupBounds = (groupId: string) => {
         const group = groups[groupId];
 
-        const childGroupNodeIds = Object.keys(group.childGroups).map(
-            (groupId) => {
-                const childGroup = groups[groupId];
-                return childGroup.nodeIds;
-            },
-        );
-
-        const childGroupsBounds = childGroupNodeIds.map((nodeIds) => {
-            const childGroupNodeBounds = nodeIds.map((nodeId) =>
+        const childGroupBounds = group.childGroupIds.map((childGropuId) => {
+            const childGroup = groups[childGropuId];
+            const nodeBounds = childGroup.nodeIds.map((nodeId) =>
                 getNodeBounds(nodes[nodeId], dimension),
             );
-            return computeBounds(childGroupNodeBounds, dimension);
+
+            return computeBounds(nodeBounds, dimension);
         });
 
         const currentGroupNodeBounds = group.nodeIds.map((nodeId) => {
@@ -375,7 +352,7 @@ export default () => {
         });
 
         const bounds = computeBounds(
-            [...childGroupsBounds, ...currentGroupNodeBounds],
+            [...childGroupBounds, ...currentGroupNodeBounds],
             dimension,
         );
 
@@ -405,7 +382,7 @@ export default () => {
         updateGroup,
         addNodeToGroup,
         isExistGroup,
-        removeNodeFromGroup,
+        isExistSameTypeGroup,
         getGroupBounds,
         moveGroup,
         updatedPointForDimension,

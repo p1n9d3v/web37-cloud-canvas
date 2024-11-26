@@ -19,7 +19,6 @@ export type Node = {
         '2d': Size;
         '3d': Size;
     };
-    groupIds: string[];
     properties: { [key: string]: any };
     connectors: { [key: string]: Point };
 };
@@ -44,7 +43,7 @@ export type Group = {
     name: string;
     nodeIds: string[];
     properties: { [key: string]: any };
-    childGroups: { [id: string]: string }; // id : type
+    childGroupIds: string[]; // id : type //vpc/subnet
 };
 
 export type Connection = {

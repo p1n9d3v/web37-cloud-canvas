@@ -1,4 +1,3 @@
-import { mockInitialState } from '@/src/mocks';
 import {
     NodeAction,
     nodeReducer,

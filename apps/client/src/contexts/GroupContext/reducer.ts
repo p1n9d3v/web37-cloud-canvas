@@ -26,6 +26,10 @@ export type GroupAction =
     | {
           type: 'REMOVE_NODE_FROM_GROUP';
           payload: { id: string; nodeId: string };
+      }
+    | {
+          type: 'ADD_CHILD_GROUP';
+          payload: { id: string; parentId: string; nodeId: string };
       };
 
 export const groupReducer = (
@@ -54,23 +58,31 @@ export const groupReducer = (
             };
         case 'REMOVE_GROUP': {
             const { id } = action.payload;
+            if (!state.groups[id]) return state;
+
             const { [id]: removedGroup, ...remainingGroups } = state.groups;
-            const findParentGroup = Object.values(remainingGroups).find(
+            const findParentGroups = Object.values(remainingGroups).filter(
                 (group) => group.childGroupIds.includes(id),
             );
-            if (findParentGroup) {
-                const childGroupsIds = findParentGroup.childGroupIds.filter(
-                    (childGroupId) => childGroupId !== id,
-                );
-                remainingGroups[findParentGroup.id] = {
-                    ...findParentGroup,
-                    childGroupIds: childGroupsIds,
+
+            const updatedParentGroups = findParentGroups.reduce((acc, cur) => {
+                return {
+                    ...acc,
+                    [cur.id]: {
+                        ...cur,
+                        childGroupIds: cur.childGroupIds.filter(
+                            (childGroupId) => childGroupId !== id,
+                        ),
+                    },
                 };
-            }
+            }, {});
 
             return {
                 ...state,
-                groups: remainingGroups,
+                groups: {
+                    ...remainingGroups,
+                    ...updatedParentGroups,
+                },
             };
         }
         case 'ADD_NODE_TO_GROUP': {
@@ -94,30 +106,6 @@ export const groupReducer = (
             const group = state.groups[id];
             if (!group) return state;
 
-            if (group.nodeIds.length === 1) {
-                const { [id]: removedGroup, ...remainingGroups } = state.groups;
-                const findParentGroups = Object.values(remainingGroups).filter(
-                    (group) => group.childGroupIds.includes(id),
-                );
-
-                const updatedGroups = findParentGroups.reduce((acc, cur) => {
-                    return {
-                        ...acc,
-                        [cur.id]: {
-                            ...cur,
-                            childGroupIds: cur.childGroupIds.filter(
-                                (childGroupId) => childGroupId !== id,
-                            ),
-                        },
-                    };
-                }, {});
-
-                return {
-                    ...state,
-                    groups: updatedGroups,
-                };
-            }
-
             return {
                 ...state,
                 groups: {
@@ -127,6 +115,30 @@ export const groupReducer = (
                         nodeIds: group.nodeIds.filter(
                             (_nodeId) => _nodeId !== nodeId,
                         ),
+                    },
+                },
+            };
+        }
+        case 'ADD_CHILD_GROUP': {
+            const { id, parentId, nodeId } = action.payload;
+            const group = state.groups[id];
+            const parentGroup = state.groups[parentId];
+            if (!parentGroup) return state;
+
+            return {
+                ...state,
+                groups: {
+                    ...state.groups,
+                    [parentId]: {
+                        ...parentGroup,
+                        childGroupIds: [...parentGroup.childGroupIds, id],
+                        nodeIds: parentGroup.nodeIds.filter(
+                            (_nodeId) => _nodeId !== nodeId,
+                        ),
+                    },
+                    [id]: {
+                        ...group,
+                        nodeIds: [...group.nodeIds, nodeId],
                     },
                 },
             };

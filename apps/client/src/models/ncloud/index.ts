@@ -18,6 +18,9 @@ export const NcloudGroupFactory = (type: string) => {
     switch (type) {
         case 'region':
             return Region;
+        case 'vpc':
+            return Vpc;
+
         default: {
             throw new Error(`Unknown type: ${type}`);
         }
@@ -38,7 +41,6 @@ const Server: Node = {
         subnet: '',
         vpc: '',
     },
-    groupIds: [],
     connectors: {},
 };
 
@@ -53,10 +55,9 @@ const CloudFunction: Node = {
     },
     properties: {
         region: '',
-        subnet: '',
         vpc: '',
+        subnet: '',
     },
-    groupIds: [],
     connectors: {},
 };
 
@@ -70,11 +71,10 @@ const MySQLDB: Node = {
         '3d': { width: 128, height: 137.5 },
     },
     properties: {
+        region: '',
         vpc: '',
         subnet: '',
-        region: '',
     },
-    groupIds: [],
     connectors: {},
 };
 
@@ -84,7 +84,16 @@ const Region: Group = {
     name: '',
     nodeIds: [],
     properties: {},
-    childGroups: {},
+    childGroupIds: [],
+};
+
+const Vpc: Group = {
+    id: '',
+    type: 'vpc',
+    name: '',
+    nodeIds: [],
+    properties: {},
+    childGroupIds: [],
 };
 
 export const Regions: { [key: string]: string } = {

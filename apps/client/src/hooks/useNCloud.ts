@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react';
 
 export default () => {
     const { selectedNodeId, selectedGroupId } = useSelection();
-    const { region, vpc, vpcList, setRegion, setVPC, setVPCList } =
+    const { region, vpc, vpcList, setRegion, setVpc, setVpcList } =
         useNCloudContext();
     const [openCloudAppbar, setOpenCloudAppbar] = useState(false);
 
@@ -25,6 +25,7 @@ export default () => {
         updateNode,
         addNode,
         addNodeToGroup,
+        addChildGroup,
         removeNodeFromGroup,
         isExistSameTypeGroup,
         addGroup,
@@ -35,6 +36,7 @@ export default () => {
         if (selectedNodeId) {
             const node = nodes[selectedNodeId];
             setRegion(node.properties.region);
+            setVpc(node.properties.vpc);
             setOpenCloudAppbar(true);
         } else {
             setOpenCloudAppbar(false);
@@ -73,6 +75,15 @@ export default () => {
         });
     };
 
+    const createVpc = (vpc: string, nodeId?: string) => {
+        addGroup({
+            ...NcloudGroupFactory('vpc'),
+            id: vpc,
+            name: vpc,
+            nodeIds: nodeId ? [nodeId] : [],
+        });
+    };
+
     const changeRegion = (newRegion: Region) => {
         if (selectedNodeId) {
             if (isExistGroup(newRegion)) {
@@ -81,7 +92,9 @@ export default () => {
                 createRegion(newRegion, selectedNodeId);
             }
             const properties = nodes[selectedNodeId].properties;
-            const relatedGroupIds = GROUP_TYPES.map((type) => properties[type]);
+            const relatedGroupIds = GROUP_TYPES.map(
+                (type) => properties[type],
+            ).filter(Boolean);
 
             relatedGroupIds.forEach((groupId) =>
                 removeNodeFromGroup(groupId, selectedNodeId),
@@ -104,9 +117,43 @@ export default () => {
 
     const updateVpc = (newVpc: string) => {
         if (selectedNodeId) {
+            if (isExistGroup(newVpc)) {
+                addNodeToGroup(newVpc, selectedNodeId);
+            } else {
+                createVpc(newVpc);
+            }
+
+            addChildGroup(newVpc, region, selectedNodeId);
+            const properties = nodes[selectedNodeId].properties;
+            const ignoreGroup = ['region'];
+            const relatedGroupIds = GROUP_TYPES.filter(
+                (type) => !ignoreGroup.includes(type),
+            )
+                .map((type) => properties[type])
+                .filter(Boolean);
+
+            relatedGroupIds.forEach((groupId) =>
+                removeNodeFromGroup(groupId, selectedNodeId),
+            );
+
+            const updatedProperties = GROUP_TYPES.reduce((acc, cur) => {
+                return {
+                    ...acc,
+                    [cur]: '',
+                };
+            }, {});
+
+            updateProperties(selectedNodeId, {
+                ...updatedProperties,
+                region,
+                vpc: newVpc,
+            });
         }
-        setVPC(vpc);
-        setVPCList((prev) => [...prev, newVpc]);
+        setVpc(newVpc);
+        setVpcList((prev) => ({
+            ...prev,
+            newVpc,
+        }));
     };
 
     const addSubnet = (id: string) => {};

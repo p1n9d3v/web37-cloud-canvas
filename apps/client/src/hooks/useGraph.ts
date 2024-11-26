@@ -101,17 +101,47 @@ export default () => {
             payload: connectedEdgeIds,
         });
 
-        const relatedGroupIds = Object.values(groups)
-            .filter((group) => group.nodeIds.includes(id))
-            .map((group) => group.id);
-        relatedGroupIds.forEach((groupId) =>
-            groupDispatch({
-                type: 'REMOVE_NODE_FROM_GROUP',
-                payload: {
-                    id: groupId,
-                    nodeId: id,
-                },
-            }),
+        const findRelatedGroupIdsByNodeId = (
+            groups: Record<string, Group>,
+            groupId: string,
+            nodeId: string,
+        ): Set<string> => {
+            const group = groups[groupId];
+            if (!group) return new Set();
+
+            const relatedGroups = new Set<string>();
+
+            if (group.nodeIds.includes(nodeId)) {
+                relatedGroups.add(groupId);
+            }
+
+            group.childGroupIds.forEach((childGroupId) => {
+                const childRelatedGroups = findRelatedGroupIdsByNodeId(
+                    groups,
+                    childGroupId,
+                    nodeId,
+                );
+                if (childRelatedGroups.size > 0) {
+                    relatedGroups.add(groupId);
+                    relatedGroups.add(childGroupId);
+                }
+            });
+
+            return relatedGroups;
+        };
+
+        const relatedGroupIds = Object.keys(groups).reduce((acc, groupId) => {
+            const relatedGroups = findRelatedGroupIdsByNodeId(
+                groups,
+                groupId,
+                id,
+            );
+            relatedGroups.forEach((id) => acc.add(id));
+            return acc;
+        }, new Set<string>());
+
+        Array.from(relatedGroupIds).forEach((groupId) =>
+            removeNodeFromGroup(groupId, id),
         );
 
         nodeDispatch({
@@ -290,6 +320,15 @@ export default () => {
         });
     };
 
+    const removeGroup = (groupId: string) => {
+        groupDispatch({
+            type: 'REMOVE_GROUP',
+            payload: {
+                id: groupId,
+            },
+        });
+    };
+
     const updateGroup = (id: string, payload: Partial<Group>) => {
         groupDispatch({
             type: 'UPDATE_GROUP',
@@ -327,6 +366,13 @@ export default () => {
         );
     };
 
+    const addChildGroup = (id: string, parentId: string, nodeId: string) => {
+        groupDispatch({
+            type: 'ADD_CHILD_GROUP',
+            payload: { id, parentId, nodeId },
+        });
+    };
+
     const addNodeToGroup = (groupId: string, nodeId: string) => {
         groupDispatch({
             type: 'ADD_NODE_TO_GROUP',
@@ -335,10 +381,22 @@ export default () => {
     };
 
     const removeNodeFromGroup = (groupId: string, nodeId: string) => {
-        groupDispatch({
-            type: 'REMOVE_NODE_FROM_GROUP',
-            payload: { id: groupId, nodeId },
-        });
+        const group = groups[groupId];
+        const allNodeIds = [
+            ...group.nodeIds,
+            ...group.childGroupIds.map(
+                (childGroupId) => groups[childGroupId].nodeIds,
+            ),
+        ];
+
+        if (allNodeIds.length === 1) {
+            removeGroup(groupId);
+        } else {
+            groupDispatch({
+                type: 'REMOVE_NODE_FROM_GROUP',
+                payload: { id: groupId, nodeId },
+            });
+        }
     };
 
     const getGroupBounds = (groupId: string) => {
@@ -385,6 +443,7 @@ export default () => {
         splitEdge,
         moveBendingPointer,
         addGroup,
+        addChildGroup,
         updateGroup,
         addNodeToGroup,
         isExistGroup,

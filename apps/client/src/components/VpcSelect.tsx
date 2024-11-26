@@ -1,24 +1,21 @@
-import { Region } from '@types';
-import SearchIcon from '@mui/icons-material/Search';
 import useNCloud from '@hooks/useNCloud';
-import IconButton from '@mui/material/IconButton';
-import Input from '@mui/material/Input';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import Typography from '@mui/material/Typography';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import SearchIcon from '@mui/icons-material/Search';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Input from '@mui/material/Input';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Popover from '@mui/material/Popover';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import Typography from '@mui/material/Typography';
 import { useState } from 'react';
-import { FormControl } from '@mui/material';
 
 export default () => {
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
-    const { vpc, vpcList, changeVPC } = useNCloud();
+    const { vpc, vpcList, updateVpc } = useNCloud();
     const handlePopoverOpen = (e: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(e.currentTarget);
     };
@@ -28,13 +25,16 @@ export default () => {
     };
 
     const handleListItemClick = (value: string) => {
-        changeVPC(value);
+        updateVpc(value);
         setAnchorEl(null);
     };
 
     const handleAddVPC = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const vpc = e.currentTarget.vpc.value;
+        if (vpc) {
+            updateVpc(vpc);
+        }
         setAnchorEl(null);
     };
 
@@ -51,15 +51,20 @@ export default () => {
                         fontWeight: 'bold',
                     }}
                 >
-                    Region
+                    VPC
                 </Typography>
-                <Button onClick={handlePopoverOpen} variant="text">
+                <Button
+                    onClick={handlePopoverOpen}
+                    variant="text"
+                    type="submit"
+                    disableRipple
+                >
                     {vpc || <AddCircleOutlineIcon />}
                 </Button>
             </Box>
 
             <Popover
-                id={id}
+                // id={id}
                 className="graph-ignore-select"
                 open={open}
                 anchorEl={anchorEl}
@@ -79,6 +84,7 @@ export default () => {
                         name="vpc"
                         fullWidth
                         placeholder="Search services"
+                        onKeyDown={(e) => e.stopPropagation()}
                         endAdornment={
                             <IconButton>
                                 <SearchIcon />
@@ -87,13 +93,13 @@ export default () => {
                     />
                 </form>
                 <List component="nav">
-                    {vpcList.map((v) => (
+                    {Object.entries(vpcList).map(([id, value]) => (
                         <ListItemButton
-                            key={vpc}
-                            selected={vpc === v}
-                            onClick={() => handleListItemClick(v as string)}
+                            key={id}
+                            selected={vpc === value}
+                            onClick={() => handleListItemClick(value as string)}
                         >
-                            <ListItemText primary={v} />
+                            <ListItemText primary={value} />
                         </ListItemButton>
                     ))}
                 </List>

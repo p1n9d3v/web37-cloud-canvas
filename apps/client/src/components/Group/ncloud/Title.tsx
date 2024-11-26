@@ -20,21 +20,28 @@ const convertToIsoMatrix = (x: number, y: number) => {
 export default ({ bounds, color, text }: Props) => {
     const { dimension } = useDimensionContext();
     const fontSize = 30;
-    const rectWidth = fontSize * (text?.length ?? 0);
+    const textLength = text ? (text.length > 7 ? 7 : text.length) : 0;
+    const rectWidth = fontSize * textLength;
     const rectHeight = 50;
-    const offset = dimension === '2d' ? 10 : rectWidth / 2 + 10;
     const rectY = 10;
+    const rectX = dimension === '2d' ? 10 : 90;
 
     const matrix = convertToIsoMatrix(bounds.x, bounds.y).toString();
-    const centerX = rectWidth / 2;
+    const centerX = rectWidth / 2 + rectX;
     const centerY = rectY + rectHeight / 2;
 
     const transform = dimension === '2d' ? '' : matrix;
+
+    const label = text
+        ? text.length > 7
+            ? `${text.slice(0, 6)}..`
+            : text
+        : '';
     return (
         <svg overflow="visible">
             <rect
                 transform={transform}
-                x={offset}
+                x={rectX}
                 y={rectY}
                 rx="12"
                 ry="12"
@@ -46,13 +53,13 @@ export default ({ bounds, color, text }: Props) => {
             <g fontWeight="bold" fontSize={fontSize} fill="#fff">
                 <text
                     transform={transform}
-                    x={centerX + offset}
+                    x={centerX}
                     y={centerY}
                     dominantBaseline="middle"
                     textAnchor="middle"
                     style={{ userSelect: 'none' }}
                 >
-                    <tspan>{text ?? ''}</tspan>
+                    <tspan>{label}</tspan>
                 </text>
             </g>
         </svg>

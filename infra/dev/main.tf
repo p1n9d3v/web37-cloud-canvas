@@ -32,7 +32,7 @@ module "vpc_subnet" {
       subnet_type = "PUBLIC"
       name       = "ccnat"
       usage_type = "NATGW"
-    }
+    },
   ]
 }
 
@@ -75,9 +75,22 @@ module "server" {
   private_servers = [
     {
       name = "cc-private-server"
+      description = "back"
       subnet_no = module.vpc_subnet.private_subnets[0].good2.id
       member_server_image_no = var.cc_member_server_image_no
-    }
+    },
+    {
+      name = "cc-private-server-2"
+      description = "monitor"
+      subnet_no = module.vpc_subnet.private_subnets[0].good2.id
+      member_server_image_no = var.cc_member_server_image_no
+    },
+    {
+      name = "cc-private-server-3"
+      description = "database"
+      subnet_no = module.vpc_subnet.private_subnets[0].good2.id
+      member_server_image_no = var.cc_member_server_image_no
+    },
   ]
   
 }

@@ -42,6 +42,9 @@ const Server: Node = {
         region: '',
         subnet: '',
         vpc: '',
+        acg: '',
+        server_image_product_code: '',
+        server_product_code: '',
     },
     connectors: {},
 };

@@ -25,10 +25,14 @@ const REGION_OPTIONS = [
     },
 ];
 
-export default () => {
+type Props = {
+    region: string;
+    onUpdateRegion: (region: Region) => void;
+};
+
+export default ({ region, onUpdateRegion }: Props) => {
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
-    const { region, updateRegion: changeRegion } = useNCloud();
     const handlePopoverOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
@@ -38,7 +42,7 @@ export default () => {
     };
 
     const handleListItemClick = (value: Region) => {
-        changeRegion(value);
+        onUpdateRegion(value);
         setAnchorEl(null);
     };
 

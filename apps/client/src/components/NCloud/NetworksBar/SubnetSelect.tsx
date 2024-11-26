@@ -12,10 +12,15 @@ import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
 
-export default () => {
+type Props = {
+    subnet: string;
+    subnetList: { [id: string]: string };
+    onUpdateSubnet: (subnet: string) => void;
+};
+
+export default ({ subnet, subnetList, onUpdateSubnet }: Props) => {
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
-    const { subnet, subnetList, updateSubnet } = useNCloud();
     const handlePopoverOpen = (e: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(e.currentTarget);
     };
@@ -25,7 +30,7 @@ export default () => {
     };
 
     const handleListItemClick = (value: string) => {
-        updateSubnet(value);
+        onUpdateSubnet(value);
         setAnchorEl(null);
     };
 
@@ -33,7 +38,7 @@ export default () => {
         e.preventDefault();
         const vpc = e.currentTarget.vpc.value;
         if (vpc) {
-            updateSubnet(vpc);
+            onUpdateSubnet(vpc);
         }
         setAnchorEl(null);
     };

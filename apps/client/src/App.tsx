@@ -10,6 +10,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import useNCloud from '@hooks/useNCloud';
+import SubnetSelect from '@components/SubnetSelect';
 
 const PropertiesBar = () => {
     const { openCloudAppbar } = useNCloud();
@@ -50,6 +51,7 @@ const PropertiesBar = () => {
                 >
                     <RegionSelect />
                     <VpcSelect />
+                    <SubnetSelect />
                 </Stack>
             </Toolbar>
         </AppBar>

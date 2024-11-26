@@ -1,3 +1,4 @@
+import { mockInitialState } from '../../../mocks';
 import {
     GroupAction,
     groupReducer,

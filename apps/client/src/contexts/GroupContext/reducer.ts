@@ -1,3 +1,4 @@
+import { findParentGroup } from '@helpers/group';
 import { Group } from '@types';
 
 export type GroupState = {
@@ -58,31 +59,45 @@ export const groupReducer = (
             };
         case 'REMOVE_GROUP': {
             const { id } = action.payload;
-            if (!state.groups[id]) return state;
+            const groupToDelete = state.groups[id];
+            if (!groupToDelete) return state;
 
-            const { [id]: removedGroup, ...remainingGroups } = state.groups;
-            const findParentGroups = Object.values(remainingGroups).filter(
-                (group) => group.childGroupIds.includes(id),
-            );
+            if (groupToDelete.childGroupIds.length > 0) {
+                return state;
+            }
 
-            const updatedParentGroups = findParentGroups.reduce((acc, cur) => {
-                return {
-                    ...acc,
-                    [cur.id]: {
-                        ...cur,
-                        childGroupIds: cur.childGroupIds.filter(
-                            (childGroupId) => childGroupId !== id,
+            const updatedGroups: { [id: string]: Group } = { ...state.groups };
+
+            const deleteGroupAndCleanUp = (
+                groups: { [id: string]: Group },
+                groupId: string,
+            ): void => {
+                delete groups[groupId];
+
+                const parentGroup = findParentGroup(groups, groupId);
+                if (parentGroup) {
+                    const updatedParentGroup: Group = {
+                        ...parentGroup,
+                        childGroupIds: parentGroup.childGroupIds.filter(
+                            (childId) => childId !== groupId,
                         ),
-                    },
-                };
-            }, {});
+                    };
+                    groups[parentGroup.id] = updatedParentGroup;
+
+                    if (
+                        updatedParentGroup.nodeIds.length === 0 &&
+                        updatedParentGroup.childGroupIds.length === 0
+                    ) {
+                        deleteGroupAndCleanUp(groups, parentGroup.id);
+                    }
+                }
+            };
+
+            deleteGroupAndCleanUp(updatedGroups, id);
 
             return {
                 ...state,
-                groups: {
-                    ...remainingGroups,
-                    ...updatedParentGroups,
-                },
+                groups: updatedGroups,
             };
         }
         case 'ADD_NODE_TO_GROUP': {
@@ -125,6 +140,7 @@ export const groupReducer = (
             const parentGroup = state.groups[parentId];
             if (!parentGroup) return state;
 
+            const nodeIds = new Set([...group.nodeIds, nodeId]);
             return {
                 ...state,
                 groups: {
@@ -138,7 +154,7 @@ export const groupReducer = (
                     },
                     [id]: {
                         ...group,
-                        nodeIds: [...group.nodeIds, nodeId],
+                        nodeIds: Array.from(nodeIds),
                     },
                 },
             };

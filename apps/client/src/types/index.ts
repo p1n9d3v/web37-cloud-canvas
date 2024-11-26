@@ -43,7 +43,8 @@ export type Group = {
     name: string;
     nodeIds: string[];
     properties: { [key: string]: any };
-    childGroupIds: string[]; // id : type //vpc/subnet
+    childGroupIds: string[];
+    // parentGroupId: string; 추후 추가 예정
 };
 
 export type Connection = {

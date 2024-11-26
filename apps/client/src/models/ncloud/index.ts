@@ -20,6 +20,8 @@ export const NcloudGroupFactory = (type: string) => {
             return Region;
         case 'vpc':
             return Vpc;
+        case 'subnet':
+            return Subnet;
 
         default: {
             throw new Error(`Unknown type: ${type}`);
@@ -90,6 +92,15 @@ const Region: Group = {
 const Vpc: Group = {
     id: '',
     type: 'vpc',
+    name: '',
+    nodeIds: [],
+    properties: {},
+    childGroupIds: [],
+};
+
+const Subnet: Group = {
+    id: '',
+    type: 'subnet',
     name: '',
     nodeIds: [],
     properties: {},

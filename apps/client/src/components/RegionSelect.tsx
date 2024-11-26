@@ -28,7 +28,7 @@ const REGION_OPTIONS = [
 export default () => {
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
-    const { region, changeRegion } = useNCloud();
+    const { region, updateRegion: changeRegion } = useNCloud();
     const handlePopoverOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };

@@ -87,7 +87,7 @@ const SubnetGroup: Group = {
     id: 'subnet1',
     type: 'subnet',
     name: 'Subnet-1',
-    nodeIds: [MySQLDBNode.id, ObjectStorageNode.id],
+    nodeIds: [ServerNode.id, MySQLDBNode.id, ObjectStorageNode.id],
     properties: {
         cidr: '',
     },
@@ -98,27 +98,32 @@ const VpcGroup: Group = {
     id: 'vpc1',
     type: 'vpc',
     name: 'VPC-1',
-    nodeIds: [CloudFunctionNode.id, ServerNode.id],
+    nodeIds: [CloudFunctionNode.id],
     properties: {
         cidr: '',
     },
-    childGroupIds: [],
+    childGroupIds: [SubnetGroup.id],
 };
 
 const RegionGroup: Group = {
     id: 'seoul',
     type: 'region',
-    name: 'KR-1',
-    nodeIds: [ServerNode2.id, MySQLDBNode.id],
+    name: 'region',
+    nodeIds: [],
     properties: {
         regionCode: 'KR-1',
     },
     childGroupIds: [VpcGroup.id],
 };
 
-const mockNodes = [ServerNode2, CloudFunctionNode, MySQLDBNode, ServerNode];
+const mockNodes = [
+    ServerNode,
+    CloudFunctionNode,
+    MySQLDBNode,
+    ObjectStorageNode,
+];
 
-const mockGroups = [RegionGroup, VpcGroup];
+const mockGroups = [RegionGroup, VpcGroup, SubnetGroup];
 
 mockGroups.forEach((group) => {
     // set properties for each group

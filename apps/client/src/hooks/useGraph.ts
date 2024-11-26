@@ -101,49 +101,13 @@ export default () => {
             payload: connectedEdgeIds,
         });
 
-        const findRelatedGroupIdsByNodeId = (
-            groups: Record<string, Group>,
-            groupId: string,
-            nodeId: string,
-        ): Set<string> => {
+        const groupId = Object.keys(groups).find((groupId) => {
             const group = groups[groupId];
-            if (!group) return new Set();
-
-            const relatedGroups = new Set<string>();
-
-            if (group.nodeIds.includes(nodeId)) {
-                relatedGroups.add(groupId);
-            }
-
-            group.childGroupIds.forEach((childGroupId) => {
-                const childRelatedGroups = findRelatedGroupIdsByNodeId(
-                    groups,
-                    childGroupId,
-                    nodeId,
-                );
-                if (childRelatedGroups.size > 0) {
-                    relatedGroups.add(groupId);
-                    relatedGroups.add(childGroupId);
-                }
-            });
-
-            return relatedGroups;
-        };
-
-        const relatedGroupIds = Object.keys(groups).reduce((acc, groupId) => {
-            const relatedGroups = findRelatedGroupIdsByNodeId(
-                groups,
-                groupId,
-                id,
-            );
-            relatedGroups.forEach((id) => acc.add(id));
-            return acc;
-        }, new Set<string>());
-
-        Array.from(relatedGroupIds).forEach((groupId) =>
-            removeNodeFromGroup(groupId, id),
-        );
-
+            return group.nodeIds.includes(id);
+        });
+        if (groupId) {
+            removeNodeFromGroup(groupId, id);
+        }
         nodeDispatch({
             type: 'REMOVE_NODE',
             payload: { id },
@@ -382,14 +346,8 @@ export default () => {
 
     const removeNodeFromGroup = (groupId: string, nodeId: string) => {
         const group = groups[groupId];
-        const allNodeIds = [
-            ...group.nodeIds,
-            ...group.childGroupIds.map(
-                (childGroupId) => groups[childGroupId].nodeIds,
-            ),
-        ];
 
-        if (allNodeIds.length === 1) {
+        if (group.nodeIds.length === 1 && group.childGroupIds.length === 0) {
             removeGroup(groupId);
         } else {
             groupDispatch({
@@ -402,25 +360,29 @@ export default () => {
     const getGroupBounds = (groupId: string) => {
         const group = groups[groupId];
 
-        const childGroupBounds = group.childGroupIds.map((childGropuId) => {
-            const childGroup = groups[childGropuId];
-            const nodeBounds = childGroup.nodeIds.map((nodeId) =>
+        const recursiveGroupBounds = (group: Group): any => {
+            if (group.childGroupIds.length === 0) {
+                const nodesBounds = group.nodeIds.map((nodeId) =>
+                    getNodeBounds(nodes[nodeId], dimension),
+                );
+
+                return computeBounds(nodesBounds, dimension);
+            }
+            const childGroupsBounds = group.childGroupIds.map((childGroupId) =>
+                recursiveGroupBounds(groups[childGroupId]),
+            );
+
+            const currentNodesBounds = group.nodeIds.map((nodeId) =>
                 getNodeBounds(nodes[nodeId], dimension),
             );
 
-            return computeBounds(nodeBounds, dimension);
-        });
+            return computeBounds(
+                [...currentNodesBounds, ...childGroupsBounds],
+                dimension,
+            );
+        };
 
-        const currentGroupNodeBounds = group.nodeIds.map((nodeId) => {
-            return getNodeBounds(nodes[nodeId], dimension);
-        });
-
-        const bounds = computeBounds(
-            [...childGroupBounds, ...currentGroupNodeBounds],
-            dimension,
-        );
-
-        return bounds;
+        return recursiveGroupBounds(group);
     };
 
     const updatedPointForDimension = () => {

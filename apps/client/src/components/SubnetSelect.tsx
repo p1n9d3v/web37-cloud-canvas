@@ -15,7 +15,7 @@ import { useState } from 'react';
 export default () => {
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
-    const { vpc, vpcList, updateVpc } = useNCloud();
+    const { subnet, subnetList, updateSubnet } = useNCloud();
     const handlePopoverOpen = (e: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(e.currentTarget);
     };
@@ -25,7 +25,7 @@ export default () => {
     };
 
     const handleListItemClick = (value: string) => {
-        updateVpc(value);
+        updateSubnet(value);
         setAnchorEl(null);
     };
 
@@ -33,7 +33,7 @@ export default () => {
         e.preventDefault();
         const vpc = e.currentTarget.vpc.value;
         if (vpc) {
-            updateVpc(vpc);
+            updateSubnet(vpc);
         }
         setAnchorEl(null);
     };
@@ -51,7 +51,7 @@ export default () => {
                         fontWeight: 'bold',
                     }}
                 >
-                    VPC
+                    Subnet
                 </Typography>
                 <Button
                     onClick={handlePopoverOpen}
@@ -59,7 +59,7 @@ export default () => {
                     type="submit"
                     disableRipple
                 >
-                    {vpc || <AddCircleOutlineIcon />}
+                    {subnet || <AddCircleOutlineIcon />}
                 </Button>
             </Box>
 
@@ -93,10 +93,10 @@ export default () => {
                     />
                 </form>
                 <List component="nav">
-                    {Object.entries(vpcList).map(([id, value]) => (
+                    {Object.entries(subnetList).map(([id, value]) => (
                         <ListItemButton
                             key={id}
-                            selected={vpc === value}
+                            selected={subnet === value}
                             onClick={() => handleListItemClick(value as string)}
                         >
                             <ListItemText primary={value} />

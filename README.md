@@ -43,9 +43,11 @@ Cloud-Canvas는 이러한 문제점을 해결하기 위한 GUI 기반 인프라 
 ## 📌 아키텍쳐
 
 ### 전반적인 인프라
+
 ![image](https://github.com/user-attachments/assets/5901b688-0d3d-4698-ad22-a4d4bb7aa8fd)
 
 ### CI/CD
+
 <img width="1024" alt="cicd" src="https://github.com/user-attachments/assets/286d7d2d-bb6a-4315-bcff-4a6ea7569077">
 
 # 팀

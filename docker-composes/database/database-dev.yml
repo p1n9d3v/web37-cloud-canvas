@@ -1,0 +1,74 @@
+services:
+    redis:
+        image: redis:alpine
+        container_name: redis
+        ports:
+            - '6379:6379'
+        healthcheck:
+            test: ['CMD', 'redis-cli', 'ping']
+            interval: 30s
+            retries: 3
+            start_period: 20s
+            timeout: 5s
+        logging:
+            driver: 'fluentd'
+            options:
+                fluentd-address: 'localhost:24224'
+                fluentd-async-connect: 'true'
+                tag: 'redis'
+        networks:
+            - cloud-canvas-network
+
+    mysql:
+        image: mysql:8.0
+        container_name: mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: rootpassword
+            MYSQL_DATABASE: cloud_canvas
+            MYSQL_USER: cloud_canvas_user
+            MYSQL_PASSWORD: password
+        ports:
+            - '3306:3306'
+        volumes:
+            - ../../config/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+            - ../../config/mysql/log.cnf:/etc/mysql/conf.d/log.cnf:ro
+        healthcheck:
+            test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 20s
+        command:
+            - sh
+            - -c
+            - |
+                mkdir -p /var/log/mysql && \
+                touch /var/log/mysql/general.log && \
+                tail -f /var/log/mysql/general.log & \
+                exec docker-entrypoint.sh mysqld
+        logging:
+            driver: 'fluentd'
+            options:
+                fluentd-address: 'localhost:24224'
+                fluentd-async-connect: 'true'
+                tag: 'mysql'
+        networks:
+            - cloud-canvas-network
+        restart: unless-stopped
+
+    fluentd:
+        build: ./logging/fluentd/
+        container_name: fluentd
+        volumes:
+            - ./logging/fluentd/conf/fluent.conf:/fluentd/etc/fluent.conf
+        ports:
+            - '24224:24224'
+            - '24224:24224/udp'
+        healthcheck:
+            test: ['CMD', 'curl', '-f', 'http://localhost:24224/api/health']
+            interval: 30s
+            retries: 3
+            start_period: 10s
+            timeout: 10s
+        networks:
+            - cloud-canvas-network

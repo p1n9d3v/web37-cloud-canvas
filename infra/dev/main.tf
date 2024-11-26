@@ -76,7 +76,7 @@ module "server" {
     {
       name = "cc-private-server"
       subnet_no = module.vpc_subnet.private_subnets[0].good2.id
-      server_image_product_code = "SW.VSVR.OS.LNX64.ROCKY.0808.B050"
+      member_server_image_no = var.cc_member_server_image_no
     }
   ]
   

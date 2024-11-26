@@ -13,7 +13,7 @@ services:
         logging:
             driver: 'fluentd'
             options:
-                fluentd-address: 'localhost:24224'
+                fluentd-address: '${FLUENTD_HOST}:24224'
                 fluentd-async-connect: 'true'
                 tag: 'redis'
         networks:
@@ -49,26 +49,9 @@ services:
         logging:
             driver: 'fluentd'
             options:
-                fluentd-address: 'localhost:24224'
+                fluentd-address: '${FLUENTD_HOST}:24224'
                 fluentd-async-connect: 'true'
                 tag: 'mysql'
         networks:
             - cloud-canvas-network
         restart: unless-stopped
-
-    fluentd:
-        build: ./logging/fluentd/
-        container_name: fluentd
-        volumes:
-            - ./logging/fluentd/conf/fluent.conf:/fluentd/etc/fluent.conf
-        ports:
-            - '24224:24224'
-            - '24224:24224/udp'
-        healthcheck:
-            test: ['CMD', 'curl', '-f', 'http://localhost:24224/api/health']
-            interval: 30s
-            retries: 3
-            start_period: 10s
-            timeout: 10s
-        networks:
-            - cloud-canvas-network

@@ -4,6 +4,8 @@ services:
         container_name: back
         environment:
             DATABASE_URL: ${DATABASE_URL}
+            REDIS_HOST: ${REDIS_HOST}
+            REDIS_PORT: ${REDIS_PORT}
         ports:
             - '3000:3000'
         entrypoint: sh -c "npx prisma generate && npx migrate reset --force && npx prisma migrate deploy && npx prisma db seed && node ./dist/src/main.js"

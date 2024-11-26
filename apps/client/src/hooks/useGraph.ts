@@ -24,7 +24,6 @@ import {
     getSvgPoint,
 } from '@utils';
 import { nanoid } from 'nanoid';
-import { useEffect } from 'react';
 
 export default () => {
     const {
@@ -331,7 +330,14 @@ export default () => {
     const addNodeToGroup = (groupId: string, nodeId: string) => {
         groupDispatch({
             type: 'ADD_NODE_TO_GROUP',
-            payload: { groupId, nodeId },
+            payload: { id: groupId, nodeId },
+        });
+    };
+
+    const removeNodeFromGroup = (groupId: string, nodeId: string) => {
+        groupDispatch({
+            type: 'REMOVE_NODE_FROM_GROUP',
+            payload: { id: groupId, nodeId },
         });
     };
 
@@ -385,6 +391,7 @@ export default () => {
         isExistSameTypeGroup,
         getGroupBounds,
         moveGroup,
+        removeNodeFromGroup,
         updatedPointForDimension,
     };
 };

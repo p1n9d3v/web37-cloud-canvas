@@ -3,6 +3,7 @@ import {
     NcloudNodeFactory,
     Regions,
 } from '@/src/models/ncloud';
+import { GROUP_TYPES } from '@constants';
 import { useNCloudContext } from '@contexts/NCloudContext';
 import { getInitPoint } from '@helpers/cloud';
 import useGraph from '@hooks/useGraph';
@@ -13,7 +14,8 @@ import { useEffect, useState } from 'react';
 
 export default () => {
     const { selectedNodeId, selectedGroupId } = useSelection();
-    const { region, vpc, vpcList, setRegion, setVPC } = useNCloudContext();
+    const { region, vpc, vpcList, setRegion, setVPC, setVPCList } =
+        useNCloudContext();
     const [openCloudAppbar, setOpenCloudAppbar] = useState(false);
 
     const {
@@ -21,11 +23,12 @@ export default () => {
         groups,
         svgRef,
         updateNode,
-        removeNodeFromGroup,
         addNode,
+        addNodeToGroup,
+        removeNodeFromGroup,
+        isExistSameTypeGroup,
         addGroup,
         isExistGroup,
-        addNodeToGroup,
     } = useGraph();
 
     useEffect(() => {
@@ -51,50 +54,64 @@ export default () => {
                 ...node.properties,
                 region,
             },
-            groupIds: [],
             point: getInitPoint(svgRef.current!),
         });
 
         if (!isExistGroup(region)) {
-            addRegion(region);
+            createRegion(region, id);
+        } else {
+            addNodeToGroup(region, id);
         }
-        addNodeToGroup(region, id);
     };
 
-    const addRegion = (region: string) => {
-        const group = NcloudGroupFactory('region');
+    const createRegion = (region: string, nodeId?: string) => {
         addGroup({
-            ...group,
+            ...NcloudGroupFactory('region'),
             id: region,
             name: Regions[region].toUpperCase(),
-            nodeIds: [],
+            nodeIds: nodeId ? [nodeId] : [],
         });
     };
 
     const changeRegion = (newRegion: Region) => {
         if (selectedNodeId) {
-            if (isExistGroup(region)) {
-                removeNodeFromGroup(region, selectedNodeId);
+            if (isExistGroup(newRegion)) {
+                addNodeToGroup(newRegion, selectedNodeId);
+            } else {
+                createRegion(newRegion, selectedNodeId);
             }
+            const properties = nodes[selectedNodeId].properties;
+            const relatedGroupIds = GROUP_TYPES.map((type) => properties[type]);
 
-            if (!isExistGroup(newRegion)) {
-                addRegion(newRegion);
-            }
+            relatedGroupIds.forEach((groupId) =>
+                removeNodeFromGroup(groupId, selectedNodeId),
+            );
 
-            addNodeToGroup(newRegion, selectedNodeId);
-            //INFO: 추후 Cloud와 그래프랑 분리 예정이라 따로 처리
+            const updatedProperties = GROUP_TYPES.reduce((acc, cur) => {
+                return {
+                    ...acc,
+                    [cur]: '',
+                };
+            }, {});
+
             updateProperties(selectedNodeId, {
+                ...updatedProperties,
                 region: newRegion,
             });
         }
         setRegion(newRegion);
     };
 
-    const addVPC = (id: string) => {};
+    const updateVpc = (newVpc: string) => {
+        if (selectedNodeId) {
+        }
+        setVPC(vpc);
+        setVPCList((prev) => [...prev, newVpc]);
+    };
 
-    const changeVPC = (vpc: string) => {};
     const addSubnet = (id: string) => {};
 
+    const createGroup = () => {};
     const updateProperties = (id: string, properties: any) => {
         updateNode(id, {
             properties: {
@@ -109,9 +126,9 @@ export default () => {
         region,
         vpc,
         vpcList,
-        changeVPC,
+        updateVpc,
         addResource,
-        addRegion,
+        addRegion: createRegion,
         changeRegion,
     };
 };

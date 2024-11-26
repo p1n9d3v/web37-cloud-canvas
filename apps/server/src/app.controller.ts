@@ -1,4 +1,9 @@
-import { Controller, Get, HttpException, NotFoundException } from '@nestjs/common';
+import {
+    Controller,
+    Get,
+    HttpException,
+    NotFoundException,
+} from '@nestjs/common';
 import { AppService } from './app.service';
 
 class CustomError extends Error {}
@@ -9,10 +14,8 @@ export class AppController {
 
     @Get()
     getHello(): string {
-        try{
+        try {
             return this.appService.getHello();
-        }
-        catch(error){
-        }
+        } catch (error) {}
     }
 }

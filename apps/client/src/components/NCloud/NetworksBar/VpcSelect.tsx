@@ -121,14 +121,16 @@ export default ({
                                     title="Subnet을 먼저 삭제해주세요"
                                     disableHoverListener={!disabledRemove}
                                 >
-                                    <IconButton
-                                        edge="end"
-                                        aria-label="delete"
-                                        disabled={disabledRemove}
-                                        onClick={() => onRemoveVpc(id)}
-                                    >
-                                        <DeleteIcon />
-                                    </IconButton>
+                                    <span>
+                                        <IconButton
+                                            edge="end"
+                                            aria-label="delete"
+                                            disabled={disabledRemove}
+                                            onClick={() => onRemoveVpc(id)}
+                                        >
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </span>
                                 </Tooltip>
                             }
                             style={{

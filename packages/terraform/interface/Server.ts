@@ -4,6 +4,6 @@ export interface Server {
     subnetNo: string;
     serverImageNumber: string;
     serverSpecCode: string;
-    loginKeyName: string;
-    networkInterfaceNo: string;
+    loginKeyName?: string;
+    networkInterfaceNo?: string;
 }

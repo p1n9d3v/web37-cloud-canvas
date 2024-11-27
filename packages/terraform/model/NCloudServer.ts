@@ -8,8 +8,8 @@ export class NCloudServer implements Server, NCloudModel {
     subnetNo: string;
     serverImageNumber: string;
     serverSpecCode: string;
-    loginKeyName: string;
-    networkInterfaceNo: string;
+    loginKeyName?: string;
+    networkInterfaceNo?: string;
     serviceType: string;
     priority: ResourcePriority;
 
@@ -21,21 +21,32 @@ export class NCloudServer implements Server, NCloudModel {
         this.subnetNo = `ncloud_subnet.${json.subnetName}.id`;
         this.serverImageNumber = json.serverImageNumber;
         this.serverSpecCode = json.serverSpecCode;
-        this.loginKeyName = `ncloud_login_key.${json.loginKeyName}.key_name`;
-        this.networkInterfaceNo = `ncloud_network_interface.${json.nicName}.id`;
+        if (json.loginKeyName) {
+            this.loginKeyName = `ncloud_login_key.${json.loginKeyName}.key_name`;
+        }
+        if (json.nicName) {
+            this.networkInterfaceNo = `ncloud_network_interface.${json.nicName}.id`;
+        }
     }
 
     getProperties() {
-        return {
+        const properties: { [key: string]: any } = {
             subnet_no: this.subnetNo,
             name: this.name,
             server_image_number: this.serverImageNumber,
             server_spec_code: this.serverSpecCode,
-            login_key_name: this.loginKeyName,
-            network_interface: {
+        };
+
+        if (this.loginKeyName) {
+            properties.login_key_name = this.loginKeyName;
+        }
+        if (this.networkInterfaceNo) {
+            properties.network_interface = {
                 network_interface_no: this.networkInterfaceNo,
                 order: 0,
-            },
-        };
+            };
+        }
+
+        return properties;
     }
 }

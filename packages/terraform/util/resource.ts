@@ -8,29 +8,28 @@ import {
 } from './dependency';
 
 export const processDependencies = (
-    node: CloudCanvasNode,
-): CloudCanvasNode[] => {
+    node: any,
+): any[] => {
     if (!['server', 'loadbalancer', 'mysql'].includes(node.type.toLowerCase()))
         return [];
 
     const dependencies: CloudCanvasNode[] = [];
     const { properties } = node;
-
-    if (properties.vpcName) {
+    if (properties.vpc) {
         dependencies.push(createVpcDependency(properties));
     }
-    if (properties.subnetName) {
+    if (properties.subnet) {
         dependencies.push(createSubnetDependency(properties, node.type));
     }
-    if (properties.acgName) {
+    if (properties.acg) {
         dependencies.push(...createAcgDependencies(properties, node.name));
     }
 
     if (node.type.toLowerCase() === 'server') {
-        if (properties.nicName) {
+        if (properties.nic) {
             dependencies.push(createNicDependency(properties));
         }
-        if (properties.loginKeyName) {
+        if (properties.loginKey) {
             dependencies.push(createLoginKeyDependency(properties));
         }
     }
@@ -38,7 +37,7 @@ export const processDependencies = (
     return dependencies;
 };
 
-export const processNodes = (nodes: CloudCanvasNode[]): CloudCanvasNode[] =>
+export const processNodes = (nodes: any[]): any[] =>
     nodes.reduce(
         (acc: CloudCanvasNode[], node) => [
             ...acc,

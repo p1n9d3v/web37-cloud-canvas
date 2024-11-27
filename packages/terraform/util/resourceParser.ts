@@ -13,7 +13,7 @@ import { NCloudLoadBalancer } from '../model/NCloudLoadBalancer';
 import { NCloudLaunchConfiguration } from '../model/NCloudLaunchConfiguration';
 import { NCloudMySQL } from '../model/NCloudMySQL';
 
-export function parseToNCloudModel(resource: CloudCanvasNode): NCloudModel {
+export function parseToNCloudModel(resource: any): NCloudModel {
     const { type, name, properties } = resource;
 
     switch (type.toLowerCase()) {
@@ -75,11 +75,11 @@ export function parseToNCloudModel(resource: CloudCanvasNode): NCloudModel {
         case 'server':
             return new NCloudServer({
                 name: name || 'server',
-                serverImageProductCode: properties.server_image_product_code,
-                serverProductCode: properties.server_product_code,
-                subnetName: properties.subnetName,
-                loginKeyName: properties.loginKeyName,
-                nicName: properties.nicName,
+                serverImageNumber: properties.server_image_number,
+                serverSpecCode: properties.server_spec_code,
+                subnetName: properties.subnet,
+                loginKeyName: properties.loginKey,
+                nicName: properties.nic,
             });
 
         case 'publicip':
@@ -94,7 +94,7 @@ export function parseToNCloudModel(resource: CloudCanvasNode): NCloudModel {
                 name: name || 'lb',
                 networkType: properties.networkType,
                 throughputType: properties.throughputType,
-                subnetName: properties.subnetName,
+                subnetName: properties.subnet,
                 vpcName: properties.vpcName,
                 acgName: properties.acgName,
             });

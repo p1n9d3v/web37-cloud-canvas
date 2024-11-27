@@ -17,14 +17,13 @@ export class TerraformConvertor {
         this.providers = new Map();
     }
 
-    addResourceFromJson(jsonData: { nodes?: CloudCanvasNode[] }): void {
-        const nodes = processNodes(jsonData.nodes || []);
+    addResourceFromJson(node: any): void {
+        const nodes = processNodes([node]);
         const regions = collectRegions(nodes);
 
         regions.forEach((region) => {
             this.providers.set(region, createProvider(region));
         });
-
         nodes.forEach((node) => {
             try {
                 const resource = parseToNCloudModel(node);

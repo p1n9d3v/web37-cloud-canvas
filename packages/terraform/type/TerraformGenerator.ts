@@ -43,7 +43,6 @@ export class CodeGenerator {
                 if (region) {
                     properties.provider = `ncloud.${region.toLowerCase()}`;
                 }
-
                 const resourceName = resource.name || resource.serviceType;
                 return generateResourceBlock(
                     resource.serviceType,

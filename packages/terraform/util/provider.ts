@@ -10,7 +10,7 @@ export const createProvider = (region: string): NCloudProvider =>
         alias: region.toLowerCase(),
     });
 
-export const collectRegions = (nodes: CloudCanvasNode[]): Set<string> => {
+export const collectRegions = (nodes: any[]): Set<string> => {
     const regions = new Set<string>();
     nodes.forEach((node) => {
         if (node.properties?.region) {

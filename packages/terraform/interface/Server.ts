@@ -2,8 +2,8 @@ export interface Server {
     id: string;
     name: string;
     subnetNo: string;
-    serverImageProductCode: string;
-    serverProductCode: string;
+    serverImageNumber: string;
+    serverSpecCode: string;
     loginKeyName: string;
     networkInterfaceNo: string;
 }

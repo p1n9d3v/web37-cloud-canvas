@@ -11,6 +11,8 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import { NCloudProvider } from '@contexts/NCloudContext.tsx';
+import ErrorBoundary from '@components/ErrorBoundary.tsx';
+import { ErrorProvider } from '@contexts/ErrorContext.tsx';
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
@@ -23,9 +25,13 @@ createRoot(document.getElementById('root')!).render(
                             <NodeProvider>
                                 <EdgeProvider>
                                     <SelectionProvider>
-                                        <NCloudProvider>
-                                            <App />
-                                        </NCloudProvider>
+                                        <ErrorBoundary>
+                                            <ErrorProvider>
+                                                <NCloudProvider>
+                                                    <App />
+                                                </NCloudProvider>
+                                            </ErrorProvider>
+                                        </ErrorBoundary>
                                     </SelectionProvider>
                                 </EdgeProvider>
                             </NodeProvider>

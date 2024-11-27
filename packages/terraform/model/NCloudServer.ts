@@ -10,6 +10,7 @@ export class NCloudServer implements Server, NCloudModel {
     serverSpecCode: string;
     loginKeyName?: string;
     networkInterfaceNo?: string;
+    acgName?: string;
     serviceType: string;
     priority: ResourcePriority;
 
@@ -26,6 +27,9 @@ export class NCloudServer implements Server, NCloudModel {
         }
         if (json.nicName) {
             this.networkInterfaceNo = `ncloud_network_interface.${json.nicName}.id`;
+        }
+        if (json.acgName) {
+            this.acgName = `ncloud_acg.${json.acgName}.id`;
         }
     }
 
@@ -46,7 +50,13 @@ export class NCloudServer implements Server, NCloudModel {
                 order: 0,
             };
         }
-
+        if (this.acgName) {
+            properties.access_control_group = {
+                access_control_group_no: this.acgName,
+                order: 0,
+            };
+        }
+ㄷ
         return properties;
     }
 }

@@ -6,4 +6,5 @@ export interface Server {
     serverSpecCode: string;
     loginKeyName?: string;
     networkInterfaceNo?: string;
+    acgName?: string;
 }

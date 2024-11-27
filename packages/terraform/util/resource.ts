@@ -7,9 +7,7 @@ import {
     createVpcDependency,
 } from './dependency';
 
-export const processDependencies = (
-    node: any,
-): any[] => {
+export const processDependencies = (node: any): any[] => {
     if (!['server', 'loadbalancer', 'mysql'].includes(node.type.toLowerCase()))
         return [];
 
@@ -25,14 +23,14 @@ export const processDependencies = (
         dependencies.push(...createAcgDependencies(properties, node.name));
     }
 
-    if (node.type.toLowerCase() === 'server') {
-        if (properties.nic) {
-            dependencies.push(createNicDependency(properties));
-        }
-        if (properties.loginKey) {
-            dependencies.push(createLoginKeyDependency(properties));
-        }
-    }
+    // if (node.type.toLowerCase() === 'server') {
+    //     // if (properties.nic) {
+    //     //     dependencies.push(createNicDependency(properties));
+    //     // }
+    //     // if (properties.loginKey) {
+    //     //     dependencies.push(createLoginKeyDependency(properties));
+    //     // }
+    // }
 
     return dependencies;
 };

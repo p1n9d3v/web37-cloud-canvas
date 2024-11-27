@@ -78,8 +78,6 @@ export function parseToNCloudModel(resource: any): NCloudModel {
                 serverImageNumber: properties.server_image_number,
                 serverSpecCode: properties.server_spec_code,
                 subnetName: properties.subnet,
-                loginKeyName: properties.loginKey,
-                nicName: properties.nic,
             });
 
         case 'publicip':

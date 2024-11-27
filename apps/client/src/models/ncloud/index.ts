@@ -29,11 +29,27 @@ export const NcloudGroupFactory = (type: string) => {
     }
 };
 
-const Server: Node = {
+const GraphNodeProperties = {
     id: '',
     name: '',
-    type: 'server',
+    type: '',
     point: { x: 0, y: 0 },
+    connectors: {},
+};
+
+const GraphGroupProperties = {
+    id: '',
+    name: '',
+    type: '',
+    nodeIds: [],
+    properties: {},
+    childGroupIds: [],
+    parentGroupId: '',
+};
+
+const Server: Node = {
+    ...GraphNodeProperties,
+    type: 'server',
     size: {
         '2d': { width: 90, height: 90 },
         '3d': { width: 128, height: 111 },
@@ -46,14 +62,11 @@ const Server: Node = {
         server_image_product_code: '',
         server_product_code: '',
     },
-    connectors: {},
 };
 
 const CloudFunction: Node = {
-    id: '',
+    ...GraphNodeProperties,
     type: 'cloud-function',
-    name: '',
-    point: { x: 0, y: 0 },
     size: {
         '2d': { width: 90, height: 90 },
         '3d': { width: 96, height: 113.438, offset: 10 },
@@ -63,14 +76,11 @@ const CloudFunction: Node = {
         vpc: '',
         subnet: '',
     },
-    connectors: {},
 };
 
 const MySQLDB: Node = {
-    id: '',
+    ...GraphNodeProperties,
     type: 'db-mysql',
-    name: '',
-    point: { x: 0, y: 0 },
     size: {
         '2d': { width: 90, height: 90 },
         '3d': { width: 128, height: 137.5 },
@@ -80,37 +90,21 @@ const MySQLDB: Node = {
         vpc: '',
         subnet: '',
     },
-    connectors: {},
 };
 
 const Region: Group = {
-    id: '',
+    ...GraphGroupProperties,
     type: 'region',
-    name: '',
-    nodeIds: [],
-    properties: {},
-    childGroupIds: [],
-    parentGroupId: '',
 };
 
 const Vpc: Group = {
-    id: '',
+    ...GraphGroupProperties,
     type: 'vpc',
-    name: '',
-    nodeIds: [],
-    properties: {},
-    childGroupIds: [],
-    parentGroupId: '',
 };
 
 const Subnet: Group = {
-    id: '',
+    ...GraphGroupProperties,
     type: 'subnet',
-    name: '',
-    nodeIds: [],
-    properties: {},
-    childGroupIds: [],
-    parentGroupId: '',
 };
 
 export const Regions: { [key: string]: string } = {

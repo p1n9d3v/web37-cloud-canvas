@@ -14,6 +14,7 @@ import {
     alignNodePoint,
     getNodeBounds,
 } from '@helpers/node';
+import useSelection from '@hooks/useSelection';
 import { Connection, Edge, Group, Node, Point } from '@types';
 import {
     alignPoint2d,
@@ -39,6 +40,7 @@ export default () => {
         dispatch: groupDispatch,
     } = useGroupContext();
 
+    const { clearSelection } = useSelection();
     const { dimension, prevDimension } = useDimensionContext();
     const { svgRef } = useSvgContext();
 
@@ -112,6 +114,8 @@ export default () => {
             type: 'REMOVE_NODE',
             payload: { id },
         });
+
+        clearSelection();
     };
 
     const updateNodePointForDimension = () => {

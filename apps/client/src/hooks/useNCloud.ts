@@ -6,12 +6,11 @@ import {
 import { NETWORKS_CATEGORIES } from '@constants';
 import { useNCloudContext } from '@contexts/NCloudContext';
 import { getInitPoint } from '@helpers/cloud';
-import useError from '@hooks/useError';
 import useGraph from '@hooks/useGraph';
 import useSelection from '@hooks/useSelection';
 import { Node, Region } from '@types';
 import { nanoid } from 'nanoid';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 export default () => {
     const { selectedNodeId, selectedGroupId } = useSelection();
@@ -44,11 +43,10 @@ export default () => {
         isExistGroup,
     } = useGraph();
 
-    const { handleError } = useError();
-
     useEffect(() => {
         if (selectedNodeId) {
             const node = nodes[selectedNodeId];
+            if (!node) return;
             setRegion(node.properties.region);
             setVpc(node.properties.vpc);
             setSubnet(node.properties.subnet);
@@ -63,32 +61,22 @@ export default () => {
     }, [selectedNodeId, nodes]);
 
     useEffect(() => {
+        const regionGroup = groups[region];
+        if (!regionGroup) return;
         setVpcList({
             ...Object.fromEntries(
-                Object.entries(groups)
-                    .map(([id, group]) => {
-                        if (group.type === 'vpc') {
-                            return [id, group.name];
-                        }
-                        return [];
-                    })
-                    .filter((arr) => arr.length > 0),
+                regionGroup.childGroupIds.map((id) => [id, groups[id].name]),
             ),
         });
 
+        const vpcGroup = groups[vpc];
+        if (!vpcGroup) return;
         setSubnetList({
             ...Object.fromEntries(
-                Object.entries(groups)
-                    .map(([id, group]) => {
-                        if (group.type === 'subnet') {
-                            return [id, group.name];
-                        }
-                        return [];
-                    })
-                    .filter((arr) => arr.length > 0),
+                vpcGroup.childGroupIds.map((id) => [id, groups[id].name]),
             ),
         });
-    }, [groups]);
+    }, [region, groups]);
 
     const addResource = (type: string) => {
         if (!svgRef.current) return;
@@ -164,23 +152,10 @@ export default () => {
                 region: newRegion,
             });
         }
-        setRegion(newRegion);
     };
 
     const updateVpc = (newVpc: string) => {
         if (selectedNodeId && vpc !== newVpc) {
-            if (
-                isExistGroup(newVpc) &&
-                region !== groups[newVpc].parentGroupId
-            ) {
-                handleError(() => {
-                    throw new Error(
-                        '다른 Region에 속한 VPC로 이동할 수 없습니다.',
-                    );
-                });
-                return;
-            }
-
             if (!isExistGroup(newVpc)) {
                 createVpc(newVpc);
             }
@@ -203,7 +178,6 @@ export default () => {
                 vpc: newVpc,
             });
         }
-        setVpc(newVpc);
     };
 
     const createSubnet = (subnet: string, nodeId?: string) => {
@@ -217,18 +191,6 @@ export default () => {
 
     const updateSubnet = (newSubnet: string) => {
         if (selectedNodeId && subnet !== newSubnet) {
-            if (
-                isExistGroup(newSubnet) &&
-                vpc !== groups[newSubnet].parentGroupId
-            ) {
-                handleError(() => {
-                    throw new Error(
-                        '다른 VPC에 속한 Subnet로 이동할 수 없습니다.',
-                    );
-                });
-                return;
-            }
-
             if (!isExistGroup(newSubnet)) {
                 createSubnet(newSubnet);
             }
@@ -254,8 +216,6 @@ export default () => {
                 subnet: newSubnet,
             });
         }
-
-        setSubnet(newSubnet);
     };
 
     const removeVpc = (vpc: string) => {

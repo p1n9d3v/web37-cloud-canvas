@@ -65,6 +65,7 @@ export default () => {
             if (!(e.target as HTMLElement).closest('.graph-ignore-select'))
                 clearSelection();
         };
+
         document.addEventListener('contextmenu', handleContextMenu);
         document.addEventListener('mousedown', handleMouseDown);
 

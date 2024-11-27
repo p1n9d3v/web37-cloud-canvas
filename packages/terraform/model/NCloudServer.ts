@@ -56,7 +56,6 @@ export class NCloudServer implements Server, NCloudModel {
                 order: 0,
             };
         }
-ㄷ
         return properties;
     }
 }

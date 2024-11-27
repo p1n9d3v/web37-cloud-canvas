@@ -7,12 +7,20 @@ import {
     useState,
 } from 'react';
 
+type SelectedResource = {
+    id: string;
+    type: string;
+    properties: {};
+};
+
 type NCloudContextProps = {
     region: string;
     vpc: string;
     vpcList: { [id: string]: string };
     subnet: string;
     subnetList: { [id: string]: string };
+    selectedResource: SelectedResource | undefined;
+    setSelectedResource: Dispatch<SetStateAction<SelectedResource | undefined>>;
     setRegion: Dispatch<SetStateAction<string>>;
     setVpc: Dispatch<SetStateAction<string>>;
     setVpcList: Dispatch<SetStateAction<{ [id: string]: string }>>;
@@ -33,6 +41,10 @@ export const NCloudProvider = ({ children }: PropsWithChildren) => {
         [id: string]: string;
     }>({});
 
+    const [selectedResource, setSelectedResource] = useState<
+        SelectedResource | undefined
+    >(undefined);
+
     return (
         <NCloudContext.Provider
             value={{
@@ -46,6 +58,8 @@ export const NCloudProvider = ({ children }: PropsWithChildren) => {
                 setVpcList,
                 setSubnet,
                 setSubnetList,
+                selectedResource,
+                setSelectedResource,
             }}
         >
             {children}

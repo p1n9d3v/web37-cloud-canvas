@@ -31,6 +31,10 @@ export type GroupAction =
     | {
           type: 'ADD_CHILD_GROUP';
           payload: { id: string; parentId: string; nodeId: string };
+      }
+    | {
+          type: 'EXCLUDE_NODE_FROM_GROUP';
+          payload: { id: string; nodeId: string };
       };
 
 export const groupReducer = (
@@ -134,6 +138,47 @@ export const groupReducer = (
                 },
             };
         }
+        case 'EXCLUDE_NODE_FROM_GROUP': {
+            const { id, nodeId } = action.payload;
+            if (!state.groups[id]) return state;
+
+            const { [id]: group, ...rest } = state.groups;
+            const parentGroup = state.groups[group.parentGroupId];
+
+            const shouldBeRemoved =
+                group.nodeIds.length === 1 && group.childGroupIds.length === 0;
+
+            return {
+                ...state,
+                groups: {
+                    ...rest,
+                    [group.parentGroupId]: {
+                        ...parentGroup,
+                        nodeIds: Array.from(
+                            new Set([...parentGroup.nodeIds, nodeId]),
+                        ),
+                        childGroupIds: shouldBeRemoved
+                            ? [
+                                  ...parentGroup.childGroupIds.filter(
+                                      (childGroupId) => childGroupId !== id,
+                                  ),
+                                  ...group.childGroupIds,
+                              ]
+                            : parentGroup.childGroupIds,
+                    },
+                    ...(shouldBeRemoved
+                        ? {}
+                        : {
+                              [id]: {
+                                  ...group,
+                                  nodeIds: group.nodeIds.filter(
+                                      (_nodeId) => _nodeId !== nodeId,
+                                  ),
+                              },
+                          }),
+                },
+            };
+        }
         case 'ADD_CHILD_GROUP': {
             const { id, parentId, nodeId } = action.payload;
             const group = state.groups[id];
@@ -141,13 +186,14 @@ export const groupReducer = (
             if (!parentGroup) return state;
 
             const nodeIds = new Set([...group.nodeIds, nodeId]);
+            const childGroupIds = new Set([...parentGroup.childGroupIds, id]);
             return {
                 ...state,
                 groups: {
                     ...state.groups,
                     [parentId]: {
                         ...parentGroup,
-                        childGroupIds: [...parentGroup.childGroupIds, id],
+                        childGroupIds: Array.from(childGroupIds),
                         nodeIds: parentGroup.nodeIds.filter(
                             (_nodeId) => _nodeId !== nodeId,
                         ),
@@ -155,6 +201,7 @@ export const groupReducer = (
                     [id]: {
                         ...group,
                         nodeIds: Array.from(nodeIds),
+                        parentGroupId: parentId,
                     },
                 },
             };

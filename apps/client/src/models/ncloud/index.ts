@@ -90,6 +90,7 @@ const Region: Group = {
     nodeIds: [],
     properties: {},
     childGroupIds: [],
+    parentGroupId: '',
 };
 
 const Vpc: Group = {
@@ -99,6 +100,7 @@ const Vpc: Group = {
     nodeIds: [],
     properties: {},
     childGroupIds: [],
+    parentGroupId: '',
 };
 
 const Subnet: Group = {
@@ -108,6 +110,7 @@ const Subnet: Group = {
     nodeIds: [],
     properties: {},
     childGroupIds: [],
+    parentGroupId: '',
 };
 
 export const Regions: { [key: string]: string } = {

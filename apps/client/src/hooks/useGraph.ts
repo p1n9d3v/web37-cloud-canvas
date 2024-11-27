@@ -344,8 +344,16 @@ export default () => {
         });
     };
 
+    const excludeNodeFromGroup = (groupId: string, nodeId: string) => {
+        groupDispatch({
+            type: 'EXCLUDE_NODE_FROM_GROUP',
+            payload: { id: groupId, nodeId },
+        });
+    };
+
     const removeNodeFromGroup = (groupId: string, nodeId: string) => {
         const group = groups[groupId];
+        if (!group) return;
 
         if (group.nodeIds.length === 1 && group.childGroupIds.length === 0) {
             removeGroup(groupId);
@@ -412,7 +420,9 @@ export default () => {
         isExistSameTypeGroup,
         getGroupBounds,
         moveGroup,
+        removeGroup,
         removeNodeFromGroup,
         updatedPointForDimension,
+        excludeNodeFromGroup,
     };
 };

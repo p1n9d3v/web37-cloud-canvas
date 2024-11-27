@@ -5,9 +5,8 @@ import useNCloud from '@hooks/useNCloud';
 import { AppBar, Divider, Stack, Toolbar, Typography } from '@mui/material';
 
 export default () => {
-    const { openCloudAppbar } = useNCloud();
-
     const {
+        selectedResource,
         region,
         subnet,
         subnetList,
@@ -16,7 +15,10 @@ export default () => {
         updateVpc,
         updateRegion,
         updateSubnet,
+        removeVpc,
+        removeSubnet,
     } = useNCloud();
+
     return (
         <AppBar
             position="fixed"
@@ -28,7 +30,7 @@ export default () => {
                 right: 0,
                 borderRadius: '20px',
                 maxWidth: 'min-content',
-                display: openCloudAppbar ? 'block' : 'none',
+                display: selectedResource ? 'block' : 'none',
             }}
         >
             <Toolbar
@@ -42,9 +44,13 @@ export default () => {
                 <Typography
                     variant="h6"
                     component="div"
-                    sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+                    sx={{
+                        flexGrow: 1,
+                        display: { xs: 'none', sm: 'block' },
+                        whiteSpace: 'nowrap',
+                    }}
                 >
-                    Server
+                    {selectedResource?.type.toUpperCase()}
                 </Typography>
                 <Divider orientation="vertical" flexItem />
                 <Stack
@@ -56,20 +62,31 @@ export default () => {
                         region={region}
                         onUpdateRegion={updateRegion}
                     />
-                    {region && (
-                        <VpcSelect
-                            vpc={vpc}
-                            vpcList={vpcList}
-                            onUpdateVpc={updateVpc}
-                        />
-                    )}
-                    {vpc && (
-                        <SubnetSelect
-                            subnet={subnet}
-                            subnetList={subnetList}
-                            onUpdateSubnet={updateSubnet}
-                        />
-                    )}
+                    {selectedResource &&
+                        Object.hasOwn(selectedResource?.properties, 'vpc') && (
+                            <VpcSelect
+                                vpc={vpc}
+                                vpcList={vpcList}
+                                onUpdateVpc={updateVpc}
+                                disabled={!Boolean(region)}
+                                disabledRemove={Boolean(subnet)}
+                                onRemoveVpc={removeVpc}
+                            />
+                        )}
+                    {selectedResource &&
+                        Object.hasOwn(
+                            selectedResource?.properties,
+                            'subnet',
+                        ) && (
+                            <SubnetSelect
+                                subnet={subnet}
+                                subnetList={subnetList}
+                                disabled={!Boolean(vpc)}
+                                // disabledRemove={!Boolean(scg)} // to be continued
+                                onUpdateSubnet={updateSubnet}
+                                onRemoveSubnet={removeSubnet}
+                            />
+                        )}
                 </Stack>
             </Toolbar>
         </AppBar>

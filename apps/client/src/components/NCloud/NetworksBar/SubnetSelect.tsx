@@ -1,24 +1,36 @@
-import useNCloud from '@hooks/useNCloud';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import SearchIcon from '@mui/icons-material/Search';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Input from '@mui/material/Input';
 import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
+import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
+import { useTheme } from '@mui/material/styles';
 import { useState } from 'react';
 
 type Props = {
     subnet: string;
     subnetList: { [id: string]: string };
+    disabled?: boolean;
+    disabledRemove?: boolean;
     onUpdateSubnet: (subnet: string) => void;
+    onRemoveSubnet: (subnet: string) => void;
 };
 
-export default ({ subnet, subnetList, onUpdateSubnet }: Props) => {
+export default ({
+    subnet,
+    subnetList,
+    disabled = false,
+    disabledRemove = false,
+    onUpdateSubnet,
+    onRemoveSubnet,
+}: Props) => {
+    const theme = useTheme();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
     const handlePopoverOpen = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -62,6 +74,7 @@ export default ({ subnet, subnetList, onUpdateSubnet }: Props) => {
                     onClick={handlePopoverOpen}
                     variant="text"
                     type="submit"
+                    disabled={disabled}
                     disableRipple
                 >
                     {subnet || <AddCircleOutlineIcon />}
@@ -99,13 +112,28 @@ export default ({ subnet, subnetList, onUpdateSubnet }: Props) => {
                 </form>
                 <List component="nav">
                     {Object.entries(subnetList).map(([id, value]) => (
-                        <ListItemButton
+                        <ListItem
                             key={id}
-                            selected={subnet === value}
                             onClick={() => handleListItemClick(value as string)}
+                            secondaryAction={
+                                <IconButton
+                                    edge="end"
+                                    aria-label="delete"
+                                    disabled={disabledRemove}
+                                    onClick={() => onRemoveSubnet(id)}
+                                >
+                                    <DeleteIcon />
+                                </IconButton>
+                            }
+                            style={{
+                                backgroundColor:
+                                    subnet === value
+                                        ? theme.palette.action.selected
+                                        : undefined,
+                            }}
                         >
                             <ListItemText primary={value} />
-                        </ListItemButton>
+                        </ListItem>
                     ))}
                 </List>
             </Popover>

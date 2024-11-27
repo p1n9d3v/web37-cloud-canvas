@@ -6,6 +6,7 @@ import {
 import { NETWORKS_CATEGORIES } from '@constants';
 import { useNCloudContext } from '@contexts/NCloudContext';
 import { getInitPoint } from '@helpers/cloud';
+import useError from '@hooks/useError';
 import useGraph from '@hooks/useGraph';
 import useSelection from '@hooks/useSelection';
 import { Node, Region } from '@types';
@@ -17,6 +18,7 @@ export default () => {
     const {
         region,
         vpc,
+        selectedResource,
         vpcList,
         subnet,
         subnetList,
@@ -25,8 +27,8 @@ export default () => {
         setSubnet,
         setSubnetList,
         setVpcList,
+        setSelectedResource,
     } = useNCloudContext();
-    const [openCloudAppbar, setOpenCloudAppbar] = useState(false);
 
     const {
         nodes,
@@ -36,11 +38,13 @@ export default () => {
         addNode,
         addNodeToGroup,
         addChildGroup,
+        excludeNodeFromGroup,
         removeNodeFromGroup,
-        isExistSameTypeGroup,
         addGroup,
         isExistGroup,
     } = useGraph();
+
+    const { handleError } = useError();
 
     useEffect(() => {
         if (selectedNodeId) {
@@ -48,11 +52,43 @@ export default () => {
             setRegion(node.properties.region);
             setVpc(node.properties.vpc);
             setSubnet(node.properties.subnet);
-            setOpenCloudAppbar(true);
+            setSelectedResource({
+                id: selectedNodeId,
+                type: node.type,
+                properties: node.properties,
+            });
         } else {
-            setOpenCloudAppbar(false);
+            setSelectedResource(undefined);
         }
-    }, [selectedNodeId]);
+    }, [selectedNodeId, nodes]);
+
+    useEffect(() => {
+        setVpcList({
+            ...Object.fromEntries(
+                Object.entries(groups)
+                    .map(([id, group]) => {
+                        if (group.type === 'vpc') {
+                            return [id, group.name];
+                        }
+                        return [];
+                    })
+                    .filter((arr) => arr.length > 0),
+            ),
+        });
+
+        setSubnetList({
+            ...Object.fromEntries(
+                Object.entries(groups)
+                    .map(([id, group]) => {
+                        if (group.type === 'subnet') {
+                            return [id, group.name];
+                        }
+                        return [];
+                    })
+                    .filter((arr) => arr.length > 0),
+            ),
+        });
+    }, [groups]);
 
     const addResource = (type: string) => {
         if (!svgRef.current) return;
@@ -95,14 +131,9 @@ export default () => {
         });
     };
 
-    const cleanupRelatedGroup = (
-        node: Node,
-        groupCategories: string[],
-        ignoreGroups: string[] = [],
-    ) => {
+    const removeNodeRelatedGroup = (node: Node, groupCategories: string[]) => {
         const properties = node.properties;
         const relatedGroupIds = groupCategories
-            .filter((type) => !ignoreGroups.includes(type))
             .map((type) => properties[type])
             .filter(Boolean);
 
@@ -112,14 +143,14 @@ export default () => {
     };
 
     const updateRegion = (newRegion: Region) => {
-        if (selectedNodeId) {
+        if (selectedNodeId && region !== newRegion) {
             if (isExistGroup(newRegion)) {
                 addNodeToGroup(newRegion, selectedNodeId);
             } else {
                 createRegion(newRegion, selectedNodeId);
             }
 
-            cleanupRelatedGroup(nodes[selectedNodeId], NETWORKS_CATEGORIES);
+            removeNodeRelatedGroup(nodes[selectedNodeId], NETWORKS_CATEGORIES);
 
             const updatedProperties = NETWORKS_CATEGORIES.reduce((acc, cur) => {
                 return {
@@ -137,17 +168,27 @@ export default () => {
     };
 
     const updateVpc = (newVpc: string) => {
-        if (selectedNodeId) {
-            if (isExistGroup(newVpc)) {
-                addNodeToGroup(newVpc, selectedNodeId);
-            } else {
+        if (selectedNodeId && vpc !== newVpc) {
+            if (
+                isExistGroup(newVpc) &&
+                region !== groups[newVpc].parentGroupId
+            ) {
+                handleError(() => {
+                    throw new Error(
+                        '다른 Region에 속한 VPC로 이동할 수 없습니다.',
+                    );
+                });
+                return;
+            }
+
+            if (!isExistGroup(newVpc)) {
                 createVpc(newVpc);
             }
 
+            addNodeToGroup(newVpc, selectedNodeId);
             addChildGroup(newVpc, region, selectedNodeId);
-            cleanupRelatedGroup(nodes[selectedNodeId], NETWORKS_CATEGORIES, [
-                'region',
-            ]);
+            const node = nodes[selectedNodeId];
+            removeNodeRelatedGroup(node, NETWORKS_CATEGORIES);
 
             const updatedProperties = NETWORKS_CATEGORIES.reduce((acc, cur) => {
                 return {
@@ -163,10 +204,6 @@ export default () => {
             });
         }
         setVpc(newVpc);
-        setVpcList((prev) => ({
-            ...prev,
-            newVpc,
-        }));
     };
 
     const createSubnet = (subnet: string, nodeId?: string) => {
@@ -179,20 +216,29 @@ export default () => {
     };
 
     const updateSubnet = (newSubnet: string) => {
-        if (selectedNodeId) {
-            if (isExistGroup(newSubnet)) {
-                addNodeToGroup(newSubnet, selectedNodeId);
-            } else {
+        if (selectedNodeId && subnet !== newSubnet) {
+            if (
+                isExistGroup(newSubnet) &&
+                vpc !== groups[newSubnet].parentGroupId
+            ) {
+                handleError(() => {
+                    throw new Error(
+                        '다른 VPC에 속한 Subnet로 이동할 수 없습니다.',
+                    );
+                });
+                return;
+            }
+
+            if (!isExistGroup(newSubnet)) {
                 createSubnet(newSubnet);
             }
 
+            addNodeToGroup(newSubnet, selectedNodeId);
             if (vpc || region) {
                 addChildGroup(newSubnet, vpc || region, selectedNodeId);
             }
-            cleanupRelatedGroup(nodes[selectedNodeId], NETWORKS_CATEGORIES, [
-                'region',
-                'vpc',
-            ]);
+            const node = nodes[selectedNodeId];
+            removeNodeRelatedGroup(node, NETWORKS_CATEGORIES);
 
             const updatedProperties = NETWORKS_CATEGORIES.reduce((acc, cur) => {
                 return {
@@ -210,10 +256,26 @@ export default () => {
         }
 
         setSubnet(newSubnet);
-        setSubnetList((prev) => ({
-            ...prev,
-            newSubnet,
-        }));
+    };
+
+    const removeVpc = (vpc: string) => {
+        if (selectedNodeId) {
+            excludeNodeFromGroup(vpc, selectedNodeId);
+            updateProperties(selectedNodeId, {
+                ...nodes[selectedNodeId].properties,
+                vpc: '',
+            });
+        }
+    };
+
+    const removeSubnet = (subnet: string) => {
+        if (selectedNodeId) {
+            excludeNodeFromGroup(subnet, selectedNodeId);
+            updateProperties(selectedNodeId, {
+                ...nodes[selectedNodeId].properties,
+                subnet: '',
+            });
+        }
     };
 
     const updateProperties = (id: string, properties: any) => {
@@ -226,15 +288,17 @@ export default () => {
     };
 
     return {
-        openCloudAppbar,
         region,
         vpc,
         vpcList,
         subnet,
         subnetList,
+        selectedResource,
         updateVpc,
         addResource,
         createRegion,
+        removeVpc,
+        removeSubnet,
         updateRegion,
         createSubnet,
         updateSubnet,

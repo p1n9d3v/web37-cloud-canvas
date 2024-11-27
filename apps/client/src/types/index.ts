@@ -44,7 +44,7 @@ export type Group = {
     nodeIds: string[];
     properties: { [key: string]: any };
     childGroupIds: string[];
-    // parentGroupId: string; 추후 추가 예정
+    parentGroupId: string;
 };
 
 export type Connection = {

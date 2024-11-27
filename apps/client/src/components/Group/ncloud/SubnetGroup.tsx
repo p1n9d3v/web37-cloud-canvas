@@ -9,7 +9,7 @@ interface Props extends Partial<Group> {
     bounds: Bounds;
 }
 
-const Region3D = ({ bounds, name, color }: Props) => {
+const Subnet3D = ({ bounds, name, color }: Props) => {
     const topLeftGrid = screenToGrid2d({ x: 0, y: 0 });
     const topRightGrid = screenToGrid2d({ x: bounds.width, y: 0 });
     const bottomRightGrid = screenToGrid2d({
@@ -55,7 +55,7 @@ const Region3D = ({ bounds, name, color }: Props) => {
     );
 };
 
-const Region2D = ({ bounds, color, name }: Props) => {
+const Subnet2D = ({ bounds, color, name }: Props) => {
     const points = `0 0, 0 ${bounds.height}, ${bounds.width} ${bounds.height}, ${bounds.width} 0`;
 
     return (
@@ -76,8 +76,8 @@ export default ({ bounds, name }: Pick<Props, 'bounds' | 'name'>) => {
     const color = useMemo(() => generateRandomRGB(), []);
 
     return dimension === '2d' ? (
-        <Region2D bounds={bounds} name={name} color={color} />
+        <Subnet2D bounds={bounds} name={name} color={color} />
     ) : (
-        <Region3D bounds={bounds} name={name} color={color} />
+        <Subnet3D bounds={bounds} name={name} color={color} />
     );
 };

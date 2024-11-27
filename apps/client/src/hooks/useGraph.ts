@@ -1,5 +1,3 @@
-import { NcloudNodeFactory } from '@/src/models/ncloud';
-import { GROUP_TYPES } from '@constants';
 import { useDimensionContext } from '@contexts/DimensionContext';
 import { useEdgeContext } from '@contexts/EdgeContext';
 import { useGroupContext } from '@contexts/GroupContext';
@@ -16,7 +14,8 @@ import {
     alignNodePoint,
     getNodeBounds,
 } from '@helpers/node';
-import { Connection, Edge, Point } from '@types';
+import useSelection from '@hooks/useSelection';
+import { Connection, Edge, Group, Node, Point } from '@types';
 import {
     alignPoint2d,
     alignPoint3d,
@@ -26,7 +25,6 @@ import {
     getSvgPoint,
 } from '@utils';
 import { nanoid } from 'nanoid';
-import { useEffect } from 'react';
 
 export default () => {
     const {
@@ -42,20 +40,17 @@ export default () => {
         dispatch: groupDispatch,
     } = useGroupContext();
 
+    const { clearSelection } = useSelection();
     const { dimension, prevDimension } = useDimensionContext();
     const { svgRef } = useSvgContext();
 
     //INFO: Node
 
-    const addNode = (type: string) => {
-        const node = NcloudNodeFactory(type);
-        //TODO: Focus 된 그룹에 추가하도록 수정해야함
+    const addNode = (node: Node) => {
         nodeDispatch({
             type: 'ADD_NODE',
             payload: {
                 ...node,
-                id: `node-${nanoid()}`,
-                point: { x: 0, y: 0 },
                 connectors: getConnectorPoints(node, dimension),
             },
         });
@@ -88,23 +83,17 @@ export default () => {
         updateEdges(updatedEdges);
     };
 
-    const removeNode = (id: string) => {
-        const node = nodes[id];
+    const updateNode = (id: string, payload: Partial<Node>) => {
         nodeDispatch({
-            type: 'REMOVE_NODE',
-            payload: { id },
+            type: 'UPDATE_NODE',
+            payload: {
+                id,
+                ...payload,
+            },
         });
+    };
 
-        const groupIds = GROUP_TYPES.map(
-            (type) => node.properties[type],
-        ).filter(Boolean);
-
-        if (groupIds.length > 0) {
-            groupIds.forEach((groupId) => {
-                removeNodeFromGroup(groupId, id);
-            });
-        }
-
+    const removeNode = (id: string) => {
         const connectedEdgeIds = Object.values(edges)
             .filter((edge) => edge.source.id === id || edge.target.id === id)
             .map((edge) => edge.id);
@@ -113,6 +102,20 @@ export default () => {
             type: 'REMOVE_EDGES',
             payload: connectedEdgeIds,
         });
+
+        const groupId = Object.keys(groups).find((groupId) => {
+            const group = groups[groupId];
+            return group.nodeIds.includes(id);
+        });
+        if (groupId) {
+            removeNodeFromGroup(groupId, id);
+        }
+        nodeDispatch({
+            type: 'REMOVE_NODE',
+            payload: { id },
+        });
+
+        clearSelection();
     };
 
     const updateNodePointForDimension = () => {
@@ -278,15 +281,38 @@ export default () => {
 
     //INFO: Group
 
-    const addGroup = (type: string, groupId: string, nodeId: string) => {};
-
-    const updateGroup = (type: string, groupId: string, nodeId: string) => {};
-
-    const removeNodeFromGroup = (groupId: string, nodeId: string) => {
+    const addGroup = (group: Group) => {
         groupDispatch({
-            type: 'REMOVE_NODE_FROM_GROUP',
-            payload: { groupId, nodeId },
+            type: 'ADD_GROUP',
+            payload: group,
         });
+    };
+
+    const removeGroup = (groupId: string) => {
+        groupDispatch({
+            type: 'REMOVE_GROUP',
+            payload: {
+                id: groupId,
+            },
+        });
+    };
+
+    const updateGroup = (id: string, payload: Partial<Group>) => {
+        groupDispatch({
+            type: 'UPDATE_GROUP',
+            payload: {
+                id,
+                ...payload,
+            },
+        });
+    };
+
+    const isExistGroup = (groupId: string) => Boolean(groups[groupId]);
+
+    const isExistSameTypeGroup = (groupId: string, type: string) => {
+        const group = groups[groupId];
+        if (!group) return false;
+        return group.type === type;
     };
 
     //INFO: Node만 움직여도 자동으로 그룹이 움직여짐, 따라서 Offset을 받아서 처리함
@@ -302,51 +328,105 @@ export default () => {
             };
             moveNode(nodeId, newPoint);
         });
+
+        group.childGroupIds.forEach((childGroupId) =>
+            moveGroup(childGroupId, offset),
+        );
+    };
+
+    const addChildGroup = (id: string, parentId: string, nodeId: string) => {
+        groupDispatch({
+            type: 'ADD_CHILD_GROUP',
+            payload: { id, parentId, nodeId },
+        });
+    };
+
+    const addNodeToGroup = (groupId: string, nodeId: string) => {
+        groupDispatch({
+            type: 'ADD_NODE_TO_GROUP',
+            payload: { id: groupId, nodeId },
+        });
+    };
+
+    const excludeNodeFromGroup = (groupId: string, nodeId: string) => {
+        groupDispatch({
+            type: 'EXCLUDE_NODE_FROM_GROUP',
+            payload: { id: groupId, nodeId },
+        });
+    };
+
+    const removeNodeFromGroup = (groupId: string, nodeId: string) => {
+        const group = groups[groupId];
+        if (!group) return;
+
+        if (group.nodeIds.length === 1 && group.childGroupIds.length === 0) {
+            removeGroup(groupId);
+        } else {
+            groupDispatch({
+                type: 'REMOVE_NODE_FROM_GROUP',
+                payload: { id: groupId, nodeId },
+            });
+        }
     };
 
     const getGroupBounds = (groupId: string) => {
         const group = groups[groupId];
 
-        const childGroupNodeIds = group.childGroupIds.map((groupId) => {
-            const childGroup = groups[groupId];
-            return childGroup.nodeIds;
-        });
+        const recursiveGroupBounds = (group: Group): any => {
+            if (group.childGroupIds.length === 0) {
+                const nodesBounds = group.nodeIds.map((nodeId) =>
+                    getNodeBounds(nodes[nodeId], dimension),
+                );
 
-        const childGroupsBounds = childGroupNodeIds.map((nodeIds) => {
-            const childGroupNodeBounds = nodeIds.map((nodeId) =>
+                return computeBounds(nodesBounds, dimension);
+            }
+            const childGroupsBounds = group.childGroupIds.map((childGroupId) =>
+                recursiveGroupBounds(groups[childGroupId]),
+            );
+
+            const currentNodesBounds = group.nodeIds.map((nodeId) =>
                 getNodeBounds(nodes[nodeId], dimension),
             );
-            return computeBounds(childGroupNodeBounds, dimension);
-        });
 
-        const currentGroupNodeBounds = group.nodeIds.map((nodeId) => {
-            return getNodeBounds(nodes[nodeId], dimension);
-        });
+            return computeBounds(
+                [...currentNodesBounds, ...childGroupsBounds],
+                dimension,
+            );
+        };
 
-        return computeBounds(
-            [...childGroupsBounds, ...currentGroupNodeBounds],
-            dimension,
-        );
+        return recursiveGroupBounds(group);
     };
 
-    useEffect(() => {
-        if (dimension === prevDimension) return;
-
+    const updatedPointForDimension = () => {
         updateNodePointForDimension();
         updateEdgePointForDimension();
-    }, [dimension]);
+    };
 
     return {
+        prevDimension,
+        dimension,
+        svgRef,
+        nodes,
+        groups,
         addNode,
         moveNode,
         removeNode,
+        updateNode,
         addEdge,
         removeEdge,
         splitEdge,
         moveBendingPointer,
+        addGroup,
+        addChildGroup,
         updateGroup,
-        removeNodeFromGroup,
+        addNodeToGroup,
+        isExistGroup,
+        isExistSameTypeGroup,
         getGroupBounds,
         moveGroup,
+        removeGroup,
+        removeNodeFromGroup,
+        updatedPointForDimension,
+        excludeNodeFromGroup,
     };
 };
